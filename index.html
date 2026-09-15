@@ -200,11 +200,14 @@
                         </div>
 
                         <div class="pt-4">
-                            <button type="button" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-4 transition-all duration-300 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 hover:gap-3 active:scale-[0.98]">
-                                Kirim & Check-In Sekarang
-                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                            </button>
-                        </div>
+    <!-- Tambahkan ID btn-submit-guest dan elemen spinner di dalamnya -->
+    <button type="button" id="btn-submit-guest" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-4 transition-all duration-300 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 hover:gap-3 active:scale-[0.98]">
+        <span id="submit-text">Kirim & Check-In Sekarang</span>
+        <i data-lucide="arrow-right" id="submit-icon" class="w-5 h-5"></i>
+        <!-- Spinner disembunyikan secara default -->
+        <div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+    </button>
+</div>
                     </form>
                 </div>
                 
