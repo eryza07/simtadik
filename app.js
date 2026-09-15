@@ -26,8 +26,8 @@ const btnLogout = document.getElementById('btn-logout');
 // ==========================================
 // DOM ELEMENTS (Data Tables)
 // ==========================================
-const tableBody = document.getElementById('table-body'); // Tabel Overview Aktif
-const historyTableBody = document.getElementById('history-table-body'); // Tabel Riwayat Log
+const tableBody = document.getElementById('table-body'); 
+const historyTableBody = document.getElementById('history-table-body'); 
 const countMenunggu = document.getElementById('count-menunggu');
 const countBertemu = document.getElementById('count-bertemu');
 const countSelesai = document.getElementById('count-selesai');
@@ -89,12 +89,18 @@ function stopCamera() {
 }
 
 // ==========================================
-// 2. ROUTING ADMIN SIDEBAR (Overview vs Riwayat)
+// 2. ROUTING ADMIN SIDEBAR (BULLETPROOF)
 // ==========================================
 navOverview.addEventListener('click', (e) => {
     e.preventDefault();
-    adminView.classList.replace('view-hidden', 'view-visible');
-    historyView.classList.replace('view-visible', 'view-hidden');
+    
+    // Tampilkan Overview
+    adminView.classList.remove('view-hidden');
+    adminView.classList.add('view-visible');
+    
+    // Sembunyikan History
+    historyView.classList.remove('view-visible');
+    historyView.classList.add('view-hidden');
     
     // Style Active Tab
     navOverview.classList.add('bg-blue-600/20', 'text-blue-400');
@@ -105,8 +111,14 @@ navOverview.addEventListener('click', (e) => {
 
 navHistory.addEventListener('click', (e) => {
     e.preventDefault();
-    historyView.classList.replace('view-hidden', 'view-visible');
-    adminView.classList.replace('view-visible', 'view-hidden');
+    
+    // Tampilkan History
+    historyView.classList.remove('view-hidden');
+    historyView.classList.add('view-visible');
+    
+    // Sembunyikan Overview
+    adminView.classList.remove('view-visible');
+    adminView.classList.add('view-hidden');
     
     // Style Active Tab
     navHistory.classList.add('bg-blue-600/20', 'text-blue-400');
@@ -120,11 +132,17 @@ navHistory.addEventListener('click', (e) => {
 // ==========================================
 function toggleLoginForm() {
     if (welcomePanel.classList.contains('panel-visible')) {
-        welcomePanel.classList.replace('panel-visible', 'panel-hidden');
-        loginPanel.classList.replace('panel-hidden', 'panel-visible');
+        // Ke Mode Login
+        welcomePanel.classList.remove('panel-visible');
+        welcomePanel.classList.add('panel-hidden');
+        loginPanel.classList.remove('panel-hidden');
+        loginPanel.classList.add('panel-visible');
     } else {
-        loginPanel.classList.replace('panel-visible', 'panel-hidden');
-        welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+        // Kembali ke Welcome
+        loginPanel.classList.remove('panel-visible');
+        loginPanel.classList.add('panel-hidden');
+        welcomePanel.classList.remove('panel-hidden');
+        welcomePanel.classList.add('panel-visible');
     }
 }
 btnShowLogin.addEventListener('click', toggleLoginForm);
@@ -141,27 +159,44 @@ loginForm.addEventListener('submit', function(e) {
         loginText.classList.remove('hidden');
         loginSpinner.classList.add('hidden');
 
-        loginPanel.classList.replace('panel-visible', 'panel-hidden');
-        sidebarPanel.classList.replace('panel-hidden', 'panel-visible');
+        // Buka Sidebar Admin
+        loginPanel.classList.remove('panel-visible');
+        loginPanel.classList.add('panel-hidden');
+        sidebarPanel.classList.remove('panel-hidden');
+        sidebarPanel.classList.add('panel-visible');
         leftPanel.classList.remove('md:w-[30%]');
         leftPanel.classList.add('md:w-[20%]');
 
-        // Masuk ke layar default admin (Overview)
-        guestView.classList.replace('view-visible', 'view-hidden');
-        adminView.classList.replace('view-hidden', 'view-visible');
-        historyView.classList.replace('view-visible', 'view-hidden');
+        // Tampilkan Dashboard Overview secara default, sembunyikan sisanya
+        guestView.classList.remove('view-visible');
+        guestView.classList.add('view-hidden');
+        
+        historyView.classList.remove('view-visible');
+        historyView.classList.add('view-hidden');
+        
+        adminView.classList.remove('view-hidden');
+        adminView.classList.add('view-visible');
     }, 1500);
 });
 
 btnLogout.addEventListener('click', function() {
-    sidebarPanel.classList.replace('panel-visible', 'panel-hidden');
-    welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+    // Kembali ke UI Tamu Default
+    sidebarPanel.classList.remove('panel-visible');
+    sidebarPanel.classList.add('panel-hidden');
+    welcomePanel.classList.remove('panel-hidden');
+    welcomePanel.classList.add('panel-visible');
+    
     leftPanel.classList.remove('md:w-[20%]');
     leftPanel.classList.add('md:w-[30%]');
     
-    adminView.classList.replace('view-visible', 'view-hidden');
-    historyView.classList.replace('view-visible', 'view-hidden');
-    guestView.classList.replace('view-hidden', 'view-visible');
+    adminView.classList.remove('view-visible');
+    adminView.classList.add('view-hidden');
+    
+    historyView.classList.remove('view-visible');
+    historyView.classList.add('view-hidden');
+    
+    guestView.classList.remove('view-hidden');
+    guestView.classList.add('view-visible');
 });
 
 // ==========================================
@@ -329,6 +364,7 @@ if (guestForm) {
             setTimeout(() => {
                 successState.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
                 successState.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
+                lucide.createIcons();
             }, 300);
 
         }, 2000); 
@@ -351,10 +387,12 @@ if (btnNextGuest) {
             guestFormContainer.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
             guestFormContainer.classList.add('scale-100', 'opacity-100');
             
+            // Bersihkan form
             guestForm.reset();
             kelasContainer.classList.remove('is-active');
             inputKelas.removeAttribute('required');
             
+            // Matikan kamera dan sembunyikan foto
             if (videoStream) stopCamera();
             cameraResult.classList.add('hidden');
             btnRetake.classList.add('hidden');
