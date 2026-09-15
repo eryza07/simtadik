@@ -3,11 +3,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* 
- * ZERO LAYOUT THRASHING ANIMATION:
- * Menggunakan teknik grid-template-rows untuk membuka dan menutup field form kelas. 
- * Ini jauh lebih ringan bagi CPU perangkat mobile dibanding memanipulasi tinggi (height) secara langsung.
- */
+/* Zero Layout Thrashing Animation untuk dropdown Kelas */
 .kelas-wrapper {
     display: grid;
     grid-template-rows: 0fr;
@@ -20,7 +16,7 @@ body {
     overflow: hidden;
 }
 
-/* Transisi smooth untuk perpindahan panel Kiri (Welcome <-> Login) */
+/* Transisi smooth untuk komponen Panel Kiri */
 .fade-panel {
     transition: opacity 300ms ease, transform 300ms ease, visibility 300ms;
 }
@@ -38,7 +34,32 @@ body {
     position: relative;
 }
 
-/* Kustomisasi Scrollbar agar tampil elegan */
+/* Transisi Utama untuk Area Kanan (Guest Form <-> Admin Dashboard) */
+.view-panel {
+    transition: opacity 400ms ease, transform 400ms ease, visibility 400ms;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+}
+.view-hidden {
+    opacity: 0;
+    transform: scale(0.98); 
+    visibility: hidden;
+    pointer-events: none;
+}
+.view-visible {
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Animasi resize sidebar panel kiri */
+#left-panel {
+    transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Kustomisasi Scrollbar agar rapi */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { 
