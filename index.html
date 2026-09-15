@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Penerima Tamu - SMAN 1 Kandangan</title>
     
-    <!-- Tailwind CSS (via CDN untuk development) -->
+    <!-- Tailwind CSS (via CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts: Plus Jakarta Sans -->
@@ -14,8 +14,77 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- ==========================================
+         KODE CSS CUSTOM (Style)
+         ========================================== -->
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Animasi Grid untuk Dropdown Kelas (Zero Layout Thrashing) */
+        .kelas-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .kelas-wrapper.is-active {
+            grid-template-rows: 1fr;
+        }
+        .kelas-inner {
+            overflow: hidden;
+        }
+
+        /* Transisi Panel Kiri */
+        .fade-panel {
+            transition: opacity 300ms ease, transform 300ms ease, visibility 300ms;
+        }
+        .panel-hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            visibility: hidden;
+            position: absolute;
+            inset: 0;
+        }
+        .panel-visible {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+            position: relative;
+        }
+
+        /* Transisi Area Kanan (Guest vs Admin Dashboard) */
+        .view-panel {
+            transition: opacity 400ms ease, transform 400ms ease, visibility 400ms;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+        }
+        .view-hidden {
+            opacity: 0;
+            transform: scale(0.98); 
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .view-visible {
+            opacity: 1;
+            transform: scale(1);
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Animasi resize sidebar panel kiri saat Admin Login */
+        #left-panel {
+            transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Scrollbar Kustom */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
 </head>
 <body class="h-screen w-screen overflow-hidden bg-slate-50 flex flex-col md:flex-row">
 
@@ -108,7 +177,7 @@
          ========================================== -->
     <main class="relative flex-1 h-full overflow-hidden bg-slate-50 z-10">
         
-        <!-- VIEW 1: GUEST FORM -->
+        <!-- VIEW 1: GUEST FORM & SUCCESS SCREEN -->
         <div id="guest-view" class="view-panel view-visible h-full overflow-y-auto p-6 md:p-12 scroll-smooth">
             <div class="max-w-2xl mx-auto">
                 <div class="mb-8">
@@ -117,98 +186,127 @@
                     <p class="text-slate-500">Mohon lengkapi data diri Anda. Notifikasi akan otomatis dikirimkan ke perangkat Kepala Sekolah.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 md:p-8">
-                    <form class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-                                <input type="text" placeholder="Masukkan nama Anda" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">No. HP / WhatsApp <span class="text-red-500">*</span></label>
-                                <input type="tel" placeholder="08xx-xxxx-xxxx" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Asal Instansi / Perusahaan <span class="text-red-500">*</span></label>
-                            <input type="text" placeholder="Contoh: Dinas Pendidikan, Universitas, dll" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Kategori Tamu <span class="text-red-500">*</span></label>
-                                <select id="kategori-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none cursor-pointer">
-                                    <option value="" disabled selected>Pilih Kategori...</option>
-                                    <option value="siswa">Siswa/Siswi</option>
-                                    <option value="mahasiswa">Mahasiswa</option>
-                                    <option value="guru">Guru/Pendidik</option>
-                                    <option value="pegawai">Pegawai</option>
-                                    <option value="umum">Tamu Umum/Lainnya</option>
-                                </select>
-                            </div>
-
-                            <div id="kelas-container" class="kelas-wrapper">
-                                <div class="kelas-inner pt-0">
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Kelas / Jurusan <span class="text-red-500">*</span></label>
-                                    <input type="text" placeholder="Contoh: X MIPA 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
+                <!-- Container Utama Form & Sukses -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 md:p-8 relative overflow-hidden min-h-[500px]">
+                    
+                    <!-- FORM TAMU -->
+                    <div id="guest-form-container" class="transition-all duration-500 transform scale-100 opacity-100">
+                        <form id="guest-form" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                                    <input type="text" required placeholder="Masukkan nama Anda" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">No. HP / WhatsApp <span class="text-red-500">*</span></label>
+                                    <input type="tel" required placeholder="08xx-xxxx-xxxx" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
                                 </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Tujuan Kunjungan <span class="text-red-500">*</span></label>
-                            <textarea rows="3" placeholder="Jelaskan secara singkat tujuan Anda bertemu Kepala Sekolah..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 resize-none"></textarea>
-                        </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Asal Instansi / Perusahaan <span class="text-red-500">*</span></label>
+                                <input type="text" required placeholder="Contoh: Dinas Pendidikan, Universitas, dll" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
+                            </div>
 
-                        <!-- WEBRTC CAMERA COMPONENT -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Foto Identitas (Live Camera)</label>
-                            <div id="camera-container" class="relative border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center min-h-[240px] transition-all">
-                                
-                                <div id="camera-idle" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer z-10" onclick="startCamera()">
-                                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3 transition-transform duration-300 hover:scale-110">
-                                        <i data-lucide="camera" class="w-6 h-6"></i>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Kategori Tamu <span class="text-red-500">*</span></label>
+                                    <select id="kategori-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Pilih Kategori...</option>
+                                        <option value="siswa">Siswa/Siswi</option>
+                                        <option value="mahasiswa">Mahasiswa</option>
+                                        <option value="guru">Guru/Pendidik</option>
+                                        <option value="pegawai">Pegawai</option>
+                                        <option value="umum">Tamu Umum/Lainnya</option>
+                                    </select>
+                                </div>
+
+                                <div id="kelas-container" class="kelas-wrapper">
+                                    <div class="kelas-inner pt-0">
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">Kelas / Jurusan <span class="text-red-500">*</span></label>
+                                        <input type="text" id="input-kelas" placeholder="Contoh: X MIPA 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400">
                                     </div>
-                                    <p class="text-sm text-slate-600 font-medium mb-1">Klik untuk Buka Kamera</p>
-                                    <p class="text-xs text-slate-400">Gunakan kamera depan / webcam</p>
                                 </div>
-
-                                <video id="camera-video" class="hidden absolute inset-0 w-full h-full object-cover z-0" autoplay playsinline></video>
-                                
-                                <button type="button" id="btn-capture" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-slate-900 rounded-full px-6 py-2 text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform z-20 items-center gap-2" onclick="takeSnapshot()">
-                                    <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div> Jepret
-                                </button>
-
-                                <canvas id="camera-canvas" class="hidden"></canvas>
-                                <img id="camera-result" class="hidden absolute inset-0 w-full h-full object-cover z-30" alt="Hasil Foto Tamu">
-                                
-                                <button type="button" id="btn-retake" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white rounded-full px-6 py-2 text-sm font-medium shadow-lg hover:bg-slate-800 transition-colors z-40" onclick="retakePhoto()">
-                                    <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>Ulangi
-                                </button>
                             </div>
-                        </div>
 
-                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center gap-4 mt-4">
-                            <div class="bg-white p-2 rounded-lg shadow-sm">
-                                <i data-lucide="user-check" class="w-5 h-5 text-blue-600"></i>
-                            </div>
                             <div>
-                                <p class="text-xs text-blue-600 font-medium uppercase tracking-wider">Tujuan Host (Otomatis)</p>
-                                <p class="text-sm font-bold text-slate-800">Kepala Sekolah</p>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Tujuan Kunjungan <span class="text-red-500">*</span></label>
+                                <textarea rows="3" required placeholder="Jelaskan secara singkat tujuan Anda bertemu Kepala Sekolah..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 resize-none"></textarea>
                             </div>
+
+                            <!-- WEBRTC CAMERA COMPONENT -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Foto Identitas (Live Camera)</label>
+                                <div id="camera-container" class="relative border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center min-h-[240px] transition-all">
+                                    <div id="camera-idle" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer z-10" onclick="startCamera()">
+                                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3 transition-transform duration-300 hover:scale-110">
+                                            <i data-lucide="camera" class="w-6 h-6"></i>
+                                        </div>
+                                        <p class="text-sm text-slate-600 font-medium mb-1">Klik untuk Buka Kamera</p>
+                                        <p class="text-xs text-slate-400">Gunakan kamera depan / webcam</p>
+                                    </div>
+
+                                    <video id="camera-video" class="hidden absolute inset-0 w-full h-full object-cover z-0" autoplay playsinline></video>
+                                    
+                                    <button type="button" id="btn-capture" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-slate-900 rounded-full px-6 py-2 text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform z-20 items-center gap-2" onclick="takeSnapshot()">
+                                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div> Jepret
+                                    </button>
+
+                                    <canvas id="camera-canvas" class="hidden"></canvas>
+                                    <img id="camera-result" class="hidden absolute inset-0 w-full h-full object-cover z-30" alt="Hasil Foto Tamu">
+                                    
+                                    <button type="button" id="btn-retake" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white rounded-full px-6 py-2 text-sm font-medium shadow-lg hover:bg-slate-800 transition-colors z-40" onclick="retakePhoto()">
+                                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>Ulangi
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center gap-4 mt-4">
+                                <div class="bg-white p-2 rounded-lg shadow-sm">
+                                    <i data-lucide="user-check" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-blue-600 font-medium uppercase tracking-wider">Tujuan Host (Otomatis)</p>
+                                    <p class="text-sm font-bold text-slate-800">Kepala Sekolah</p>
+                                </div>
+                            </div>
+
+                            <!-- TOMBOL SUBMIT -->
+                            <div class="pt-4">
+                                <button type="submit" id="btn-submit-guest" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-4 transition-all duration-300 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 hover:gap-3 active:scale-[0.98]">
+                                    <span id="submit-text">Kirim & Check-In Sekarang</span>
+                                    <i data-lucide="arrow-right" id="submit-icon" class="w-5 h-5"></i>
+                                    <div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- LAYAR SUKSES / TIKET ANTREAN -->
+                    <div id="success-state" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-8 text-center opacity-0 pointer-events-none transition-all duration-500 transform scale-95">
+                        <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                            <i data-lucide="check-circle" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-2">Check-In Berhasil!</h3>
+                        <p class="text-slate-500 mb-6">Data Anda telah dikirim ke Kepala Sekolah. Silakan tunggu di lobi.</p>
+                        
+                        <!-- Tiket Virtual -->
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 w-full max-w-sm mb-8 text-left relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-amber-100 rounded-bl-full flex items-start justify-end p-3">
+                                <div class="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-1">Status Kunjungan</p>
+                            <p class="text-lg font-bold text-amber-600 mb-4">Menunggu...</p>
+                            
+                            <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-1">Host Tujuan</p>
+                            <p class="text-base font-bold text-slate-800">Kepala Sekolah</p>
                         </div>
 
-                        <div class="pt-4">
-    <!-- Tambahkan ID btn-submit-guest dan elemen spinner di dalamnya -->
-    <button type="button" id="btn-submit-guest" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-4 transition-all duration-300 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 hover:gap-3 active:scale-[0.98]">
-        <span id="submit-text">Kirim & Check-In Sekarang</span>
-        <i data-lucide="arrow-right" id="submit-icon" class="w-5 h-5"></i>
-        <!-- Spinner disembunyikan secara default -->
-        <div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-    </button>
-</div>
-                    </form>
+                        <button type="button" id="btn-next-guest" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl px-8 py-3 transition-colors flex items-center gap-2 shadow-sm">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Selesai (Tamu Berikutnya)
+                        </button>
+                    </div>
+
                 </div>
                 
                 <div class="text-center mt-8 pb-8">
@@ -289,7 +387,207 @@
 
     </main>
 
-    <!-- Custom JS -->
-    <script src="app.js"></script>
+    <!-- ==========================================
+         KODE JAVASCRIPT CUSTOM
+         ========================================== -->
+    <script>
+        // Inisialisasi ikon Lucide
+        lucide.createIcons();
+
+        // DOM ELEMENTS
+        const leftPanel = document.getElementById('left-panel');
+        const welcomePanel = document.getElementById('welcome-panel');
+        const loginPanel = document.getElementById('login-panel');
+        const sidebarPanel = document.getElementById('sidebar-panel');
+        const guestView = document.getElementById('guest-view');
+        const adminView = document.getElementById('admin-view');
+        const btnShowLogin = document.getElementById('btn-show-login');
+        const btnHideLogin = document.getElementById('btn-hide-login');
+        const loginForm = document.getElementById('login-form');
+        const btnDoLogin = document.getElementById('btn-do-login');
+        const loginText = document.getElementById('login-text');
+        const loginSpinner = document.getElementById('login-spinner');
+        const btnLogout = document.getElementById('btn-logout');
+        const kategoriSelect = document.getElementById('kategori-select');
+        const kelasContainer = document.getElementById('kelas-container');
+        const inputKelas = document.getElementById('input-kelas');
+
+        // LOGIKA FORM TAMU (Animasi Kelas)
+        kategoriSelect.addEventListener('change', function() {
+            if (this.value === 'siswa') {
+                kelasContainer.classList.add('is-active');
+                inputKelas.setAttribute('required', 'true');
+            } else {
+                kelasContainer.classList.remove('is-active');
+                inputKelas.removeAttribute('required');
+                inputKelas.value = "";
+            }
+        });
+
+        // LOGIKA NAVIGASI & LOGIN ADMIN
+        function toggleLoginForm() {
+            if (welcomePanel.classList.contains('panel-visible')) {
+                welcomePanel.classList.replace('panel-visible', 'panel-hidden');
+                loginPanel.classList.replace('panel-hidden', 'panel-visible');
+            } else {
+                loginPanel.classList.replace('panel-visible', 'panel-hidden');
+                welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+            }
+        }
+        btnShowLogin.addEventListener('click', toggleLoginForm);
+        btnHideLogin.addEventListener('click', toggleLoginForm);
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            btnDoLogin.disabled = true;
+            loginText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
+
+            setTimeout(() => {
+                btnDoLogin.disabled = false;
+                loginText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+
+                loginPanel.classList.replace('panel-visible', 'panel-hidden');
+                sidebarPanel.classList.replace('panel-hidden', 'panel-visible');
+                leftPanel.classList.remove('md:w-[30%]');
+                leftPanel.classList.add('md:w-[20%]');
+
+                guestView.classList.replace('view-visible', 'view-hidden');
+                adminView.classList.replace('view-hidden', 'view-visible');
+            }, 1500);
+        });
+
+        btnLogout.addEventListener('click', function() {
+            sidebarPanel.classList.replace('panel-visible', 'panel-hidden');
+            welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+            leftPanel.classList.remove('md:w-[20%]');
+            leftPanel.classList.add('md:w-[30%]');
+            adminView.classList.replace('view-visible', 'view-hidden');
+            guestView.classList.replace('view-hidden', 'view-visible');
+        });
+
+        // LOGIKA WEBRTC CAMERA (FOTO TAMU)
+        const cameraIdle = document.getElementById('camera-idle');
+        const cameraVideo = document.getElementById('camera-video');
+        const btnCapture = document.getElementById('btn-capture');
+        const cameraCanvas = document.getElementById('camera-canvas');
+        const cameraResult = document.getElementById('camera-result');
+        const btnRetake = document.getElementById('btn-retake');
+        let videoStream = null;
+
+        async function startCamera() {
+            try {
+                const constraints = { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } };
+                videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+                cameraVideo.srcObject = videoStream;
+                cameraIdle.classList.add('hidden');
+                cameraVideo.classList.remove('hidden');
+                btnCapture.classList.remove('hidden');
+                btnCapture.classList.add('flex');
+            } catch (err) {
+                console.error("Gagal mengakses kamera:", err);
+                alert("Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.");
+            }
+        }
+
+        function takeSnapshot() {
+            if (!videoStream) return;
+            cameraCanvas.width = cameraVideo.videoWidth;
+            cameraCanvas.height = cameraVideo.videoHeight;
+            const ctx = cameraCanvas.getContext('2d');
+            ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+            const imageData = cameraCanvas.toDataURL('image/jpeg', 0.8);
+            cameraResult.src = imageData;
+            
+            cameraVideo.classList.add('hidden');
+            btnCapture.classList.add('hidden');
+            btnCapture.classList.remove('flex');
+            cameraResult.classList.remove('hidden');
+            btnRetake.classList.remove('hidden');
+            stopCamera();
+        }
+
+        function retakePhoto() {
+            cameraResult.classList.add('hidden');
+            btnRetake.classList.add('hidden');
+            cameraResult.src = ""; 
+            startCamera();
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+        }
+
+        // LOGIKA SUBMIT FORM TAMU & LAYAR SUKSES
+        const guestForm = document.getElementById('guest-form');
+        const guestFormContainer = document.getElementById('guest-form-container');
+        const btnSubmitGuest = document.getElementById('btn-submit-guest');
+        const submitText = document.getElementById('submit-text');
+        const submitIcon = document.getElementById('submit-icon');
+        const submitSpinner = document.getElementById('submit-spinner');
+        const successState = document.getElementById('success-state');
+        const btnNextGuest = document.getElementById('btn-next-guest');
+
+        if (guestForm) {
+            guestForm.addEventListener('submit', function(e) {
+                e.preventDefault(); 
+                btnSubmitGuest.disabled = true;
+                btnSubmitGuest.classList.add('opacity-80', 'cursor-not-allowed');
+                submitText.innerText = "Mengirim Data...";
+                submitIcon.classList.add('hidden');
+                submitSpinner.classList.remove('hidden');
+
+                // Delay 2 detik (simulasi kirim ke server/wa)
+                setTimeout(() => {
+                    btnSubmitGuest.disabled = false;
+                    btnSubmitGuest.classList.remove('opacity-80', 'cursor-not-allowed');
+                    submitText.innerText = "Kirim & Check-In Sekarang";
+                    submitIcon.classList.remove('hidden');
+                    submitSpinner.classList.add('hidden');
+
+                    // Transisi Animasi: Sembunyikan Form, Munculkan Tiket Antrean
+                    guestFormContainer.classList.remove('scale-100', 'opacity-100');
+                    guestFormContainer.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    
+                    setTimeout(() => {
+                        successState.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+                        successState.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
+                        lucide.createIcons(); // Refresh icons
+                    }, 300);
+                }, 2000); 
+            });
+        }
+
+        // LOGIKA RESET UNTUK TAMU BERIKUTNYA
+        if (btnNextGuest) {
+            btnNextGuest.addEventListener('click', function() {
+                // Transisi Animasi: Sembunyikan Tiket, Munculkan Form
+                successState.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
+                successState.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                
+                setTimeout(() => {
+                    guestFormContainer.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+                    guestFormContainer.classList.add('scale-100', 'opacity-100');
+                    
+                    // Reset semua input form
+                    guestForm.reset();
+                    kelasContainer.classList.remove('is-active');
+                    inputKelas.removeAttribute('required');
+
+                    // Matikan kamera dan reset foto UI
+                    if (videoStream) stopCamera();
+                    cameraResult.classList.add('hidden');
+                    btnRetake.classList.add('hidden');
+                    cameraIdle.classList.remove('hidden');
+                    cameraVideo.classList.add('hidden');
+                    btnCapture.classList.add('hidden');
+                }, 300);
+            });
+        }
+    </script>
 </body>
 </html>
