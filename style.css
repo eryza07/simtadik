@@ -3,7 +3,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Zero Layout Thrashing Animation untuk dropdown Kelas */
+/* Animasi Grid untuk Dropdown Kelas (Zero Layout Thrashing) */
 .kelas-wrapper {
     display: grid;
     grid-template-rows: 0fr;
