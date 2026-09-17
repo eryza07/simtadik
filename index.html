@@ -11,43 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- CSS Anti-Rusak -->
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
-        
-        /* Animasi Buka/Tutup Form Kelas */
-        .kelas-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 300ms ease; }
-        .kelas-wrapper.is-active { grid-template-rows: 1fr; }
-        .kelas-inner { overflow: hidden; }
-
-        /* Kustomisasi Scrollbar Desktop */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* Sembunyikan scrollbar di HP agar lebih rapi */
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Animasi Transisi Halus antar layar */
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Mode Cetak (PDF/Printer) */
-        @media print {
-            .no-print, header, aside, nav, button { display: none !important; }
-            body, main { background: white !important; overflow: visible !important; height: auto !important; display: block !important;}
-            #view-success { display: block !important; padding: 0 !important; }
-            .print-card { box-shadow: none !important; border: 4px solid #0f172a !important; margin: 0 auto !important; }
-        }
-    </style>
+    <!-- Memanggil CSS Eksternal -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="h-[100dvh] w-full bg-slate-50 flex flex-col md:flex-row overflow-hidden">
+<body class="h-[100dvh] w-full bg-slate-50 flex flex-col md:flex-row overflow-hidden relative">
 
-    <!-- ==========================================
-         1. HEADER MOBILE (Khusus HP)
-         ========================================== -->
+    <!-- HEADER MOBILE -->
     <header class="md:hidden bg-slate-900 text-white flex items-center px-5 py-4 shrink-0 shadow-md relative z-30">
         <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
             <i data-lucide="school" class="w-4 h-4 text-white"></i>
@@ -55,13 +24,10 @@
         <h1 class="font-bold text-sm tracking-widest uppercase">SMAN 1 Kandangan</h1>
     </header>
 
-    <!-- ==========================================
-         2. SIDEBAR DESKTOP (Sembunyi di HP)
-         ========================================== -->
+    <!-- SIDEBAR DESKTOP -->
     <aside class="hidden md:flex flex-col w-[30%] bg-slate-900 text-white p-8 relative shrink-0 shadow-2xl z-20 transition-all duration-300">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none"></div>
         
-        <!-- Sidebar: Menu Tamu -->
         <div id="desktop-guest-sidebar" class="flex flex-col h-full justify-between relative z-10 fade-in">
             <div>
                 <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
@@ -85,7 +51,6 @@
             </button>
         </div>
 
-        <!-- Sidebar: Menu Admin -->
         <div id="desktop-admin-sidebar" class="hidden flex-col h-full justify-between relative z-10 fade-in">
             <div>
                 <div class="flex items-center gap-3 mb-10">
@@ -104,12 +69,10 @@
         </div>
     </aside>
 
-    <!-- ==========================================
-         3. KONTEN UTAMA (Tempat Semua Layar Berada)
-         ========================================== -->
+    <!-- KONTEN UTAMA -->
     <main class="flex-1 h-full overflow-y-auto pb-20 md:pb-0 relative z-10 custom-scrollbar print:pb-0">
         
-        <!-- ================= LAYA 1: FORM TAMU ================= -->
+        <!-- LAYA 1: FORM TAMU -->
         <div id="view-guest-form" class="app-view block p-5 sm:p-8 lg:p-12 fade-in">
             <div class="max-w-2xl mx-auto">
                 <div class="mb-6 md:mb-8 text-center md:text-left">
@@ -179,8 +142,8 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 2: TIKET SUKSES (Bisa di Print) ================= -->
-        <div id="view-success" class="app-view hidden p-5 md:p-12 fade-in print:block h-full flex flex-col justify-center">
+        <!-- LAYA 2: TIKET SUKSES (Bisa di Print) -->
+        <div id="view-success" class="app-view hidden p-5 md:p-12 fade-in flex-col justify-center h-full">
             <div class="max-w-sm mx-auto text-center w-full">
                 <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 no-print">
                     <i data-lucide="check-circle" class="w-8 h-8"></i>
@@ -221,7 +184,7 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 3: CEK STATUS MANDIRI ================= -->
+        <!-- LAYA 3: CEK STATUS MANDIRI -->
         <div id="view-track" class="app-view hidden p-5 sm:p-8 lg:p-12 h-full flex flex-col justify-center fade-in">
             <div class="max-w-md mx-auto w-full">
                 <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2 text-center md:text-left">Cek Status Tiket</h2>
@@ -260,7 +223,7 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 4: LOGIN ADMIN (Gabung ke Main Area agar responsif) ================= -->
+        <!-- LAYA 4: LOGIN ADMIN -->
         <div id="view-login" class="app-view hidden p-5 sm:p-8 h-full flex flex-col justify-center fade-in">
             <div class="max-w-sm mx-auto w-full bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100">
                 <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center mb-6 mx-auto">
@@ -287,12 +250,11 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 5: ADMIN OVERVIEW ================= -->
+        <!-- LAYA 5: ADMIN OVERVIEW -->
         <div id="view-admin-overview" class="app-view hidden p-5 sm:p-8 lg:p-10 fade-in">
             <div class="max-w-5xl mx-auto">
                 <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-6">Overview Kunjungan</h2>
                 
-                <!-- Statistik -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
                     <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col justify-center">
                         <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider">Menunggu</p>
@@ -308,7 +270,6 @@
                     </div>
                 </div>
                 
-                <!-- Tabel Cepat -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                     <div class="overflow-x-auto hide-scroll">
                         <table class="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
@@ -327,8 +288,8 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 6: ADMIN VERIFIKASI ================= -->
-        <div id="view-admin-verify" class="app-view hidden p-5 sm:p-8 lg:p-10 fade-in flex flex-col">
+        <!-- LAYA 6: ADMIN VERIFIKASI -->
+        <div id="view-admin-verify" class="app-view hidden p-5 sm:p-8 lg:p-10 fade-in flex-col">
             <div class="max-w-xl mx-auto w-full pt-4 md:pt-10">
                 <div class="text-center mb-6">
                     <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
@@ -368,7 +329,7 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 7: ADMIN HISTORY ================= -->
+        <!-- LAYA 7: ADMIN HISTORY -->
         <div id="view-admin-history" class="app-view hidden p-5 sm:p-8 lg:p-10 fade-in">
             <div class="max-w-5xl mx-auto">
                 <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-900">Log Riwayat Harian</h2></div>
@@ -390,12 +351,8 @@
         </div>
     </main>
 
-    <!-- ==========================================
-         4. BOTTOM NAVBAR (Khusus HP / Mobile)
-         ========================================== -->
-    
-    <!-- Navbar Bawah Tamu -->
-    <nav id="mobile-nav-guest" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] transition-transform duration-300">
+    <!-- BOTTOM NAVBAR TAMU (Khusus HP) -->
+    <nav id="mobile-nav-guest" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 flex justify-around items-center h-[70px] z-[999] transition-transform duration-300 transform translate-y-0">
         <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-blue-600 transition" data-target="view-guest-form">
             <i data-lucide="edit-3" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-bold">Formulir</span>
         </button>
@@ -407,8 +364,8 @@
         </button>
     </nav>
 
-    <!-- Navbar Bawah Admin -->
-    <nav id="mobile-nav-admin" class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-xl transition-transform duration-300 translate-y-full">
+    <!-- BOTTOM NAVBAR ADMIN (Khusus HP) -->
+    <nav id="mobile-nav-admin" class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around items-center h-[70px] z-[999] transition-transform duration-300 transform translate-y-full">
         <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-blue-400 transition" data-target="view-admin-overview">
             <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-bold">Overview</span>
         </button>
@@ -423,263 +380,7 @@
         </button>
     </nav>
 
-    <!-- ==========================================
-         5. KODE JAVASCRIPT ENGINE
-         ========================================== -->
-    <script>
-        lucide.createIcons();
-
-        // 1. DATABASE VIRTUAL
-        const guestsDatabase = {};
-
-        // 2. SISTEM ROUTER CERDAS (ANTI BUG)
-        // Fungsi ini yang bertugas mematikan/menyalakan layar dengan bersih tanpa tabrakan Z-Index
-        function switchAppView(targetId) {
-            // Sembunyikan semua layar di area Main
-            document.querySelectorAll('.app-view').forEach(view => {
-                view.classList.remove('block');
-                view.classList.add('hidden');
-            });
-            // Tampilkan layar yang dituju
-            document.getElementById(targetId).classList.remove('hidden');
-            document.getElementById(targetId).classList.add('block');
-        }
-
-        // 3. KONTROL NAVBAR MOBILE (BAWAH)
-        const mNavBtns = document.querySelectorAll('.m-nav-btn');
-        mNavBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Reset warna icon semua tombol tamu
-                mNavBtns.forEach(b => {
-                    b.classList.remove('text-blue-600'); b.classList.add('text-slate-400');
-                    b.querySelector('span').classList.remove('font-bold'); b.querySelector('span').classList.add('font-medium');
-                });
-                // Aktifkan icon yang diklik
-                this.classList.remove('text-slate-400'); this.classList.add('text-blue-600');
-                this.querySelector('span').classList.remove('font-medium'); this.querySelector('span').classList.add('font-bold');
-                
-                // Ganti layar
-                switchAppView(this.getAttribute('data-target'));
-            });
-        });
-
-        const mAdminBtns = document.querySelectorAll('.m-admin-btn');
-        mAdminBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                mAdminBtns.forEach(b => {
-                    b.classList.remove('text-blue-400'); b.classList.add('text-slate-400');
-                    b.querySelector('span').classList.remove('font-bold'); b.querySelector('span').classList.add('font-medium');
-                });
-                this.classList.remove('text-slate-400'); this.classList.add('text-blue-400');
-                this.querySelector('span').classList.remove('font-medium'); this.querySelector('span').classList.add('font-bold');
-                switchAppView(this.getAttribute('data-target'));
-            });
-        });
-
-        // 4. KONTROL NAVBAR DESKTOP (KIRI)
-        const dNavBtns = document.querySelectorAll('.d-nav-btn');
-        dNavBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                switchAppView(this.getAttribute('data-target'));
-            });
-        });
-
-        const dAdminBtns = document.querySelectorAll('.d-admin-btn');
-        dAdminBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Reset styling
-                dAdminBtns.forEach(b => {
-                    b.classList.remove('bg-blue-600/20', 'text-blue-400');
-                    b.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
-                });
-                // Set active style
-                this.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
-                this.classList.add('bg-blue-600/20', 'text-blue-400');
-                switchAppView(this.getAttribute('data-target'));
-            });
-        });
-
-        // 5. SISTEM LOGIN & LOGOUT (Otomatis Ubah Navbar)
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            document.getElementById('btn-do-login').disabled = true;
-            document.getElementById('login-text').classList.add('hidden');
-            document.getElementById('login-spinner').classList.remove('hidden');
-
-            setTimeout(() => {
-                // Sembunyikan Loading UI
-                document.getElementById('btn-do-login').disabled = false;
-                document.getElementById('login-text').classList.remove('hidden');
-                document.getElementById('login-spinner').classList.add('hidden');
-
-                // TUKAR NAVBAR MOBILE (Geser Tamu ke bawah, Angkat Admin ke atas)
-                document.getElementById('mobile-nav-guest').classList.replace('translate-y-0', 'translate-y-full');
-                document.getElementById('mobile-nav-admin').classList.replace('translate-y-full', 'translate-y-0');
-
-                // TUKAR SIDEBAR DESKTOP
-                document.getElementById('desktop-guest-sidebar').classList.add('hidden');
-                document.getElementById('desktop-admin-sidebar').classList.remove('hidden');
-                document.getElementById('desktop-admin-sidebar').classList.add('flex');
-
-                // Buka Layar Overview Default
-                switchAppView('view-admin-overview');
-
-                // Pastikan tombol Admin mobile dan desktop di set ke Overview
-                document.querySelector('.m-admin-btn[data-target="view-admin-overview"]').click();
-                document.querySelector('.d-admin-btn[data-target="view-admin-overview"]').click();
-
-            }, 1000); // Simulasi loading 1 detik
-        });
-
-        // Fungsi Logout Global (Berlaku untuk Desktop & Mobile)
-        function processLogout() {
-            // Tukar Navbar Mobile kembali
-            document.getElementById('mobile-nav-admin').classList.replace('translate-y-0', 'translate-y-full');
-            document.getElementById('mobile-nav-guest').classList.replace('translate-y-full', 'translate-y-0');
-
-            // Tukar Sidebar Desktop kembali
-            document.getElementById('desktop-admin-sidebar').classList.add('hidden');
-            document.getElementById('desktop-admin-sidebar').classList.remove('flex');
-            document.getElementById('desktop-guest-sidebar').classList.remove('hidden');
-            
-            // Pindahkan ke Layar Form Tamu
-            switchAppView('view-guest-form');
-            document.querySelector('.m-nav-btn[data-target="view-guest-form"]').click();
-        }
-
-        document.getElementById('btn-logout-desktop').addEventListener('click', processLogout);
-        document.getElementById('btn-logout-mobile').addEventListener('click', processLogout);
-
-        // 6. ANIMASI DROPDOWN FORM KELAS
-        document.getElementById('kategori-select').addEventListener('change', function() {
-            if (this.value === 'siswa') document.getElementById('kelas-container').classList.add('is-active');
-            else document.getElementById('kelas-container').classList.remove('is-active');
-        });
-
-        // 7. KAMERA WEBRTC
-        const cameraVideo = document.getElementById('camera-video');
-        const cameraCanvas = document.getElementById('camera-canvas');
-        const cameraResult = document.getElementById('camera-result');
-        let videoStream = null;
-
-        async function startCamera() {
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-                cameraVideo.srcObject = videoStream;
-                document.getElementById('camera-idle').classList.add('hidden');
-                cameraVideo.classList.remove('hidden');
-                document.getElementById('btn-capture').classList.remove('hidden');
-            } catch (err) { alert("Izinkan akses kamera terlebih dahulu."); }
-        }
-
-        function takeSnapshot() {
-            if (!videoStream) return;
-            cameraCanvas.width = cameraVideo.videoWidth;
-            cameraCanvas.height = cameraVideo.videoHeight;
-            cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0);
-            cameraResult.src = cameraCanvas.toDataURL('image/jpeg', 0.8);
-            cameraVideo.classList.add('hidden');
-            document.getElementById('btn-capture').classList.add('hidden');
-            cameraResult.classList.remove('hidden');
-            document.getElementById('btn-retake').classList.remove('hidden');
-            stopCamera();
-        }
-
-        function retakePhoto() {
-            cameraResult.classList.add('hidden');
-            document.getElementById('btn-retake').classList.add('hidden');
-            startCamera();
-        }
-
-        function stopCamera() {
-            if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
-        }
-
-        // 8. FUNGSI UPDATE COUNTER STATISTIK DASHBOARD
-        function updateCounter(type, amount) {
-            const el = document.getElementById(`count-${type}`);
-            el.innerText = Math.max(0, parseInt(el.innerText) + amount);
-        }
-
-        // 9. PROSES PENGIRIMAN DATA TAMU -> BIKIN TIKET -> INJEK KE ADMIN
-        document.getElementById('guest-form').addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            
-            const guestName = document.getElementById('guest-name').value;
-            const instansi = document.getElementById('guest-instansi').value;
-            const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-            
-            // Bikin Kode Tiket (Contoh: SMAN1-A8B9C)
-            const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
-            // Simpan Ke Database In-Memory
-            guestsDatabase[code] = { name: guestName, instansi: instansi, time: timeStr, status: 'menunggu' };
-
-            // UI Loading Kirim
-            document.getElementById('btn-submit-guest').disabled = true;
-            document.getElementById('submit-text').innerText = "Membuat Tiket...";
-            document.getElementById('submit-icon').classList.add('hidden');
-            document.getElementById('submit-spinner').classList.remove('hidden');
-
-            setTimeout(() => {
-                // Tampilkan Data ke Layar Tiket
-                document.getElementById('ticket-name').innerText = guestName;
-                document.getElementById('ticket-code').innerText = code;
-
-                // Pindah ke layar sukses (Tiket)
-                switchAppView('view-success');
-
-                // ============ INJEKSI DATA KE TABEL OVERVIEW ADMIN ============
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/50 transition-colors border-b border-slate-100";
-                tr.innerHTML = `
-                    <td class="px-4 py-3">
-                        <p class="text-[9px] font-mono text-slate-400">${code}</p>
-                        <p class="font-bold text-slate-900">${guestName}</p>
-                        <p class="text-[10px] text-slate-500 hidden sm:block">${instansi}</p>
-                    </td>
-                    <td class="px-4 py-3 hidden sm:table-cell text-xs text-slate-600">${instansi}</td>
-                    <td class="px-4 py-3">
-                        <span class="status-badge inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span>
-                    </td>
-                    <td class="px-4 py-3">
-                        <select id="sel-${code}" class="bg-white border border-slate-300 rounded-md px-2 py-1 text-xs outline-none w-full sm:w-auto font-medium">
-                            <option value="menunggu" selected>Menunggu</option>
-                            <option value="bertemu">Sedang Bertemu</option>
-                            <option value="selesai">Selesai Keluar</option>
-                        </select>
-                    </td>
-                `;
-                document.getElementById('table-body').prepend(tr);
-                updateCounter('menunggu', 1);
-
-                // ============ INJEKSI DATA KE TABEL HISTORY ADMIN ============
-                const histTr = document.createElement('tr');
-                histTr.className = "hover:bg-slate-50/50 border-b border-slate-100";
-                histTr.innerHTML = `
-                    <td class="px-4 py-3">
-                        <p class="text-[9px] font-mono text-slate-400">${code}</p>
-                        <p class="font-bold text-slate-900 text-sm">${guestName}</p>
-                    </td>
-                    <td class="px-4 py-3 text-xs text-slate-600">
-                        <span class="text-emerald-600 fontBiar saya bantu perbaiki. Sepertinya maksud kamu tidak ada **gambarnya** atau layarnya *blank*, dan kondisinya sekarang makin bermasalah.
-
-Langkah paling aman dan umum untuk mengatasi layar yang tiba-tiba *blank* atau hilang gambar adalah melakukan *force restart* (mulai ulang paksa). 
-
-<Steps>
-  <Step title="Lakukan Force Restart" subtitle="Sekitar 15 detik">Tekan dan tahan tombol **Power** dan **Volume Turun** secara bersamaan selama kurang lebih 10-15 detik.</Step>
-  <Step title="Tunggu Reaksi Perangkat" subtitle="Cek Indikator">Lepaskan tombol saat layar benar-benar mati dan perangkat bergetar atau memunculkan logo pembuat perangkat.</Step>
-</Steps>
-
-Untuk memastikan apakah cara ini berhasil, perhatikan apakah layar kembali menyala normal atau setidaknya ada suara dan getaran yang merespons.
-
-Agar saya bisa memberikan solusi yang lebih spesifik, tolong jawab pertanyaan ini:
-1. Perangkat atau aplikasi apa yang sedang rusak ini (HP, laptop, emulator, atau game tertentu)?
-2. Apa yang terakhir kamu ubah, klik, atau hubungkan ke perangkat sebelum gambarnya hilang?
-
-<Elicitations message="Pilih salah satu kondisi di bawah ini atau ketikkan detailnya:">
-  <Elicitation label="Ini di HP Android" query="Ini terjadi di HP Android saya, layarnya tiba-tiba blank." />
-  <Elicitation label="Lagi pakai Emulator/Game" query="Ini terjadi waktu saya lagi main game atau pakai emulator." />
-  <Elicitation label="Ini di Laptop/Komputer" query="Ini terjadi di laptop atau komputer saya." />
-</Elicitations>
+    <!-- Memanggil JS Eksternal -->
+    <script src="app.js"></script>
+</body>
+</html>
