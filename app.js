@@ -1,18 +1,14 @@
 lucide.createIcons();
 
-// 1. DATABASE VIRTUAL LENGKAP
 const guestsDatabase = {};
 
-// 2. SET DEFAULT DATE HARI INI
 const dateInput = document.getElementById('guest-date');
 const today = new Date().toISOString().split('T')[0];
 dateInput.value = today;
 
-// 3. ROUTER ANTI BUG
 function switchAppView(targetId) {
     document.querySelectorAll('.app-view').forEach(view => {
-        view.classList.remove('block', 'flex');
-        view.classList.add('hidden');
+        view.classList.remove('block', 'flex'); view.classList.add('hidden');
     });
     const target = document.getElementById(targetId);
     target.classList.remove('hidden');
@@ -23,7 +19,6 @@ function switchAppView(targetId) {
     }
 }
 
-// 4. KONTROL NAVBAR MOBILE
 const mNavBtns = document.querySelectorAll('.m-nav-btn');
 mNavBtns.forEach(btn => {
     btn.addEventListener('click', function() {
@@ -50,15 +45,12 @@ mAdminBtns.forEach(btn => {
     });
 });
 
-// 5. KONTROL NAVBAR DESKTOP
 document.querySelectorAll('.d-nav-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.d-nav-btn').forEach(b => {
-            b.classList.remove('bg-white/10', 'text-blue-400', 'border-white/10');
-            b.classList.add('text-slate-400');
+            b.classList.remove('bg-white/10', 'text-blue-400', 'border-white/10'); b.classList.add('text-slate-400');
         });
-        this.classList.remove('text-slate-400');
-        this.classList.add('bg-white/10', 'text-blue-400', 'border-white/10');
+        this.classList.remove('text-slate-400'); this.classList.add('bg-white/10', 'text-blue-400', 'border-white/10');
         switchAppView(this.getAttribute('data-target'));
     });
 });
@@ -66,16 +58,13 @@ document.querySelectorAll('.d-nav-btn').forEach(btn => {
 document.querySelectorAll('.d-admin-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.d-admin-btn').forEach(b => {
-            b.classList.remove('bg-blue-600/20', 'text-blue-400');
-            b.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+            b.classList.remove('bg-blue-600/20', 'text-blue-400'); b.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
         });
-        this.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
-        this.classList.add('bg-blue-600/20', 'text-blue-400');
+        this.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white'); this.classList.add('bg-blue-600/20', 'text-blue-400');
         switchAppView(this.getAttribute('data-target'));
     });
 });
 
-// 6. LOGIN / LOGOUT
 document.getElementById('login-form').addEventListener('submit', function(e) {
     e.preventDefault(); 
     document.getElementById('btn-do-login').disabled = true;
@@ -116,13 +105,11 @@ function doLogout() {
 document.getElementById('btn-logout-desktop').addEventListener('click', doLogout);
 document.getElementById('btn-logout-mobile').addEventListener('click', doLogout);
 
-// 7. FORM KELAS
 document.getElementById('kategori-select').addEventListener('change', function() {
     if (this.value === 'siswa') document.getElementById('kelas-container').classList.add('is-active');
     else document.getElementById('kelas-container').classList.remove('is-active');
 });
 
-// 8. KAMERA WEBRTC
 const cameraVideo = document.getElementById('camera-video');
 const cameraCanvas = document.getElementById('camera-canvas');
 const cameraResult = document.getElementById('camera-result');
@@ -154,14 +141,13 @@ function stopCamera() {
     if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
 }
 
-// FUNGSI UPDATE COUNTER STATISTIK
 function updateCounter(type, amount) {
     const el = document.getElementById(`count-${type}`);
     el.innerText = Math.max(0, parseInt(el.innerText) + amount);
 }
 
 // ==============================================================
-// 9. SUBMIT FORM & SISTEM KONFLIK JADWAL
+// SUBMIT FORM KEDATANGAN
 // ==============================================================
 document.getElementById('guest-form').addEventListener('submit', function(e) {
     e.preventDefault(); 
@@ -183,8 +169,7 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
     let conflictGuestName = null;
     for (const code in guestsDatabase) {
         if (guestsDatabase[code].date === guestDate && guestsDatabase[code].status !== 'selesai') {
-            conflictGuestName = guestsDatabase[code].name;
-            break;
+            conflictGuestName = guestsDatabase[code].name; break;
         }
     }
 
@@ -194,9 +179,7 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
         const modal = document.getElementById('conflict-modal');
         const card = document.getElementById('conflict-card');
         modal.classList.remove('hidden');
-        setTimeout(() => {
-            card.classList.remove('scale-95', 'opacity-0'); card.classList.add('scale-100', 'opacity-100');
-        }, 10);
+        setTimeout(() => { card.classList.remove('scale-95', 'opacity-0'); card.classList.add('scale-100', 'opacity-100'); }, 10);
         return; 
     }
 
@@ -205,16 +188,8 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
     guestsDatabase[code] = { 
-        name: guestName, 
-        instansi: instansi, 
-        kategori: kategori + kelas,
-        tujuan: tujuan,
-        photo: photoSrc,
-        date: guestDate, 
-        displayDate: displayDate, 
-        time: timeStr, 
-        outTime: '-',
-        status: 'menunggu' 
+        name: guestName, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan,
+        photo: photoSrc, date: guestDate, displayDate: displayDate, time: timeStr, outTime: '-', status: 'menunggu' 
     };
 
     document.getElementById('btn-submit-guest').disabled = true;
@@ -228,15 +203,16 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
         document.getElementById('ticket-code').innerText = code;
         switchAppView('view-success');
 
+        // INJEKSI KE OVERVIEW
         const tr = document.createElement('tr');
         tr.id = `ov-row-${code}`;
-        tr.className = "bg-blue-50/50 hover:bg-slate-50/50 transition-colors border-b border-slate-100";
+        tr.className = "bg-blue-50/50 hover:bg-slate-50/50 transition-colors border-b border-slate-100 fade-in";
         tr.innerHTML = `
             <td class="px-4 py-3"><p class="text-[9px] font-mono text-slate-400">${code}</p><p class="font-bold text-slate-900 text-sm">${guestName}</p></td>
             <td class="px-4 py-3 text-xs text-slate-600 font-medium hidden sm:table-cell">${displayDate}</td>
             <td class="px-4 py-3"><span id="ov-badge-${code}" class="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold block mb-1 w-max">Menunggu</span></td>
             <td class="px-4 py-3 text-center">
-                <button onclick="openDetailModal('${code}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-2 md:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto active:scale-95 w-full md:w-max">
+                <button onclick="openDetailModal('${code}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-2 md:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto active:scale-95 w-full md:w-max shadow-sm">
                     <i data-lucide="eye" class="w-3 h-3 md:w-4 md:h-4"></i> Cek Detail
                 </button>
             </td>
@@ -244,12 +220,18 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
         document.getElementById('table-body').prepend(tr);
         updateCounter('menunggu', 1);
 
+        // INJEKSI KE HISTORY (Dengan Tombol Cek Detail)
         const histTr = document.createElement('tr');
-        histTr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors";
+        histTr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors fade-in";
         histTr.innerHTML = `
             <td class="px-4 py-3"><p class="text-[9px] font-mono text-slate-400">${code}</p><p class="font-bold text-slate-900 text-sm">${guestName}</p></td>
             <td class="px-4 py-3 text-[10px] text-slate-600 font-medium">In: ${displayDate} <br><span id="hist-out-${code}">Out: -</span></td>
             <td class="px-4 py-3"><span id="hist-badge-${code}" class="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold">Menunggu</span></td>
+            <td class="px-4 py-3 text-center">
+                <button onclick="openDetailModal('${code}')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 px-3 py-2 md:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto active:scale-95 w-full md:w-max">
+                    <i data-lucide="eye" class="w-3 h-3 md:w-4 md:h-4"></i> Cek Detail
+                </button>
+            </td>
         `;
         document.getElementById('history-table-body').prepend(histTr);
 
@@ -272,37 +254,29 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
 document.getElementById('btn-change-schedule').addEventListener('click', () => {
     const modal = document.getElementById('conflict-modal');
     const card = document.getElementById('conflict-card');
-    card.classList.remove('scale-100', 'opacity-100');
-    card.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        document.getElementById('guest-date').focus();
-    }, 300);
+    card.classList.remove('scale-100', 'opacity-100'); card.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => { modal.classList.add('hidden'); document.getElementById('guest-date').focus(); }, 300);
 });
 
 document.getElementById('btn-next-guest').addEventListener('click', () => { switchAppView('view-guest-form'); });
 
 // ==============================================================
-// 10. FUNGSI UPDATE BARIS TABEL DINAMIS
+// LOGIKA PEMBARUAN STATUS GLOBAL
 // ==============================================================
 function updateRowUI(code) {
     const data = guestsDatabase[code];
     const ovBadge = document.getElementById(`ov-badge-${code}`);
-    const ovRow = document.getElementById(`ov-row-${code}`);
     const histBadge = document.getElementById(`hist-badge-${code}`);
     const histOut = document.getElementById(`hist-out-${code}`);
 
     let bClass = "", bText = "";
 
     if (data.status === 'menunggu') {
-        bClass = "px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold block mb-1 w-max"; bText = "Menunggu";
-        if(ovRow) { ovRow.classList.remove('opacity-50'); ovRow.classList.replace('bg-slate-50/10', 'bg-blue-50/50'); }
+        bClass = "px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold block w-max"; bText = "Menunggu";
     } else if (data.status === 'bertemu') {
-        bClass = "px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-[10px] font-bold block mb-1 w-max"; bText = "Sedang Bertemu";
-        if(ovRow) { ovRow.classList.remove('opacity-50'); ovRow.classList.replace('bg-slate-50/10', 'bg-blue-50/50'); }
+        bClass = "px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-[10px] font-bold block w-max"; bText = "Sedang Bertemu";
     } else if (data.status === 'selesai') {
-        bClass = "px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold block mb-1 w-max"; bText = "Selesai";
-        if(ovRow) { ovRow.classList.add('opacity-50'); ovRow.classList.replace('bg-blue-50/50', 'bg-slate-50/10'); }
+        bClass = "px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold block w-max"; bText = "Selesai";
     }
 
     if(ovBadge) { ovBadge.className = bClass; ovBadge.innerText = bText; }
@@ -317,9 +291,16 @@ function changeGuestStatus(code, newStatus) {
     const prevStatus = data.status;
     data.status = newStatus;
     
+    // PENGHAPUSAN OTOMATIS DARI OVERVIEW JIKA SELESAI
     if(newStatus === 'selesai') {
         const o = new Date();
         data.outTime = `${o.getHours().toString().padStart(2,'0')}:${o.getMinutes().toString().padStart(2,'0')}`;
+        
+        const ovRow = document.getElementById(`ov-row-${code}`);
+        if(ovRow) {
+            ovRow.classList.add('opacity-0', 'scale-95'); // Animasi hilang
+            setTimeout(() => ovRow.remove(), 300); // Hapus permanen
+        }
     }
     
     updateCounter(prevStatus, -1);
@@ -329,11 +310,16 @@ function changeGuestStatus(code, newStatus) {
     if(activeDetailCode === code) {
         updateModalStatusBadge(newStatus);
         document.getElementById('detail-outtime').innerText = data.outTime;
+        
+        // Disable Modal Edit Jika Status Selesai
+        if(newStatus === 'selesai') {
+            document.getElementById('modal-action-footer').classList.add('hidden');
+        }
     }
 }
 
 // ==============================================================
-// 11. SISTEM MODAL DETAIL TAMU
+// MODAL DETAIL FOTO & INFO TAMU
 // ==============================================================
 let activeDetailCode = null;
 
@@ -352,24 +338,25 @@ window.openDetailModal = function(code) {
 
     updateModalStatusBadge(data.status);
 
+    // READ-ONLY JIKA SUDAH SELESAI
+    const actionFooter = document.getElementById('modal-action-footer');
+    if (data.status === 'selesai') {
+        actionFooter.classList.add('hidden');
+    } else {
+        actionFooter.classList.remove('hidden');
+    }
+
     const modal = document.getElementById('detail-modal');
     const card = document.getElementById('detail-card');
     modal.classList.remove('hidden');
-    setTimeout(() => {
-        card.classList.remove('scale-95', 'opacity-0');
-        card.classList.add('scale-100', 'opacity-100');
-    }, 10);
+    setTimeout(() => { card.classList.remove('scale-95', 'opacity-0'); card.classList.add('scale-100', 'opacity-100'); }, 10);
 };
 
 window.closeDetailModal = function() {
     const modal = document.getElementById('detail-modal');
     const card = document.getElementById('detail-card');
-    card.classList.remove('scale-100', 'opacity-100');
-    card.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        activeDetailCode = null;
-    }, 300);
+    card.classList.remove('scale-100', 'opacity-100'); card.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => { modal.classList.add('hidden'); activeDetailCode = null; }, 300);
 };
 
 window.updateStatusFromModal = function(newStatus) {
@@ -380,9 +367,8 @@ function updateModalStatusBadge(status) {
     const badge = document.getElementById('detail-status-badge');
     const btnM = document.getElementById('btn-status-menunggu');
     const btnB = document.getElementById('btn-status-bertemu');
-    const btnS = document.getElementById('btn-status-selesai');
-
-    [btnM, btnB, btnS].forEach(btn => btn.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95");
+    
+    [btnM, btnB].forEach(btn => btn.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95");
 
     if(status === 'menunggu') {
         badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-amber-100 text-amber-700 block w-max"; badge.innerText = "Menunggu";
@@ -390,14 +376,11 @@ function updateModalStatusBadge(status) {
     } else if(status === 'bertemu') {
         badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-blue-100 text-blue-700 block w-max"; badge.innerText = "Sedang Bertemu";
         btnB.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-blue-500 text-white border-blue-600 shadow-md active:scale-95";
-    } else if(status === 'selesai') {
-        badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-emerald-100 text-emerald-700 block w-max"; badge.innerText = "Selesai Keluar";
-        btnS.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-emerald-500 text-white border-emerald-600 shadow-md active:scale-95";
     }
 }
 
 // ==============================================================
-// 12. CEK TIKET MANDIRI & VERIFIKASI ADMIN
+// CEK TIKET MANDIRI & VERIFIKASI ADMIN
 // ==============================================================
 document.getElementById('track-input').addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
 document.getElementById('btn-do-track').addEventListener('click', () => {
