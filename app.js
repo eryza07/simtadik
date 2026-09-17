@@ -8,7 +8,8 @@ dateInput.value = today;
 
 function switchAppView(targetId) {
     document.querySelectorAll('.app-view').forEach(view => {
-        view.classList.remove('block', 'flex'); view.classList.add('hidden');
+        view.classList.remove('block', 'flex');
+        view.classList.add('hidden');
     });
     const target = document.getElementById(targetId);
     target.classList.remove('hidden');
@@ -48,9 +49,11 @@ mAdminBtns.forEach(btn => {
 document.querySelectorAll('.d-nav-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.d-nav-btn').forEach(b => {
-            b.classList.remove('bg-white/10', 'text-blue-400', 'border-white/10'); b.classList.add('text-slate-400');
+            b.classList.remove('bg-white/10', 'text-blue-400', 'border-white/10');
+            b.classList.add('text-slate-400');
         });
-        this.classList.remove('text-slate-400'); this.classList.add('bg-white/10', 'text-blue-400', 'border-white/10');
+        this.classList.remove('text-slate-400');
+        this.classList.add('bg-white/10', 'text-blue-400', 'border-white/10');
         switchAppView(this.getAttribute('data-target'));
     });
 });
@@ -58,9 +61,11 @@ document.querySelectorAll('.d-nav-btn').forEach(btn => {
 document.querySelectorAll('.d-admin-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.d-admin-btn').forEach(b => {
-            b.classList.remove('bg-blue-600/20', 'text-blue-400'); b.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+            b.classList.remove('bg-blue-600/20', 'text-blue-400');
+            b.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
         });
-        this.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white'); this.classList.add('bg-blue-600/20', 'text-blue-400');
+        this.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+        this.classList.add('bg-blue-600/20', 'text-blue-400');
         switchAppView(this.getAttribute('data-target'));
     });
 });
@@ -203,7 +208,7 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
         document.getElementById('ticket-code').innerText = code;
         switchAppView('view-success');
 
-        // INJEKSI KE OVERVIEW
+        // INJEKSI KE OVERVIEW (Layar Admin Utama)
         const tr = document.createElement('tr');
         tr.id = `ov-row-${code}`;
         tr.className = "bg-blue-50/50 hover:bg-slate-50/50 transition-colors border-b border-slate-100 fade-in";
@@ -220,13 +225,13 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
         document.getElementById('table-body').prepend(tr);
         updateCounter('menunggu', 1);
 
-        // INJEKSI KE HISTORY (Dengan Tombol Cek Detail)
+        // INJEKSI KE HISTORY 
         const histTr = document.createElement('tr');
         histTr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors fade-in";
         histTr.innerHTML = `
             <td class="px-4 py-3"><p class="text-[9px] font-mono text-slate-400">${code}</p><p class="font-bold text-slate-900 text-sm">${guestName}</p></td>
             <td class="px-4 py-3 text-[10px] text-slate-600 font-medium">In: ${displayDate} <br><span id="hist-out-${code}">Out: -</span></td>
-            <td class="px-4 py-3"><span id="hist-badge-${code}" class="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold">Menunggu</span></td>
+            <td class="px-4 py-3"><span id="hist-badge-${code}" class="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold w-max block">Menunggu</span></td>
             <td class="px-4 py-3 text-center">
                 <button onclick="openDetailModal('${code}')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 px-3 py-2 md:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto active:scale-95 w-full md:w-max">
                     <i data-lucide="eye" class="w-3 h-3 md:w-4 md:h-4"></i> Cek Detail
@@ -261,7 +266,7 @@ document.getElementById('btn-change-schedule').addEventListener('click', () => {
 document.getElementById('btn-next-guest').addEventListener('click', () => { switchAppView('view-guest-form'); });
 
 // ==============================================================
-// LOGIKA PEMBARUAN STATUS GLOBAL
+// LOGIKA PEMBARUAN STATUS GLOBAL (TERMASUK ANIMASI HILANG)
 // ==============================================================
 function updateRowUI(code) {
     const data = guestsDatabase[code];
@@ -311,7 +316,7 @@ function changeGuestStatus(code, newStatus) {
         updateModalStatusBadge(newStatus);
         document.getElementById('detail-outtime').innerText = data.outTime;
         
-        // Disable Modal Edit Jika Status Selesai
+        // HIDE ACTION BUTTON JIKA STATUS SELESAI
         if(newStatus === 'selesai') {
             document.getElementById('modal-action-footer').classList.add('hidden');
         }
@@ -338,7 +343,7 @@ window.openDetailModal = function(code) {
 
     updateModalStatusBadge(data.status);
 
-    // READ-ONLY JIKA SUDAH SELESAI
+    // MODE BACA SAJA (READ-ONLY) JIKA SUDAH SELESAI
     const actionFooter = document.getElementById('modal-action-footer');
     if (data.status === 'selesai') {
         actionFooter.classList.add('hidden');
@@ -363,19 +368,30 @@ window.updateStatusFromModal = function(newStatus) {
     if(activeDetailCode) changeGuestStatus(activeDetailCode, newStatus);
 };
 
+// >>> BUGFIX: Lencana Modal kini dijamin update saat jadi 'Selesai' <<<
 function updateModalStatusBadge(status) {
     const badge = document.getElementById('detail-status-badge');
     const btnM = document.getElementById('btn-status-menunggu');
     const btnB = document.getElementById('btn-status-bertemu');
-    
-    [btnM, btnB].forEach(btn => btn.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95");
+    const btnS = document.getElementById('btn-status-selesai');
+
+    // Reset tombol (kalau kebetulan masih dirender)
+    if(btnM && btnB && btnS) {
+        [btnM, btnB, btnS].forEach(btn => btn.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95");
+    }
 
     if(status === 'menunggu') {
-        badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-amber-100 text-amber-700 block w-max"; badge.innerText = "Menunggu";
-        btnM.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-amber-500 text-white border-amber-600 shadow-md active:scale-95";
+        badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-amber-100 text-amber-700 block w-max"; 
+        badge.innerText = "Menunggu";
+        if(btnM) btnM.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-amber-500 text-white border-amber-600 shadow-md active:scale-95";
     } else if(status === 'bertemu') {
-        badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-blue-100 text-blue-700 block w-max"; badge.innerText = "Sedang Bertemu";
-        btnB.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-blue-500 text-white border-blue-600 shadow-md active:scale-95";
+        badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-blue-100 text-blue-700 block w-max"; 
+        badge.innerText = "Sedang Bertemu";
+        if(btnB) btnB.className = "flex-1 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-blue-500 text-white border-blue-600 shadow-md active:scale-95";
+    } else if(status === 'selesai') {
+        badge.className = "px-2 py-1 rounded-md text-[10px] md:text-xs font-bold bg-emerald-100 text-emerald-700 block w-max"; 
+        badge.innerText = "Selesai (Keluar)";
+        // Tombol tidak perlu diberi warna biru/kuning karena footer ini di-hide di fungsi updateStatusFromModal
     }
 }
 
