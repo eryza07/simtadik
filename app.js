@@ -1,107 +1,235 @@
 lucide.createIcons();
 
-// ==========================================
-// IN-MEMORY DATABASE
-// ==========================================
 const guestsDatabase = {};
 
-// ==========================================
-// DOM ELEMENTS
-// ==========================================
+// DOM Elements Container
 const leftPanel = document.getElementById('left-panel');
 const welcomePanel = document.getElementById('welcome-panel');
 const loginPanel = document.getElementById('login-panel');
 const sidebarPanel = document.getElementById('sidebar-panel');
-
 const guestView = document.getElementById('guest-view');
 const trackingView = document.getElementById('tracking-view');
 const adminView = document.getElementById('admin-view');
 const verifyView = document.getElementById('verify-view');
 const historyView = document.getElementById('history-view');
 
-// ==========================================
-// MENU MOBILE (TITIK TIGA)
-// ==========================================
-const btnMobileMenu = document.getElementById('btn-mobile-menu');
-const mobileDropdown = document.getElementById('mobile-dropdown');
-
-if (btnMobileMenu && mobileDropdown) {
-    btnMobileMenu.addEventListener('click', (e) => {
-        e.stopPropagation();
-        mobileDropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!btnMobileMenu.contains(e.target) && !mobileDropdown.contains(e.target)) {
-            mobileDropdown.classList.add('hidden');
-        }
-    });
-}
-
-// ==========================================
-// ROUTING (MENU NAVIGASI ADMIN)
-// ==========================================
+// DOM Elements Desktop Nav
 const navOverview = document.getElementById('nav-overview');
 const navVerify = document.getElementById('nav-verify');
 const navHistory = document.getElementById('nav-history');
 
-function hideAllAdminViews() {
+// DOM Elements Mobile Bottom Navs
+const mNavGuest = document.getElementById('mobile-nav-guest');
+const mNavAdmin = document.getElementById('mobile-nav-admin');
+
+// ==========================================
+// KONTROL NAVIGASI MOBILE (BOTTOM NAVBAR)
+// ==========================================
+const mBtnForm = document.getElementById('m-btn-form');
+const mBtnTrack = document.getElementById('m-btn-track');
+const mBtnLogin = document.getElementById('m-btn-login');
+
+const mBtnOverview = document.getElementById('m-btn-overview');
+const mBtnVerify = document.getElementById('m-btn-verify');
+const mBtnHistory = document.getElementById('m-btn-history');
+const mBtnLogout = document.getElementById('m-btn-logout');
+
+// Helper: Reset warna icon mobile Guest
+function resetMobileNavGuest() {
+    [mBtnForm, mBtnTrack, mBtnLogin].forEach(btn => {
+        btn.classList.remove('text-blue-600');
+        btn.classList.add('text-slate-400');
+        btn.querySelector('span').classList.remove('font-bold');
+        btn.querySelector('span').classList.add('font-medium');
+    });
+    // Sembunyikan panel Desktop
+    guestView.classList.replace('view-visible', 'view-hidden');
+    trackingView.classList.replace('view-visible', 'view-hidden');
+    loginPanel.classList.replace('panel-visible', 'panel-hidden');
+    welcomePanel.classList.replace('panel-visible', 'panel-hidden');
+}
+
+// Helper: Reset warna icon mobile Admin
+function resetMobileNavAdmin() {
+    [mBtnOverview, mBtnVerify, mBtnHistory].forEach(btn => {
+        btn.classList.remove('text-blue-400');
+        btn.classList.add('text-slate-400');
+        btn.querySelector('span').classList.remove('font-bold');
+        btn.querySelector('span').classList.add('font-medium');
+    });
     adminView.classList.replace('view-visible', 'view-hidden');
     verifyView.classList.replace('view-visible', 'view-hidden');
     historyView.classList.replace('view-visible', 'view-hidden');
 }
 
-function resetAdminNavStyle() {
-    const baseClass = "flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2 md:py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-xs md:text-sm font-medium transition-colors";
-    navOverview.className = baseClass;
-    navVerify.className = baseClass;
-    navHistory.className = baseClass;
+// Event Mobile Nav Guest
+mBtnForm.addEventListener('click', () => {
+    resetMobileNavGuest();
+    mBtnForm.classList.replace('text-slate-400', 'text-blue-600');
+    mBtnForm.querySelector('span').classList.replace('font-medium', 'font-bold');
+    welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+    guestView.classList.replace('view-hidden', 'view-visible');
+});
+
+mBtnTrack.addEventListener('click', () => {
+    resetMobileNavGuest();
+    mBtnTrack.classList.replace('text-slate-400', 'text-blue-600');
+    mBtnTrack.querySelector('span').classList.replace('font-medium', 'font-bold');
+    welcomePanel.classList.replace('panel-hidden', 'panel-visible'); // Pertahankan header
+    trackingView.classList.replace('view-hidden', 'view-visible');
+});
+
+mBtnLogin.addEventListener('click', () => {
+    resetMobileNavGuest();
+    mBtnLogin.classList.replace('text-slate-400', 'text-blue-600');
+    mBtnLogin.querySelector('span').classList.replace('font-medium', 'font-bold');
+    loginPanel.classList.replace('panel-hidden', 'panel-visible');
+});
+
+// Event Mobile Nav Admin
+mBtnOverview.addEventListener('click', () => {
+    resetMobileNavAdmin();
+    mBtnOverview.classList.replace('text-slate-400', 'text-blue-400');
+    mBtnOverview.querySelector('span').classList.replace('font-medium', 'font-bold');
+    adminView.classList.replace('view-hidden', 'view-visible');
+});
+
+mBtnVerify.addEventListener('click', () => {
+    resetMobileNavAdmin();
+    mBtnVerify.classList.replace('text-slate-400', 'text-blue-400');
+    mBtnVerify.querySelector('span').classList.replace('font-medium', 'font-bold');
+    verifyView.classList.replace('view-hidden', 'view-visible');
+});
+
+mBtnHistory.addEventListener('click', () => {
+    resetMobileNavAdmin();
+    mBtnHistory.classList.replace('text-slate-400', 'text-blue-400');
+    mBtnHistory.querySelector('span').classList.replace('font-medium', 'font-bold');
+    historyView.classList.replace('view-hidden', 'view-visible');
+});
+
+
+// ==========================================
+// KONTROL NAVIGASI DESKTOP
+// ==========================================
+document.getElementById('btn-show-tracking-desktop').addEventListener('click', () => {
+    guestView.classList.replace('view-visible', 'view-hidden');
+    trackingView.classList.replace('view-hidden', 'view-visible');
+});
+
+document.getElementById('btn-back-from-tracking-desktop')?.addEventListener('click', () => {
+    trackingView.classList.replace('view-visible', 'view-hidden');
+    guestView.classList.replace('view-hidden', 'view-visible');
+});
+
+function toggleDesktopLogin() {
+    if (welcomePanel.classList.contains('panel-visible')) {
+        welcomePanel.classList.replace('panel-visible', 'panel-hidden');
+        loginPanel.classList.replace('panel-hidden', 'panel-visible');
+    } else {
+        loginPanel.classList.replace('panel-visible', 'panel-hidden');
+        welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+    }
+}
+document.getElementById('btn-show-login-desktop').addEventListener('click', toggleDesktopLogin);
+document.getElementById('btn-hide-login-desktop').addEventListener('click', toggleDesktopLogin);
+
+function resetDesktopAdminNavStyle() {
+    const b = "flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2 md:py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-xs md:text-sm font-medium transition-colors";
+    navOverview.className = b; navVerify.className = b; navHistory.className = b;
+    adminView.classList.replace('view-visible', 'view-hidden');
+    verifyView.classList.replace('view-visible', 'view-hidden');
+    historyView.classList.replace('view-visible', 'view-hidden');
 }
 
 navOverview.addEventListener('click', (e) => {
-    e.preventDefault(); hideAllAdminViews(); resetAdminNavStyle();
+    e.preventDefault(); resetDesktopAdminNavStyle();
     adminView.classList.replace('view-hidden', 'view-visible');
     navOverview.classList.add('bg-blue-600/20', 'text-blue-400');
-    navOverview.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+    navOverview.classList.remove('text-slate-400', 'hover:bg-slate-800');
 });
-
 navVerify.addEventListener('click', (e) => {
-    e.preventDefault(); hideAllAdminViews(); resetAdminNavStyle();
+    e.preventDefault(); resetDesktopAdminNavStyle();
     verifyView.classList.replace('view-hidden', 'view-visible');
     navVerify.classList.add('bg-blue-600/20', 'text-blue-400');
-    navVerify.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
-    
-    document.getElementById('admin-verify-input').value = "";
-    document.getElementById('verify-result-card').classList.add('hidden');
-    document.getElementById('verify-not-found').classList.add('hidden');
+    navVerify.classList.remove('text-slate-400', 'hover:bg-slate-800');
 });
-
 navHistory.addEventListener('click', (e) => {
-    e.preventDefault(); hideAllAdminViews(); resetAdminNavStyle();
+    e.preventDefault(); resetDesktopAdminNavStyle();
     historyView.classList.replace('view-hidden', 'view-visible');
     navHistory.classList.add('bg-blue-600/20', 'text-blue-400');
-    navHistory.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+    navHistory.classList.remove('text-slate-400', 'hover:bg-slate-800');
 });
 
+
 // ==========================================
-// TAMU: CEK STATUS MANDIRI (TRACK & TRACE)
+// LOGIN & LOGOUT PROSES (Menangani Mobile & Desktop)
 // ==========================================
-// Menangkap klik baik dari tombol Desktop maupun dropdown Mobile
-document.querySelectorAll('.btn-trigger-tracking').forEach(btn => {
-    btn.addEventListener('click', () => {
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault(); 
+    document.getElementById('btn-do-login').disabled = true;
+    document.getElementById('login-text').classList.add('hidden');
+    document.getElementById('login-spinner').classList.remove('hidden');
+
+    setTimeout(() => {
+        document.getElementById('btn-do-login').disabled = false;
+        document.getElementById('login-text').classList.remove('hidden');
+        document.getElementById('login-spinner').classList.add('hidden');
+
+        // Sembunyikan Nav Mobile Tamu, Tampilkan Nav Admin
+        mNavGuest.classList.replace('translate-y-0', 'translate-y-full');
+        mNavAdmin.classList.replace('translate-y-full', 'translate-y-0');
+
+        // Buka Sidebar Admin Desktop
+        loginPanel.classList.replace('panel-visible', 'panel-hidden');
+        sidebarPanel.classList.replace('panel-hidden', 'panel-visible');
+        leftPanel.classList.remove('md:w-[35%]', 'lg:w-[30%]');
+        leftPanel.classList.add('md:w-[25%]', 'lg:w-[20%]');
+
+        // Reset semua view
         guestView.classList.replace('view-visible', 'view-hidden');
-        trackingView.classList.replace('view-hidden', 'view-visible');
-        if(mobileDropdown) mobileDropdown.classList.add('hidden'); // Tutup menu jika dibuka via mobile
-    });
+        trackingView.classList.replace('view-visible', 'view-hidden');
+        verifyView.classList.replace('view-visible', 'view-hidden');
+        historyView.classList.replace('view-visible', 'view-hidden');
+        
+        // Tampilkan Overview default
+        adminView.classList.replace('view-hidden', 'view-visible');
+    }, 1000);
 });
 
-document.getElementById('btn-back-from-tracking').addEventListener('click', () => {
+function processLogout() {
+    // Sembunyikan Nav Admin, Tampilkan Nav Tamu
+    mNavAdmin.classList.replace('translate-y-0', 'translate-y-full');
+    mNavGuest.classList.replace('translate-y-full', 'translate-y-0');
+
+    // Kembalikan Sidebar ke Welcome Desktop
+    sidebarPanel.classList.replace('panel-visible', 'panel-hidden');
+    welcomePanel.classList.replace('panel-hidden', 'panel-visible');
+    
+    leftPanel.classList.remove('md:w-[25%]', 'lg:w-[20%]');
+    leftPanel.classList.add('md:w-[35%]', 'lg:w-[30%]');
+    
+    // Tampilkan form tamu, sembunyikan view admin
+    adminView.classList.replace('view-visible', 'view-hidden');
+    verifyView.classList.replace('view-visible', 'view-hidden');
+    historyView.classList.replace('view-visible', 'view-hidden');
     trackingView.classList.replace('view-visible', 'view-hidden');
+    
     guestView.classList.replace('view-hidden', 'view-visible');
-    document.getElementById('track-input').value = "";
-    document.getElementById('track-result-container').classList.add('hidden');
-});
+    
+    // Reset Mobile Nav Color
+    resetMobileNavGuest();
+    mBtnForm.classList.replace('text-slate-400', 'text-blue-600');
+    mBtnForm.querySelector('span').classList.replace('font-medium', 'font-bold');
+}
 
+document.getElementById('btn-logout-desktop').addEventListener('click', processLogout);
+mBtnLogout.addEventListener('click', processLogout);
+
+
+// ==========================================
+// TAMU: CEK STATUS MANDIRI LOGIC
+// ==========================================
 document.getElementById('track-input').addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
 
 document.getElementById('btn-do-track').addEventListener('click', () => {
@@ -131,7 +259,7 @@ document.getElementById('btn-do-track').addEventListener('click', () => {
             dotEl.className = "w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse";
             barEl.className = "absolute top-0 right-0 w-2 h-full bg-blue-500";
         } else if (data.status === 'selesai') {
-            statusEl.innerText = "Selesai (Sudah Keluar)";
+            statusEl.innerText = "Selesai (Keluar)";
             statusEl.className = "text-base md:text-lg font-bold text-emerald-600";
             dotEl.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
             barEl.className = "absolute top-0 right-0 w-2 h-full bg-emerald-500";
@@ -158,7 +286,7 @@ async function startCamera() {
         document.getElementById('camera-idle').classList.add('hidden');
         cameraVideo.classList.remove('hidden');
         document.getElementById('btn-capture').classList.remove('hidden');
-    } catch (err) { alert("Akses kamera ditolak atau tidak didukung di perangkat ini."); }
+    } catch (err) { alert("Akses kamera ditolak."); }
 }
 
 function takeSnapshot() {
@@ -186,54 +314,6 @@ function stopCamera() {
 }
 
 // ==========================================
-// LOGIN & LOGOUT ADMIN
-// ==========================================
-document.getElementById('btn-show-login').addEventListener('click', () => {
-    document.getElementById('welcome-panel').classList.replace('panel-visible', 'panel-hidden');
-    document.getElementById('login-panel').classList.replace('panel-hidden', 'panel-visible');
-});
-
-document.getElementById('btn-hide-login').addEventListener('click', () => {
-    document.getElementById('login-panel').classList.replace('panel-visible', 'panel-hidden');
-    document.getElementById('welcome-panel').classList.replace('panel-hidden', 'panel-visible');
-});
-
-document.getElementById('login-form').addEventListener('submit', function(e) {
-    e.preventDefault(); 
-    document.getElementById('btn-do-login').disabled = true;
-    document.getElementById('login-text').classList.add('hidden');
-    document.getElementById('login-spinner').classList.remove('hidden');
-
-    setTimeout(() => {
-        document.getElementById('btn-do-login').disabled = false;
-        document.getElementById('login-text').classList.remove('hidden');
-        document.getElementById('login-spinner').classList.add('hidden');
-
-        document.getElementById('login-panel').classList.replace('panel-visible', 'panel-hidden');
-        sidebarPanel.classList.replace('panel-hidden', 'panel-visible');
-        leftPanel.classList.remove('md:w-[35%]', 'lg:w-[30%]');
-        leftPanel.classList.add('md:w-[25%]', 'lg:w-[20%]');
-
-        guestView.classList.replace('view-visible', 'view-hidden');
-        trackingView.classList.replace('view-visible', 'view-hidden');
-        
-        hideAllAdminViews();
-        adminView.classList.replace('view-hidden', 'view-visible');
-    }, 1000);
-});
-
-document.getElementById('btn-logout').addEventListener('click', () => {
-    sidebarPanel.classList.replace('panel-visible', 'panel-hidden');
-    document.getElementById('welcome-panel').classList.replace('panel-hidden', 'panel-visible');
-    
-    leftPanel.classList.remove('md:w-[25%]', 'lg:w-[20%]');
-    leftPanel.classList.add('md:w-[35%]', 'lg:w-[30%]');
-    
-    hideAllAdminViews();
-    guestView.classList.replace('view-hidden', 'view-visible');
-});
-
-// ==========================================
 // SUBMIT FORM KEDATANGAN TAMU (GENERATE TIKET)
 // ==========================================
 document.getElementById('kategori-select').addEventListener('change', function() {
@@ -250,10 +330,7 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
     const now = new Date();
     const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
     
-    // Generate Kode Unik: SMAN1-XXXXX
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
-    // Masukkan ke DB Virtual
     guestsDatabase[code] = { name: guestName, instansi: instansi, time: timeStr, status: 'menunggu' };
 
     document.getElementById('btn-submit-guest').disabled = true;
@@ -262,7 +339,6 @@ document.getElementById('guest-form').addEventListener('submit', function(e) {
     document.getElementById('submit-spinner').classList.remove('hidden');
 
     setTimeout(() => {
-        // Tampilkan Tiket Sukses
         document.getElementById('ticket-name').innerText = guestName;
         document.getElementById('ticket-code').innerText = code;
 
@@ -306,23 +382,22 @@ document.getElementById('btn-next-guest').addEventListener('click', () => {
 });
 
 // ==========================================
-// INJEKSI KE ADMIN & LOGIKA SINKRONISASI SELECT-BOX
+// INJEKSI KE ADMIN
 // ==========================================
 function injectToAdminOverview(code, name, time) {
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50/50 transition-colors";
-    
     tr.innerHTML = `
-        <td class="px-4 md:px-6 py-3 md:py-4">
-            <p class="text-[9px] md:text-[10px] font-mono text-slate-400">${code}</p>
+        <td class="px-4 py-3">
+            <p class="text-[10px] font-mono text-slate-400">${code}</p>
             <p class="font-bold text-slate-900">${name}</p>
         </td>
-        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-600">${time}</td>
-        <td class="px-4 md:px-6 py-3 md:py-4">
-            <span class="status-badge inline-flex px-2 py-1 md:px-2.5 rounded-full text-[10px] md:text-xs font-medium bg-amber-100 text-amber-700">Menunggu</span>
+        <td class="px-4 py-3 text-slate-600">${time}</td>
+        <td class="px-4 py-3">
+            <span class="status-badge inline-flex px-2 py-1 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">Menunggu</span>
         </td>
-        <td class="px-4 md:px-6 py-3 md:py-4">
-            <select id="sel-${code}" class="bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs outline-none">
+        <td class="px-4 py-3">
+            <select id="sel-${code}" class="bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs outline-none w-full sm:w-auto">
                 <option value="menunggu" selected>Menunggu</option>
                 <option value="bertemu">Sedang Bertemu</option>
                 <option value="selesai">Selesai</option>
@@ -338,7 +413,7 @@ function injectToAdminOverview(code, name, time) {
 
     selector.addEventListener('change', (e) => {
         const val = e.target.value;
-        guestsDatabase[code].status = val; // Sync Database Virtual
+        guestsDatabase[code].status = val; 
         
         updateCounter(prev, -1);
         updateCounter(val, 1);
@@ -347,24 +422,21 @@ function injectToAdminOverview(code, name, time) {
         const histOut = document.getElementById(`hist-out-${code}`);
 
         if(val === 'menunggu') {
-            badge.className = "status-badge inline-flex px-2 py-1 md:px-2.5 rounded-full text-[10px] md:text-xs font-medium bg-amber-100 text-amber-700";
+            badge.className = "status-badge inline-flex px-2 py-1 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700";
             badge.innerText = "Menunggu";
             if(histBadge) { histBadge.className=badge.className; histBadge.innerText="Menunggu"; }
         } else if(val === 'bertemu') {
-            badge.className = "status-badge inline-flex px-2 py-1 md:px-2.5 rounded-full text-[10px] md:text-xs font-medium bg-blue-100 text-blue-700";
+            badge.className = "status-badge inline-flex px-2 py-1 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700";
             badge.innerText = "Sedang Bertemu";
             if(histBadge) { histBadge.className=badge.className; histBadge.innerText="Sedang Bertemu"; }
         } else if(val === 'selesai') {
-            badge.className = "status-badge inline-flex px-2 py-1 md:px-2.5 rounded-full text-[10px] md:text-xs font-medium bg-emerald-100 text-emerald-700";
+            badge.className = "status-badge inline-flex px-2 py-1 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-700";
             badge.innerText = "Selesai";
             tr.classList.add('opacity-50');
-            
             const o = new Date();
-            const outT = `${o.getHours().toString().padStart(2,'0')}:${o.getMinutes().toString().padStart(2,'0')}`;
             if(histBadge) { 
-                histBadge.className=badge.className; 
-                histBadge.innerText="Selesai"; 
-                histOut.innerText = `Keluar: ${outT}`;
+                histBadge.className=badge.className; histBadge.innerText="Selesai"; 
+                histOut.innerText = `Keluar: ${o.getHours().toString().padStart(2,'0')}:${o.getMinutes().toString().padStart(2,'0')}`;
             }
         }
         prev = val;
@@ -375,14 +447,14 @@ function injectToHistory(code, name, time) {
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50/50";
     tr.innerHTML = `
-        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-600 font-medium">Hari Ini</td>
-        <td class="px-4 md:px-6 py-3 md:py-4">
-            <p class="text-[9px] md:text-[10px] font-mono text-slate-400">${code}</p>
+        <td class="px-4 py-3 text-slate-600 font-medium">Hari Ini</td>
+        <td class="px-4 py-3">
+            <p class="text-[10px] font-mono text-slate-400">${code}</p>
             <p class="font-bold text-slate-900">${name}</p>
         </td>
-        <td class="px-4 md:px-6 py-3 md:py-4 text-slate-600">${time} <br><span id="hist-out-${code}" class="text-[10px] md:text-xs font-bold text-slate-800">Blm Keluar</span></td>
-        <td class="px-4 md:px-6 py-3 md:py-4">
-            <span id="hist-badge-${code}" class="inline-flex px-2 py-1 md:px-2.5 rounded-full text-[10px] md:text-xs font-medium bg-amber-100 text-amber-700">Menunggu</span>
+        <td class="px-4 py-3 text-slate-600">${time} <br><span id="hist-out-${code}" class="text-[10px] font-bold text-slate-800">Blm Keluar</span></td>
+        <td class="px-4 py-3">
+            <span id="hist-badge-${code}" class="inline-flex px-2 py-1 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">Menunggu</span>
         </td>
     `;
     document.getElementById('history-table-body').prepend(tr);
@@ -419,12 +491,12 @@ document.getElementById('btn-admin-verify').addEventListener('click', () => {
         const msgDone = document.getElementById('verify-msg-done');
 
         if(data.status === 'menunggu') {
-            badge.className = "px-3 py-1 rounded-full text-[10px] md:text-xs font-bold bg-amber-100 text-amber-700";
+            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700";
             badge.innerText = "Menunggu";
             btnApply.classList.remove('hidden');
             msgDone.classList.add('hidden');
         } else {
-            badge.className = data.status === 'bertemu' ? "px-3 py-1 rounded-full text-[10px] md:text-xs font-bold bg-blue-100 text-blue-700" : "px-3 py-1 rounded-full text-[10px] md:text-xs font-bold bg-emerald-100 text-emerald-700";
+            badge.className = data.status === 'bertemu' ? "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700" : "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700";
             badge.innerText = data.status === 'bertemu' ? "Sedang Bertemu" : "Selesai";
             btnApply.classList.add('hidden');
             msgDone.classList.remove('hidden');
@@ -440,15 +512,13 @@ document.getElementById('btn-apply-ruangan').addEventListener('click', () => {
         const selectBox = document.getElementById(`sel-${codeToVerify}`);
         if(selectBox) {
             selectBox.value = 'bertemu';
-            
-            // Trigger event "change" agar tabel overview dan history terupdate otomatis!
             selectBox.dispatchEvent(new Event('change'));
             
             document.getElementById('btn-apply-ruangan').classList.add('hidden');
             document.getElementById('verify-msg-done').classList.remove('hidden');
             
             const badge = document.getElementById('verify-res-status-badge');
-            badge.className = "px-3 py-1 rounded-full text-[10px] md:text-xs font-bold bg-blue-100 text-blue-700";
+            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700";
             badge.innerText = "Sedang Bertemu";
         }
     }
