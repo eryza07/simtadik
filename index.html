@@ -19,6 +19,21 @@
 
         <!-- LAYAR WELCOME (TAMU) -->
         <div id="welcome-panel" class="fade-panel panel-visible flex flex-col h-full justify-between z-10 gap-6 md:gap-0">
+            
+            <!-- MENU MOBILE (TITIK TIGA) - KHUSUS HP -->
+            <div class="md:hidden absolute top-6 right-6 z-50">
+                <button id="btn-mobile-menu" class="w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl flex items-center justify-center text-white backdrop-blur-sm transition-all active:scale-95 shadow-sm">
+                    <i data-lucide="more-vertical" class="w-5 h-5"></i>
+                </button>
+                
+                <!-- Dropdown Menu Mobile -->
+                <div id="mobile-dropdown" class="hidden absolute top-12 right-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden origin-top-right transition-all">
+                    <button class="btn-trigger-tracking w-full px-4 py-3 text-left text-sm font-semibold text-slate-800 hover:bg-slate-50 flex items-center gap-3 transition-colors">
+                        <i data-lucide="search" class="w-4 h-4 text-blue-600"></i> Cek Status Tiket
+                    </button>
+                </div>
+            </div>
+
             <div>
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4 md:mb-6 shadow-lg shadow-blue-500/30">
                     <i data-lucide="school" class="text-white w-5 h-5 md:w-6 md:h-6"></i>
@@ -27,10 +42,13 @@
                 <p class="text-slate-400 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">
                     Silakan isi formulir kedatangan di layar utama untuk mendapatkan akses kunjung.
                 </p>
-                <button id="btn-show-tracking" class="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl px-4 py-3 flex items-center justify-center gap-3 transition-colors text-sm font-medium backdrop-blur-sm">
+                
+                <!-- TOMBOL CEK STATUS PENUH - KHUSUS TABLET/LAPTOP -->
+                <button class="btn-trigger-tracking hidden md:flex w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl px-4 py-3 items-center justify-center gap-3 transition-colors text-sm font-medium backdrop-blur-sm">
                     <i data-lucide="search" class="w-4 h-4"></i> Tamu: Cek Status Tiket
                 </button>
             </div>
+            
             <div class="pt-4 md:pt-6 border-t border-slate-800/50 md:border-slate-800 mt-4 md:mt-8">
                 <button id="btn-show-login" class="group flex items-center gap-3 text-sm text-slate-400 hover:text-white transition-colors duration-300 w-full justify-center md:justify-start">
                     <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
@@ -182,7 +200,7 @@
                         </form>
                     </div>
 
-                    <!-- LAYAR TIKET SUKSES (Bisa di Print) -->
+                    <!-- LAYAR TIKET SUKSES -->
                     <div id="success-state" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 md:p-8 text-center opacity-0 pointer-events-none transition-all duration-500 transform scale-95 print:opacity-100 print:scale-100 print:relative print:pointer-events-auto">
                         <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-3 md:mb-4 no-print">
                             <i data-lucide="check-circle" class="w-6 h-6 md:w-8 md:h-8"></i>
@@ -208,7 +226,7 @@
                                     <p id="ticket-name" class="font-bold text-sm md:text-base text-slate-900">-</p>
                                 </div>
                                 <div class="bg-slate-900 p-3 md:p-4 rounded-xl text-center mt-4 md:mt-6">
-                                    <p class="text-[9px] md:text-xs text-slate-400 mb-1 uppercase tracking-wider">Kode Pelacakan</p>
+                                    <p class="text-[9px] md:text-xs text-slate-400 mb-1 uppercase tracking-wider">Kode Pelacakan Anda</p>
                                     <p id="ticket-code" class="text-xl md:text-2xl font-bold text-white tracking-widest font-mono">SMAN1-XXXX</p>
                                 </div>
                             </div>
@@ -237,7 +255,7 @@
                 <p class="text-slate-500 text-sm md:text-base mb-6 md:mb-8">Masukkan Kode Pelacakan Anda (Contoh: SMAN1-XXXXX).</p>
 
                 <div class="bg-white p-1.5 md:p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-8">
-                    <input type="text" id="track-input" placeholder="Masukkan kode..." class="flex-1 bg-transparent px-3 py-3 md:px-4 text-center sm:text-left outline-none text-slate-900 font-mono uppercase font-bold text-sm md:text-base" autocomplete="off">
+                    <input type="text" id="track-input" placeholder="Ketik Kode Tiket..." class="flex-1 bg-transparent px-3 py-3 md:px-4 text-center sm:text-left outline-none text-slate-900 font-mono uppercase font-bold text-sm md:text-base" autocomplete="off">
                     <button id="btn-do-track" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm md:text-base">
                         Cari
                     </button>
