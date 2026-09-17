@@ -20,6 +20,25 @@ const verifyView = document.getElementById('verify-view');
 const historyView = document.getElementById('history-view');
 
 // ==========================================
+// MENU MOBILE (TITIK TIGA)
+// ==========================================
+const btnMobileMenu = document.getElementById('btn-mobile-menu');
+const mobileDropdown = document.getElementById('mobile-dropdown');
+
+if (btnMobileMenu && mobileDropdown) {
+    btnMobileMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mobileDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!btnMobileMenu.contains(e.target) && !mobileDropdown.contains(e.target)) {
+            mobileDropdown.classList.add('hidden');
+        }
+    });
+}
+
+// ==========================================
 // ROUTING (MENU NAVIGASI ADMIN)
 // ==========================================
 const navOverview = document.getElementById('nav-overview');
@@ -67,9 +86,13 @@ navHistory.addEventListener('click', (e) => {
 // ==========================================
 // TAMU: CEK STATUS MANDIRI (TRACK & TRACE)
 // ==========================================
-document.getElementById('btn-show-tracking').addEventListener('click', () => {
-    guestView.classList.replace('view-visible', 'view-hidden');
-    trackingView.classList.replace('view-hidden', 'view-visible');
+// Menangkap klik baik dari tombol Desktop maupun dropdown Mobile
+document.querySelectorAll('.btn-trigger-tracking').forEach(btn => {
+    btn.addEventListener('click', () => {
+        guestView.classList.replace('view-visible', 'view-hidden');
+        trackingView.classList.replace('view-hidden', 'view-visible');
+        if(mobileDropdown) mobileDropdown.classList.add('hidden'); // Tutup menu jika dibuka via mobile
+    });
 });
 
 document.getElementById('btn-back-from-tracking').addEventListener('click', () => {
