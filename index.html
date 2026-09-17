@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Penerima Tamu - SMAN 1 Kandangan</title>
-    
-    <!-- Library Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Panggil CSS Eksternal -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="h-[100dvh] w-full bg-slate-50 flex flex-col md:flex-row overflow-hidden relative">
@@ -92,7 +88,6 @@
                                 <input type="tel" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1.5">Asal Instansi <span class="text-red-500">*</span></label>
@@ -106,7 +101,6 @@
                                 <input type="date" id="guest-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 cursor-pointer">
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
                             <div>
                                 <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1.5">Kategori <span class="text-red-500">*</span></label>
@@ -155,7 +149,7 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 2: TIKET SUKSES (Bisa di Print) ================= -->
+        <!-- ================= LAYA 2: TIKET SUKSES ================= -->
         <div id="view-success" class="app-view hidden p-5 md:p-12 fade-in flex-col justify-center h-full">
             <div class="max-w-sm mx-auto text-center w-full">
                 <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 no-print">
@@ -215,7 +209,6 @@
                 </div>
 
                 <div id="track-result-container" class="hidden fade-in">
-                    <!-- Kartu Ketemu -->
                     <div id="track-found" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden hidden">
                         <div class="absolute top-0 right-0 w-2 h-full bg-blue-500" id="track-color-bar"></div>
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Informasi Kunjungan</h4>
@@ -235,7 +228,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Kartu Gagal -->
                     <div id="track-not-found" class="bg-red-50 text-red-600 p-5 rounded-2xl border border-red-100 flex flex-col items-center justify-center text-center hidden">
                         <i data-lucide="alert-circle" class="w-6 h-6 mb-2"></i>
                         <p class="font-bold text-sm">Kode Tidak Ditemukan</p>
@@ -250,7 +242,7 @@
                 <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center mb-6 mx-auto"><i data-lucide="lock" class="w-6 h-6"></i></div>
                 <h2 class="text-2xl font-bold text-center mb-1 text-slate-900">Akses Admin TU</h2>
                 <p class="text-slate-400 text-xs text-center mb-8">Masuk untuk mengelola data tamu harian.</p>
-                <form id="login-form" class="space-y-4 mt-6">
+                <form id="login-form" class="space-y-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-1">Username / NIP</label>
                         <input type="text" value="admin" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 text-sm">
@@ -284,11 +276,12 @@
                         <h3 id="count-bertemu" class="text-2xl md:text-4xl font-black text-blue-500 mt-1">0</h3>
                     </div>
                     <div class="col-span-2 sm:col-span-1 bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col justify-center text-center sm:text-left">
-                        <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider">Selesai</p>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider">Selesai Hari Ini</p>
                         <h3 id="count-selesai" class="text-2xl md:text-4xl font-black text-emerald-500 mt-1">0</h3>
                     </div>
                 </div>
                 
+                <!-- TABEL OVERVIEW (Hanya Menunggu & Sedang Bertemu) -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                     <div class="overflow-x-auto hide-scroll">
                         <table class="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
@@ -314,12 +307,9 @@
                     <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3"><i data-lucide="scan-line"></i></div>
                     <h2 class="text-xl md:text-3xl font-bold text-slate-900 mb-2">Verifikasi Kode Tamu</h2>
                 </div>
-
                 <div class="bg-white p-2 rounded-2xl shadow-lg border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6">
                     <input type="text" id="admin-verify-input" placeholder="Ketik Kode (SMAN1-...)" class="flex-1 bg-transparent px-4 py-3 outline-none text-slate-900 font-mono uppercase font-bold text-center sm:text-left text-sm md:text-lg" autocomplete="off">
-                    <button id="btn-admin-verify" class="w-full sm:w-auto bg-blue-600 text-white rounded-xl px-8 py-3 font-semibold text-sm active:scale-95 transition">
-                        Cek & Verifikasi
-                    </button>
+                    <button id="btn-admin-verify" class="w-full sm:w-auto bg-blue-600 text-white rounded-xl px-8 py-3 font-semibold text-sm active:scale-95 transition">Cek & Verifikasi</button>
                 </div>
 
                 <div id="verify-result-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hidden fade-in">
@@ -336,7 +326,7 @@
                         <i data-lucide="check-circle" class="w-4 h-4"></i> Sahkan & Masukkan Ruangan
                     </button>
                     <p id="verify-msg-done" class="text-center text-xs font-bold text-blue-500 hidden py-4">
-                        <i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Tamu ini sudah aktif di dalam.
+                        <i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Tamu ini sudah aktif / selesai di dalam.
                     </p>
                 </div>
                 
@@ -346,10 +336,10 @@
             </div>
         </div>
 
-        <!-- ================= LAYA 7: ADMIN HISTORY ================= -->
+        <!-- ================= LAYA 7: ADMIN HISTORY (Semua Data Ada di Sini) ================= -->
         <div id="view-admin-history" class="app-view hidden p-5 sm:p-8 lg:p-10 fade-in">
             <div class="max-w-5xl mx-auto">
-                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-900">Log Riwayat Harian</h2></div>
+                <div class="mb-6"><h2 class="text-xl md:text-2xl font-bold text-slate-900">Log Riwayat Penuh</h2></div>
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                     <div class="overflow-x-auto hide-scroll">
                         <table class="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
@@ -358,6 +348,8 @@
                                     <th class="px-4 py-3 font-medium">Identitas & Tiket</th>
                                     <th class="px-4 py-3 font-medium">Tgl / Jam Keluar</th>
                                     <th class="px-4 py-3 font-medium">Status Akhir</th>
+                                    <!-- Kolom Aksi di History -->
+                                    <th class="px-4 py-3 font-medium text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="history-table-body" class="divide-y divide-slate-100"></tbody>
@@ -368,15 +360,11 @@
         </div>
     </main>
 
-    <!-- ==========================================
-         MODAL KONFLIK JADWAL (Pop-up saat tanggal bentrok)
-         ========================================== -->
+    <!-- MODAL KONFLIK JADWAL -->
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="conflict-overlay"></div>
         <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-sm w-full relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="conflict-card">
-            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="calendar-x" class="w-8 h-8"></i>
-            </div>
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="calendar-x" class="w-8 h-8"></i></div>
             <h3 class="text-xl font-bold text-center text-slate-900 mb-2">Jadwal Sudah Terisi</h3>
             <p class="text-center text-slate-500 text-sm mb-6 leading-relaxed">
                 Mohon maaf, tanggal <span id="conflict-date-text" class="font-bold text-slate-800 border-b border-slate-300"></span> sudah di-booking lebih dulu oleh <span id="conflict-name-text" class="font-bold text-blue-600"></span>. Kepala Sekolah tidak bisa menerima tamu ganda di hari yang sama.
@@ -387,9 +375,7 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL DETAIL FOTO & DATA TAMU
-         ========================================== -->
+    <!-- MODAL DETAIL FOTO & DATA TAMU -->
     <div id="detail-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4 md:p-8 pt-10">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeDetailModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh] md:max-h-[85vh]" id="detail-card">
@@ -426,49 +412,36 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4 md:p-6 border-t border-slate-100 bg-white rounded-b-3xl shrink-0">
+            
+            <!-- FOOTER MODAL: Akan disembunyikan otomatis jika tamu sudah "Selesai" -->
+            <div id="modal-action-footer" class="p-4 md:p-6 border-t border-slate-100 bg-white rounded-b-3xl shrink-0">
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 text-center md:text-left">Pembaruan Status Cepat</p>
                 <div class="flex flex-col sm:flex-row gap-2 md:gap-3">
                     <button onclick="updateStatusFromModal('menunggu')" id="btn-status-menunggu" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95">Menunggu</button>
                     <button onclick="updateStatusFromModal('bertemu')" id="btn-status-bertemu" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95">Sedang Bertemu</button>
-                    <button onclick="updateStatusFromModal('selesai')" id="btn-status-selesai" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95">Selesai (Pulang)</button>
+                    <button onclick="updateStatusFromModal('selesai')" id="btn-status-selesai" class="flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold border transition-all bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100 active:scale-95">
+                        <i data-lucide="check-check" class="w-4 h-4 inline mr-1"></i> Tandai Selesai
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    <!-- ==========================================
-         BOTTOM NAVBAR (Khusus HP)
-         ========================================== -->
+    <!-- BOTTOM NAVBAR (Mobile) -->
     <nav id="mobile-nav-guest" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 flex justify-around items-center h-[70px] z-[999] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
-        <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-blue-600 transition" data-target="view-guest-form">
-            <i data-lucide="edit-3" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-bold">Formulir</span>
-        </button>
-        <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-track">
-            <i data-lucide="search" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Cek Tiket</span>
-        </button>
-        <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-login">
-            <i data-lucide="lock" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Akses TU</span>
-        </button>
+        <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-blue-600 transition" data-target="view-guest-form"><i data-lucide="edit-3" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-bold">Formulir</span></button>
+        <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-track"><i data-lucide="search" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Cek Tiket</span></button>
+        <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-login"><i data-lucide="lock" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Akses TU</span></button>
     </nav>
-
     <nav id="mobile-nav-admin" class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around items-center h-[70px] z-[999] shadow-xl hidden">
-        <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-blue-400 transition" data-target="view-admin-overview">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-bold">Overview</span>
-        </button>
-        <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-admin-verify">
-            <i data-lucide="scan-line" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Verifikasi</span>
-        </button>
-        <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-admin-history">
-            <i data-lucide="book-open" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Riwayat</span>
-        </button>
-        <button id="btn-logout-mobile" class="flex-1 flex flex-col items-center justify-center h-full text-red-400 transition">
-            <i data-lucide="log-out" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Keluar</span>
-        </button>
+        <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-blue-400 transition" data-target="view-admin-overview"><i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-bold">Overview</span></button>
+        <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-admin-verify"><i data-lucide="scan-line" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Verifikasi</span></button>
+        <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 transition" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Riwayat</span></button>
+        <button id="btn-logout-mobile" class="flex-1 flex flex-col items-center justify-center h-full text-red-400 transition"><i data-lucide="log-out" class="w-5 h-5 mb-1"></i><span class="text-[10px] font-medium">Keluar</span></button>
     </nav>
 
-    <!-- Panggil JS Eksternal -->
+    <!-- Memanggil JS -->
     <script src="app.js"></script>
 </body>
 </html>
