@@ -2,33 +2,37 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Penerima Tamu - SMAN 1 Kandangan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="h-screen w-screen overflow-hidden bg-slate-50 flex flex-col md:flex-row">
+<body class="h-screen w-screen overflow-x-hidden md:overflow-hidden bg-slate-50 flex flex-col md:flex-row">
 
     <!-- ==========================================
-         PANEL KIRI: Autentikasi & Navigasi Admin
+         PANEL KIRI: Autentikasi & Menu Navigasi
          ========================================== -->
-    <aside class="relative w-full md:w-[30%] h-auto md:h-full bg-slate-900 text-white p-8 flex flex-col justify-between shrink-0 overflow-hidden shadow-2xl z-20 transition-all duration-500" id="left-panel">
+    <aside class="relative w-full md:w-[35%] lg:w-[30%] h-auto md:h-full bg-slate-900 text-white p-6 md:p-8 flex flex-col justify-between shrink-0 overflow-hidden shadow-2xl z-20 transition-all duration-500" id="left-panel">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none"></div>
 
-        <div id="welcome-panel" class="fade-panel panel-visible flex flex-col h-full justify-between z-10">
+        <!-- LAYAR WELCOME (TAMU) -->
+        <div id="welcome-panel" class="fade-panel panel-visible flex flex-col h-full justify-between z-10 gap-6 md:gap-0">
             <div>
-                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
-                    <i data-lucide="school" class="text-white"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4 md:mb-6 shadow-lg shadow-blue-500/30">
+                    <i data-lucide="school" class="text-white w-5 h-5 md:w-6 md:h-6"></i>
                 </div>
-                <h1 class="text-3xl font-bold leading-tight mb-4">Selamat Datang di<br><span class="text-blue-400">SMAN 1 Kandangan</span></h1>
-                <p class="text-slate-400 text-sm leading-relaxed">
+                <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-2 md:mb-4">Selamat Datang di<br><span class="text-blue-400">SMAN 1 Kandangan</span></h1>
+                <p class="text-slate-400 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">
                     Silakan isi formulir kedatangan di layar utama untuk mendapatkan akses kunjung.
                 </p>
+                <button id="btn-show-tracking" class="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl px-4 py-3 flex items-center justify-center gap-3 transition-colors text-sm font-medium backdrop-blur-sm">
+                    <i data-lucide="search" class="w-4 h-4"></i> Tamu: Cek Status Tiket
+                </button>
             </div>
-            <div class="mt-8">
-                <button id="btn-show-login" class="group flex items-center gap-3 text-sm text-slate-400 hover:text-white transition-colors duration-300">
+            <div class="pt-4 md:pt-6 border-t border-slate-800/50 md:border-slate-800 mt-4 md:mt-8">
+                <button id="btn-show-login" class="group flex items-center gap-3 text-sm text-slate-400 hover:text-white transition-colors duration-300 w-full justify-center md:justify-start">
                     <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
                         <i data-lucide="lock" class="w-4 h-4"></i>
                     </div>
@@ -37,32 +41,34 @@
             </div>
         </div>
 
-        <div id="login-panel" class="fade-panel panel-hidden flex flex-col h-full justify-center z-10">
-            <h2 class="text-2xl font-bold mb-2">Akses Host</h2>
-            <p class="text-slate-400 text-sm mb-8">Masuk untuk mengelola daftar tamu.</p>
+        <!-- LAYAR LOGIN ADMIN -->
+        <div id="login-panel" class="fade-panel panel-hidden flex flex-col h-full justify-center z-10 py-10 md:py-0">
+            <h2 class="text-xl md:text-2xl font-bold mb-2">Akses Host</h2>
+            <p class="text-slate-400 text-xs md:text-sm mb-6 md:mb-8">Masuk untuk mengelola daftar tamu.</p>
             <form id="login-form" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Username / NIP</label>
-                    <input type="text" value="admin" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm">
+                    <input type="text" value="admin" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
-                    <input type="password" value="password" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm">
+                    <input type="password" value="password" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 text-sm">
                 </div>
                 <div class="pt-2">
-                    <button type="submit" id="btn-do-login" class="relative w-full bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-4 py-3 transition-colors text-sm flex justify-center items-center h-[44px] shadow-lg shadow-blue-600/30">
-                        <span id="login-text">Masuk ke Dashboard</span>
+                    <button type="submit" id="btn-do-login" class="relative w-full bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-4 py-3 text-sm flex justify-center items-center h-[44px]">
+                        <span id="login-text">Masuk Dashboard</span>
                         <div id="login-spinner" class="spinner hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     </button>
                 </div>
-                <button type="button" id="btn-hide-login" class="w-full text-center text-slate-400 hover:text-white text-sm mt-4 transition-colors">
-                    &larr; Kembali ke layar Tamu
+                <button type="button" id="btn-hide-login" class="w-full text-center text-slate-400 hover:text-white text-sm mt-4">
+                    &larr; Kembali
                 </button>
             </form>
         </div>
 
-        <div id="sidebar-panel" class="fade-panel panel-hidden flex flex-col h-full z-10">
-            <div class="flex items-center gap-3 mb-10">
+        <!-- MENU SIDEBAR ADMIN -->
+        <div id="sidebar-panel" class="fade-panel panel-hidden flex flex-col h-full z-10 py-6 md:py-0">
+            <div class="flex items-center gap-3 mb-6 md:mb-10">
                 <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                     <i data-lucide="shield-check" class="text-white w-5 h-5"></i>
                 </div>
@@ -71,214 +77,301 @@
                     <p class="text-xs text-slate-400">Kepala Sekolah / TU</p>
                 </div>
             </div>
-            <nav class="flex-1 space-y-2">
-                <!-- Tambahkan ID untuk trigger perpindahan view -->
-                <a href="#" id="nav-overview" class="flex items-center gap-3 px-4 py-3 bg-blue-600/20 text-blue-400 rounded-xl text-sm font-medium transition-colors">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview Kunjungan
+            
+            <nav class="flex-1 space-y-2 flex flex-row md:flex-col overflow-x-auto md:overflow-visible pb-4 md:pb-0 hide-scrollbar">
+                <a href="#" id="nav-overview" class="flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2 md:py-3 bg-blue-600/20 text-blue-400 rounded-xl text-xs md:text-sm font-medium transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
                 </a>
-                <a href="#" id="nav-history" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-sm font-medium transition-colors">
-                    <i data-lucide="book-open" class="w-4 h-4"></i> Riwayat & Log Tamu
+                <a href="#" id="nav-verify" class="flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2 md:py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-xs md:text-sm font-medium transition-colors">
+                    <i data-lucide="scan-line" class="w-4 h-4"></i> Verifikasi Kode
+                </a>
+                <a href="#" id="nav-history" class="flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2 md:py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl text-xs md:text-sm font-medium transition-colors">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> Riwayat & Log
                 </a>
             </nav>
-            <button id="btn-logout" class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl text-sm font-medium transition-colors mt-auto">
-                <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+
+            <button id="btn-logout" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl text-sm font-medium transition-colors mt-4 md:mt-auto border md:border-none border-red-500/30">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Keluar Dashboard
             </button>
         </div>
     </aside>
 
     <!-- ==========================================
-         PANEL KANAN: Main Content Area
+         PANEL KANAN: Konten Utama (Views)
          ========================================== -->
-    <main class="relative flex-1 h-full overflow-hidden bg-slate-50 z-10">
+    <main class="relative flex-1 h-full overflow-y-auto overflow-x-hidden bg-slate-50 z-10 print:bg-white">
         
-        <!-- VIEW 1: GUEST FORM -->
-        <div id="guest-view" class="view-panel view-visible h-full overflow-y-auto p-6 md:p-12 scroll-smooth">
-            <div class="max-w-2xl mx-auto">
-                <div class="mb-8">
-                    <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider rounded-full mb-3">Self Check-In</span>
-                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Formulir Kunjungan</h2>
-                    <p class="text-slate-500">Mohon lengkapi data diri Anda.</p>
+        <!-- VIEW 1: GUEST FORM & TICKET -->
+        <div id="guest-view" class="view-panel view-visible h-full p-4 sm:p-6 lg:p-12 scroll-smooth print:p-0">
+            <div class="max-w-2xl mx-auto print:max-w-none pb-10 md:pb-0">
+                
+                <div class="mb-6 md:mb-8 no-print text-center md:text-left mt-4 md:mt-0">
+                    <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold tracking-wider rounded-full mb-2 md:mb-3">Self Check-In</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-1 md:mb-2">Formulir Kunjungan</h2>
+                    <p class="text-slate-500 text-sm md:text-base">Mohon lengkapi data diri Anda.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 md:p-8 relative overflow-hidden min-h-[500px]">
-                    <div id="guest-form-container" class="transition-all duration-500 transform scale-100 opacity-100">
-                        <form id="guest-form" class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 sm:p-6 md:p-8 relative overflow-hidden min-h-[500px] print:shadow-none print:border-none print:p-0">
+                    
+                    <div id="guest-form-container" class="transition-all duration-500 transform scale-100 opacity-100 no-print">
+                        <form id="guest-form" class="space-y-4 md:space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-                                    <input type="text" id="guest-name" required placeholder="Masukkan nama Anda" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                                    <input type="text" id="guest-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base text-slate-900 focus:outline-none focus:border-blue-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">No. HP / WhatsApp <span class="text-red-500">*</span></label>
-                                    <input type="tel" required placeholder="08xx-xxxx-xxxx" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">No. HP / WA <span class="text-red-500">*</span></label>
+                                    <input type="tel" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base text-slate-900 focus:outline-none focus:border-blue-500">
                                 </div>
                             </div>
-
+                            
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Asal Instansi <span class="text-red-500">*</span></label>
-                                <input type="text" id="guest-instansi" required placeholder="Contoh: Dinas Pendidikan, dll" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                                <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">Asal Instansi <span class="text-red-500">*</span></label>
+                                <input type="text" id="guest-instansi" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base text-slate-900 focus:outline-none focus:border-blue-500">
                             </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Kategori <span class="text-red-500">*</span></label>
-                                    <select id="kategori-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none cursor-pointer">
-                                        <option value="" disabled selected>Pilih Kategori...</option>
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">Kategori <span class="text-red-500">*</span></label>
+                                    <select id="kategori-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base text-slate-900 focus:outline-none focus:border-blue-500">
+                                        <option value="" disabled selected>Pilih...</option>
                                         <option value="siswa">Siswa/Siswi</option>
-                                        <option value="mahasiswa">Mahasiswa</option>
-                                        <option value="guru">Guru/Pendidik</option>
-                                        <option value="pegawai">Pegawai</option>
-                                        <option value="umum">Umum/Lainnya</option>
+                                        <option value="umum">Tamu Umum/Lainnya</option>
                                     </select>
                                 </div>
                                 <div id="kelas-container" class="kelas-wrapper">
                                     <div class="kelas-inner pt-0">
-                                        <label class="block text-sm font-medium text-slate-700 mb-2">Kelas / Jurusan <span class="text-red-500">*</span></label>
-                                        <input type="text" id="input-kelas" placeholder="Contoh: X MIPA 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 transition-all">
+                                        <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">Kelas / Jurusan</label>
+                                        <input type="text" id="input-kelas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base text-slate-900 focus:outline-none focus:border-blue-500">
                                     </div>
                                 </div>
                             </div>
-
+                            
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Tujuan Kunjungan <span class="text-red-500">*</span></label>
-                                <textarea rows="3" required placeholder="Jelaskan tujuan Anda..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-500 resize-none"></textarea>
+                                <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">Tujuan Kunjungan <span class="text-red-500">*</span></label>
+                                <textarea rows="3" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base text-slate-900 focus:outline-none focus:border-blue-500 resize-none"></textarea>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Foto Identitas (Live Camera)</label>
-                                <div id="camera-container" class="relative border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center min-h-[240px] transition-all">
-                                    <div id="camera-idle" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer z-10" onclick="startCamera()">
-                                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3 transition-transform duration-300 hover:scale-110">
-                                            <i data-lucide="camera" class="w-6 h-6"></i>
-                                        </div>
-                                        <p class="text-sm text-slate-600 font-medium mb-1">Klik Buka Kamera</p>
+                                <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1 md:mb-2">Foto Identitas (Live Camera)</label>
+                                <div id="camera-container" class="relative border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center min-h-[200px] md:min-h-[240px]">
+                                    <div id="camera-idle" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 cursor-pointer z-10 hover:bg-slate-100 transition-colors" onclick="startCamera()">
+                                        <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2 md:mb-3"><i data-lucide="camera" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                                        <p class="text-xs md:text-sm font-medium">Ketuk Buka Kamera</p>
                                     </div>
                                     <video id="camera-video" class="hidden absolute inset-0 w-full h-full object-cover z-0" autoplay playsinline></video>
-                                    <button type="button" id="btn-capture" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-slate-900 rounded-full px-6 py-2 text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform z-20 items-center gap-2" onclick="takeSnapshot()">
-                                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div> Jepret
+                                    <button type="button" id="btn-capture" class="hidden absolute bottom-4 z-20 bg-white px-5 md:px-6 py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-2 active:scale-95" onclick="takeSnapshot()">
+                                        <div class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div> Jepret
                                     </button>
                                     <canvas id="camera-canvas" class="hidden"></canvas>
                                     <img id="camera-result" class="hidden absolute inset-0 w-full h-full object-cover z-30">
-                                    <button type="button" id="btn-retake" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white rounded-full px-6 py-2 text-sm font-medium shadow-lg z-40" onclick="retakePhoto()">
-                                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>Ulangi
+                                    <button type="button" id="btn-retake" class="hidden absolute bottom-4 z-40 bg-slate-900 text-white px-5 md:px-6 py-2 rounded-full text-xs md:text-sm font-medium shadow active:scale-95" onclick="retakePhoto()">
+                                        <i data-lucide="refresh-cw" class="w-3 h-3 md:w-4 md:h-4 inline mr-1 md:mr-2"></i>Ulangi
                                     </button>
                                 </div>
                             </div>
 
                             <div class="pt-4">
-                                <button type="submit" id="btn-submit-guest" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-4 transition-all duration-300 shadow-lg flex items-center justify-center gap-2 active:scale-[0.98]">
-                                    <span id="submit-text">Kirim & Check-In</span>
-                                    <i data-lucide="arrow-right" id="submit-icon" class="w-5 h-5"></i>
+                                <button type="submit" id="btn-submit-guest" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl px-4 py-3 md:py-4 text-sm md:text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+                                    <span id="submit-text">Kirim & Dapatkan Tiket</span>
+                                    <i data-lucide="arrow-right" id="submit-icon" class="w-4 h-4 md:w-5 md:h-5"></i>
                                     <div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <div id="success-state" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-8 text-center opacity-0 pointer-events-none transition-all duration-500 transform scale-95">
-                        <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                            <i data-lucide="check-circle" class="w-10 h-10"></i>
+                    <!-- LAYAR TIKET SUKSES (Bisa di Print) -->
+                    <div id="success-state" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 md:p-8 text-center opacity-0 pointer-events-none transition-all duration-500 transform scale-95 print:opacity-100 print:scale-100 print:relative print:pointer-events-auto">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-3 md:mb-4 no-print">
+                            <i data-lucide="check-circle" class="w-6 h-6 md:w-8 md:h-8"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-900 mb-2">Check-In Berhasil!</h3>
-                        <p class="text-slate-500 mb-6">Silakan tunggu di lobi.</p>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 w-full max-w-sm mb-8 relative overflow-hidden">
-                            <p class="text-xs text-slate-400 font-medium uppercase mb-1">Status Kunjungan</p>
-                            <p class="text-lg font-bold text-amber-600">Menunggu...</p>
+                        <h3 class="text-xl md:text-2xl font-bold text-slate-900 mb-1 no-print">Pengajuan Berhasil!</h3>
+                        <p class="text-slate-500 text-xs md:text-sm mb-4 md:mb-6 no-print">Tunjukkan kode tiket di bawah ini ke staf Admin.</p>
+                        
+                        <div id="ticket-card" class="bg-white p-5 md:p-6 rounded-2xl border-2 border-slate-200 w-full max-w-sm mb-4 md:mb-6 text-left relative overflow-hidden shadow-lg print:shadow-none print:border-4 print:border-slate-800">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full"></div>
+                            <div class="absolute -left-4 -bottom-4 w-16 h-16 md:w-20 md:h-20 bg-amber-50 rounded-full"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-4 md:mb-6 pb-4 md:pb-6 border-b border-dashed border-slate-300">
+                                    <div>
+                                        <p class="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tiket Kunjungan</p>
+                                        <h4 class="text-base md:text-lg font-bold text-slate-900">SMAN 1 Kandangan</h4>
+                                    </div>
+                                    <i data-lucide="ticket" class="w-5 h-5 md:w-6 md:h-6 text-slate-300"></i>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <p class="text-[10px] md:text-xs text-slate-500 mb-1">Nama Tamu</p>
+                                    <p id="ticket-name" class="font-bold text-sm md:text-base text-slate-900">-</p>
+                                </div>
+                                <div class="bg-slate-900 p-3 md:p-4 rounded-xl text-center mt-4 md:mt-6">
+                                    <p class="text-[9px] md:text-xs text-slate-400 mb-1 uppercase tracking-wider">Kode Pelacakan</p>
+                                    <p id="ticket-code" class="text-xl md:text-2xl font-bold text-white tracking-widest font-mono">SMAN1-XXXX</p>
+                                </div>
+                            </div>
                         </div>
-                        <button type="button" id="btn-next-guest" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl px-8 py-3 flex items-center gap-2">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Selesai (Tamu Berikutnya)
-                        </button>
+
+                        <div class="flex flex-col sm:flex-row gap-2 md:gap-3 no-print w-full max-w-sm">
+                            <button type="button" onclick="window.print()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-3 flex items-center justify-center gap-2 text-sm">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak / Simpan
+                            </button>
+                            <button type="button" id="btn-next-guest" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl px-4 py-3 flex items-center justify-center gap-2 text-sm">
+                                Selesai (Berikutnya)
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW 2: ADMIN OVERVIEW -->
-        <div id="admin-view" class="view-panel view-hidden h-full overflow-y-auto p-6 md:p-10 bg-slate-100/50">
-            <div class="max-w-5xl mx-auto">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-900">Overview Kunjungan</h2>
-                        <p class="text-sm text-slate-500">Pantau dan kelola tamu hari ini.</p>
-                    </div>
-                </div>
+        <!-- VIEW 2: TRACKING / CEK STATUS TAMU -->
+        <div id="tracking-view" class="view-panel view-hidden h-full p-4 sm:p-6 lg:p-12 scroll-smooth bg-slate-50 flex items-center justify-center">
+            <div class="max-w-md w-full">
+                <button id="btn-back-from-tracking" class="mb-4 md:mb-6 text-xs md:text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Form
+                </button>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Cek Status Tiket</h2>
+                <p class="text-slate-500 text-sm md:text-base mb-6 md:mb-8">Masukkan Kode Pelacakan Anda (Contoh: SMAN1-XXXXX).</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
-                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="clock" class="w-5 h-5"></i></div>
-                        <p class="text-sm text-slate-500 font-medium">Menunggu</p>
-                        <h3 id="count-menunggu" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
-                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="users" class="w-5 h-5"></i></div>
-                        <p class="text-sm text-slate-500 font-medium">Sedang Bertemu</p>
-                        <h3 id="count-bertemu" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
-                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
-                        <p class="text-sm text-slate-500 font-medium">Selesai</p>
-                        <h3 id="count-selesai" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">Antrean Aktif</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-500">
-                                <tr>
-                                    <th class="px-6 py-4 font-medium">Nama Tamu</th>
-                                    <th class="px-6 py-4 font-medium">Instansi / Kategori</th>
-                                    <th class="px-6 py-4 font-medium">Jam Masuk</th>
-                                    <th class="px-6 py-4 font-medium">Status Kunjungan</th>
-                                    <th class="px-6 py-4 font-medium">Aksi Update</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body" class="divide-y divide-slate-100">
-                                <!-- Data Overview masuk ke sini -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 3: RIWAYAT & LOG TAMU (FITUR BARU) -->
-        <div id="history-view" class="view-panel view-hidden h-full overflow-y-auto p-6 md:p-10 bg-slate-100/50">
-            <div class="max-w-5xl mx-auto">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-900">Log Riwayat Tamu</h2>
-                        <p class="text-sm text-slate-500">Rekapitulasi lengkap seluruh kunjungan beserta jam keluar.</p>
-                    </div>
-                    <button class="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 hover:bg-slate-50">
-                        <i data-lucide="download" class="w-4 h-4"></i> Export Data
+                <div class="bg-white p-1.5 md:p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-8">
+                    <input type="text" id="track-input" placeholder="Masukkan kode..." class="flex-1 bg-transparent px-3 py-3 md:px-4 text-center sm:text-left outline-none text-slate-900 font-mono uppercase font-bold text-sm md:text-base" autocomplete="off">
+                    <button id="btn-do-track" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm md:text-base">
+                        Cari
                     </button>
                 </div>
 
+                <div id="track-result-container" class="hidden transition-all duration-300">
+                    <div id="track-found" class="bg-white p-5 md:p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden hidden">
+                        <div class="absolute top-0 right-0 w-2 h-full bg-blue-500" id="track-color-bar"></div>
+                        <h4 class="text-xs md:text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Informasi Kunjungan</h4>
+                        <div class="mb-4">
+                            <p class="text-[10px] md:text-xs text-slate-500">Nama Tamu</p>
+                            <p id="track-res-name" class="font-semibold text-slate-900 text-sm md:text-base">-</p>
+                        </div>
+                        <div class="p-3 md:p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] md:text-xs text-slate-500 mb-1">Status Saat Ini:</p>
+                            <div class="flex items-center gap-2">
+                                <span id="track-res-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                <p id="track-res-status" class="text-base md:text-lg font-bold text-amber-600">Menunggu</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="track-not-found" class="bg-red-50 text-red-600 p-5 md:p-6 rounded-2xl border border-red-100 flex flex-col items-center justify-center text-center hidden">
+                        <i data-lucide="alert-circle" class="w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                        <p class="font-bold text-sm md:text-base">Kode Tidak Ditemukan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: ADMIN OVERVIEW -->
+        <div id="admin-view" class="view-panel view-hidden h-full p-4 sm:p-6 lg:p-10 bg-slate-100/50">
+            <div class="max-w-5xl mx-auto pb-10">
+                <div class="mb-6 md:mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900">Overview Kunjungan</h2>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200/60 text-center md:text-left">
+                        <p class="text-[10px] md:text-sm text-slate-500 font-medium">Menunggu</p>
+                        <h3 id="count-menunggu" class="text-2xl md:text-3xl font-bold text-slate-900 mt-1">0</h3>
+                    </div>
+                    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200/60 text-center md:text-left">
+                        <p class="text-[10px] md:text-sm text-slate-500 font-medium">Sedang Bertemu</p>
+                        <h3 id="count-bertemu" class="text-2xl md:text-3xl font-bold text-slate-900 mt-1">0</h3>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200/60 text-center md:text-left">
+                        <p class="text-[10px] md:text-sm text-slate-500 font-medium">Selesai</p>
+                        <h3 id="count-selesai" class="text-2xl md:text-3xl font-bold text-slate-900 mt-1">0</h3>
+                    </div>
+                </div>
+                
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
+                        <table class="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
                             <thead class="bg-slate-50 text-slate-500">
                                 <tr>
-                                    <th class="px-6 py-4 font-medium">Tanggal</th>
-                                    <th class="px-6 py-4 font-medium">Detail Tamu</th>
-                                    <th class="px-6 py-4 font-medium">Jam Masuk</th>
-                                    <th class="px-6 py-4 font-medium">Jam Keluar</th>
-                                    <th class="px-6 py-4 font-medium">Status Akhir</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Tiket & Tamu</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Jam Masuk</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Status</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Aksi Update</th>
                                 </tr>
                             </thead>
-                            <tbody id="history-table-body" class="divide-y divide-slate-100">
-                                <!-- Data Log Riwayat akan masuk secara otomatis di sini -->
-                            </tbody>
+                            <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- VIEW 4: ADMIN VERIFIKASI KODE -->
+        <div id="verify-view" class="view-panel view-hidden h-full p-4 sm:p-6 lg:p-10 bg-slate-100/50 flex flex-col">
+            <div class="max-w-2xl mx-auto w-full pt-4 md:pt-10">
+                <div class="text-center mb-6 md:mb-8">
+                    <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                        <i data-lucide="scan-line" class="w-6 h-6 md:w-8 md:h-8"></i>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Verifikasi Kode</h2>
+                    <p class="text-slate-500 text-sm md:text-base">Masukkan kode tiket tamu untuk memverifikasi kedatangan.</p>
+                </div>
+
+                <div class="bg-white p-2 rounded-2xl shadow-lg border border-slate-200 flex flex-col sm:flex-row gap-2 mb-8">
+                    <input type="text" id="admin-verify-input" placeholder="Ketik Kode SMAN1-..." class="flex-1 bg-transparent px-4 py-3 md:py-4 outline-none text-slate-900 font-mono uppercase font-bold text-center sm:text-left text-sm md:text-lg" autocomplete="off">
+                    <button id="btn-admin-verify" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-8 py-3 md:py-4 font-semibold text-sm md:text-base flex items-center justify-center gap-2">
+                        Cari
+                    </button>
+                </div>
+
+                <div id="verify-result-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 hidden">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                        <div>
+                            <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Data Ditemukan</p>
+                            <h3 id="verify-res-name" class="text-xl md:text-2xl font-bold text-slate-900">Nama Tamu</h3>
+                            <p id="verify-res-instansi" class="text-xs md:text-sm text-slate-500">Asal Instansi</p>
+                        </div>
+                        <span id="verify-res-status-badge" class="px-3 py-1 rounded-full text-[10px] md:text-xs font-bold bg-amber-100 text-amber-700 self-start sm:self-auto">Menunggu</span>
+                    </div>
+
+                    <button id="btn-apply-ruangan" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 md:py-4 text-sm md:text-base flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all">
+                        <i data-lucide="check-circle" class="w-4 h-4 md:w-5 md:h-5"></i> Update Status: Sedang Bertemu
+                    </button>
+                    <p id="verify-msg-done" class="text-center text-xs md:text-sm font-bold text-blue-500 hidden py-4">
+                        <i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Tamu ini sudah diverifikasi.
+                    </p>
+                </div>
+                
+                <div id="verify-not-found" class="bg-red-50 text-red-600 p-5 md:p-6 rounded-2xl border border-red-100 text-center hidden">
+                    <p class="font-bold text-sm md:text-base">Kode Tidak Ditemukan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: HISTORY ADMIN -->
+        <div id="history-view" class="view-panel view-hidden h-full p-4 sm:p-6 lg:p-10 bg-slate-100/50">
+            <div class="max-w-5xl mx-auto pb-10">
+                <div class="mb-6 md:mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900">Riwayat Tamu</h2>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Tanggal</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Tiket & Tamu</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Jam Masuk/Keluar</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 font-medium">Status Akhir</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="app.js"></script>
