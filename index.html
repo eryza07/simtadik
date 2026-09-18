@@ -165,10 +165,10 @@
             <div id="view-track" class="app-view hidden fade-in max-w-md mx-auto flex-col justify-center h-full">
                 <h2 class="text-2xl font-black text-slate-900 mb-1 text-center">Cek Status Tiket</h2>
                 <p class="text-slate-400 text-xs text-center mb-6">Pantau nomor antrean dengan kode pelacakan Anda.</p>
-                <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex gap-2 mb-6">
+                <form onsubmit="event.preventDefault(); document.getElementById('btn-do-track').click();" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex gap-2 mb-6">
                     <input type="text" id="track-input" placeholder="SMAN1-..." class="flex-1 bg-transparent px-4 py-2.5 outline-none font-mono uppercase font-bold text-xs" autocomplete="off">
-                    <button id="btn-do-track" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2.5 font-bold text-xs transition">Cari</button>
-                </div>
+                    <button type="button" id="btn-do-track" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2.5 font-bold text-xs transition">Cari</button>
+                </form>
                 <div id="track-result-container" class="hidden fade-in">
                     <div id="track-found" class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden hidden">
                         <div class="absolute top-0 right-0 w-2 h-full bg-rose-500" id="track-color-bar"></div>
@@ -198,14 +198,11 @@
                 </div>
             </div>
 
-            <!-- =========================================================
-                 VIEW 5: ADMIN BERANDA (LIVE MONITOR SINGKAT) + GRAFIK
-                 ========================================================= -->
+            <!-- VIEW 5: ADMIN BERANDA (LIVE MONITOR SINGKAT) -->
             <div id="view-admin-overview" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
                     <div class="lg:col-span-8 space-y-6">
-                        <!-- Banner Profil -->
                         <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 text-white p-6 shadow-sm border border-slate-800">
                             <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 via-transparent to-transparent pointer-events-none"></div>
                             <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -216,7 +213,6 @@
                             </div>
                         </div>
 
-                        <!-- 3 Angka Pantauan Cepat -->
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-bold text-slate-900 tracking-tight">Pantauan Kilat Harian</h3>
@@ -224,13 +220,13 @@
                             </div>
                             <div class="grid grid-cols-3 gap-3 md:gap-4">
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu (Lobi)</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3>
                                 </div>
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Di Ruangan</p><h3 id="stat-bertemu" class="text-2xl md:text-3xl font-black text-blue-500 mt-1">0</h3>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Di Ruang Kepsek</p><h3 id="stat-bertemu" class="text-2xl md:text-3xl font-black text-blue-500 mt-1">0</h3>
                                 </div>
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Selesai/Pulang</p><h3 id="stat-checkout-count" class="text-2xl md:text-3xl font-black text-emerald-500 mt-1">0</h3>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Selesai Hari Ini</p><h3 id="stat-checkout-count" class="text-2xl md:text-3xl font-black text-emerald-500 mt-1">0</h3>
                                 </div>
                             </div>
                         </div>
@@ -246,7 +242,6 @@
                             </div>
                         </div>
 
-                        <!-- Antrean Aktif -->
                         <div class="mt-6">
                             <h3 class="text-lg font-bold text-slate-900 tracking-tight mb-4">Antrean Tamu Aktif Saat Ini</h3>
                             <div id="active-guests-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
@@ -254,7 +249,6 @@
                         </div>
                     </div>
 
-                    <!-- Panel Kanan -->
                     <div class="lg:col-span-4 space-y-6">
                         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
                             <div class="flex items-center justify-between mb-5"><div><h4 class="font-bold text-sm text-slate-900">Ruang Kepala Sekolah</h4><p class="text-[11px] text-slate-400">Status Ketersediaan</p></div><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600" id="room-status-badge">Kosong</span></div>
@@ -262,15 +256,16 @@
                         </div>
                         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
                             <div class="flex items-center justify-between mb-4"><h4 class="font-bold text-sm text-slate-900">Verifikasi Cepat</h4><i data-lucide="shield-check" class="w-4 h-4 text-slate-400"></i></div>
-                            <div class="flex gap-2"><input type="text" id="quick-verify-input" placeholder="SMAN1-..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono uppercase font-bold focus:outline-none focus:border-rose-500"><button id="btn-quick-verify-go" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-4 py-2.5 text-xs font-bold transition">Cek</button></div>
+                            <form onsubmit="event.preventDefault(); document.getElementById('btn-quick-verify-go').click();" class="flex gap-2">
+                                <input type="text" id="quick-verify-input" placeholder="SMAN1-..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono uppercase font-bold focus:outline-none focus:border-rose-500">
+                                <button type="button" id="btn-quick-verify-go" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-4 py-2.5 text-xs font-bold transition">Cek</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- =========================================================
-                 VIEW 6: TAB STATISTIK & ANALITIK JADWAL
-                 ========================================================= -->
+            <!-- VIEW 6: TAB STATISTIK & ANALITIK JADWAL -->
             <div id="view-admin-statistik" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -294,7 +289,7 @@
                     </div>
                 </div>
 
-                <!-- TABEL ANALITIK JADWAL -->
+                <!-- TABEL ANALITIK JADWAL PER HARI -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm mt-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
@@ -326,10 +321,12 @@
                     <span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold tracking-wider rounded-full mb-2">Pintu Masuk TU</span>
                     <h2 class="text-2xl font-black text-slate-900 mb-1">Verifikasi & Persetujuan</h2>
                 </div>
-                <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6 max-w-md mx-auto">
+                
+                <form id="form-admin-verify" onsubmit="event.preventDefault(); document.getElementById('btn-admin-verify').click();" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6 max-w-md mx-auto">
                     <input type="text" id="admin-verify-input" placeholder="Ketik Kode (SMAN1-...)" class="flex-1 bg-transparent px-4 py-3 outline-none text-slate-900 font-mono uppercase font-bold text-center sm:text-left text-sm" autocomplete="off">
-                    <button id="btn-admin-verify" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-6 py-3 font-bold text-xs transition active:scale-95">Tampilkan Profil</button>
-                </div>
+                    <button type="button" id="btn-admin-verify" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-6 py-3 font-bold text-xs transition active:scale-95">Tampilkan Profil</button>
+                </form>
+
                 <div id="verify-result-card" class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden hidden fade-in mt-6">
                     <div class="flex flex-col md:flex-row">
                         <div class="w-full md:w-1/3 bg-slate-50 p-6 flex flex-col items-center justify-center border-r border-slate-100"><div class="w-36 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-md mb-3 bg-slate-200"><img id="v-res-photo" src="" class="w-full h-full object-cover"></div><span id="v-res-status-badge" class="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span></div>
@@ -377,7 +374,7 @@
         </main>
     </div>
 
-    <!-- WADAH CETAK LAPORAN (Hanya Tampil Saat Print PDF) -->
+    <!-- WADAH CETAK LAPORAN -->
     <div id="print-report-container" class="hidden bg-white min-h-screen relative z-[99999]">
         <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4">
             <h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1>
@@ -402,7 +399,7 @@
         </div>
     </div>
 
-    <!-- MODAL DETAIL FOTO -->
+    <!-- MODAL DETAIL -->
     <div id="detail-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeDetailModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden" id="detail-card">
@@ -428,18 +425,28 @@
         </div>
     </div>
 
-    <!-- MODAL KONFLIK JADWAL -->
+    <!-- MODAL KONFLIK JADWAL (UPDATE LOGIKA JARAK 2 JAM) -->
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" id="conflict-overlay"></div>
-        <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="calendar-x" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Terisi</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> dibooking oleh <span id="conflict-name-text" class="font-bold text-rose-600"></span>.</p><button type="button" id="btn-change-schedule" class="w-full bg-slate-900 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95">Ganti Jadwal</button></div>
+        <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card">
+            <div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div>
+            <h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3>
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p>
+            
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5">
+                <p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p>
+                <p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25">Gunakan Jam Ini</button>
+                <button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95">Pilih Waktu Lain</button>
+            </div>
+        </div>
     </div>
 
-    <!-- BOTTOM NAVBAR MOBILE (Hanya Tampil di HP - Dengan Garis Animasi) -->
-    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200/80 flex justify-around items-center h-[68px] z-40 shadow-lg px-2 relative transition-transform duration-300 transform translate-y-0" id="mobile-bottom-nav">
-        <!-- MAGIC LINE MOBILE -->
-        <div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div>
-        <!-- Diisi JS -->
-    </nav>
+    <!-- BOTTOM NAVBAR MOBILE -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200/80 flex justify-around items-center h-[68px] z-40 shadow-lg px-2 relative transition-transform duration-300 transform translate-y-0" id="mobile-bottom-nav"></nav>
 
     <script src="app.js"></script>
 </body>
