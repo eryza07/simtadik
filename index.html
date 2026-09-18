@@ -100,7 +100,6 @@
                         </div>
                         <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Asal Instansi / Lembaga *</label><input type="text" id="guest-instansi" required placeholder="Contoh: Dinas, Wali Murid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
                         
-                        <!-- BARU: BARIS TANGGAL & JAM -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1.5 flex justify-between"><span>Tgl Pertemuan *</span><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i></label>
@@ -175,7 +174,7 @@
                         <div class="absolute top-0 right-0 w-2 h-full bg-rose-500" id="track-color-bar"></div>
                         <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Informasi Kunjungan</h4>
                         <div class="mb-3"><p class="text-[10px] text-slate-400 uppercase font-bold">Nama Tamu</p><p id="track-res-name" class="font-bold text-slate-900 text-sm">-</p></div>
-                        <div class="mb-4"><p class="text-[10px] text-slate-400 uppercase font-bold">Jadwal Pertemuan</p><p id="track-res-date" class="font-bold text-rose-600 text-xs">-</p></div>
+                        <div class="mb-4"><p class="text-[10px] text-slate-400 uppercase font-bold">Tanggal Pertemuan</p><p id="track-res-date" class="font-bold text-rose-600 text-xs">-</p></div>
                         <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
                             <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Status Saat Ini:</p>
                             <div class="flex items-center gap-2"><span id="track-res-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span><p id="track-res-status" class="text-sm font-black text-amber-600">Menunggu</p></div>
@@ -200,12 +199,13 @@
             </div>
 
             <!-- =========================================================
-                 VIEW 5: ADMIN BERANDA (LIVE MONITOR SINGKAT)
+                 VIEW 5: ADMIN BERANDA (LIVE MONITOR SINGKAT) + GRAFIK
                  ========================================================= -->
             <div id="view-admin-overview" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
                     <div class="lg:col-span-8 space-y-6">
+                        <!-- Banner Profil -->
                         <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 text-white p-6 shadow-sm border border-slate-800">
                             <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 via-transparent to-transparent pointer-events-none"></div>
                             <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -216,7 +216,7 @@
                             </div>
                         </div>
 
-                        <!-- 3 Angka Pantauan Cepat (Disederhanakan) -->
+                        <!-- 3 Angka Pantauan Cepat -->
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-bold text-slate-900 tracking-tight">Pantauan Kilat Harian</h3>
@@ -224,18 +224,29 @@
                             </div>
                             <div class="grid grid-cols-3 gap-3 md:gap-4">
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu (Lobi)</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3>
                                 </div>
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Di Ruang Kepsek</p><h3 id="stat-bertemu" class="text-2xl md:text-3xl font-black text-blue-500 mt-1">0</h3>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Di Ruangan</p><h3 id="stat-bertemu" class="text-2xl md:text-3xl font-black text-blue-500 mt-1">0</h3>
                                 </div>
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Selesai Hari Ini</p><h3 id="stat-checkout-count" class="text-2xl md:text-3xl font-black text-emerald-500 mt-1">0</h3>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Selesai/Pulang</p><h3 id="stat-checkout-count" class="text-2xl md:text-3xl font-black text-emerald-500 mt-1">0</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Antrean Aktif (Hanya Menunggu & Bertemu) -->
+                        <!-- GRAFIK CHART.JS DI BERANDA -->
+                        <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-bold text-sm text-slate-900">Grafik Pendaftar Harian</h4>
+                                <i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                            <div class="w-full h-[200px]">
+                                <canvas id="visitorChartOverview"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Antrean Aktif -->
                         <div class="mt-6">
                             <h3 class="text-lg font-bold text-slate-900 tracking-tight mb-4">Antrean Tamu Aktif Saat Ini</h3>
                             <div id="active-guests-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
@@ -243,6 +254,7 @@
                         </div>
                     </div>
 
+                    <!-- Panel Kanan -->
                     <div class="lg:col-span-4 space-y-6">
                         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
                             <div class="flex items-center justify-between mb-5"><div><h4 class="font-bold text-sm text-slate-900">Ruang Kepala Sekolah</h4><p class="text-[11px] text-slate-400">Status Ketersediaan</p></div><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600" id="room-status-badge">Kosong</span></div>
@@ -257,7 +269,7 @@
             </div>
 
             <!-- =========================================================
-                 VIEW 6: TAB BARU -> STATISTIK & ANALITIK JADWAL
+                 VIEW 6: TAB STATISTIK & ANALITIK JADWAL
                  ========================================================= -->
             <div id="view-admin-statistik" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="flex items-center justify-between mb-6">
@@ -275,14 +287,14 @@
                             <div class="relative w-20 h-20 shrink-0"><svg class="w-full h-full" viewBox="0 0 36 36"><path class="text-slate-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path id="donut-progress" class="donut-ring text-rose-500" stroke-width="4" stroke-dasharray="0, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg><div class="absolute inset-0 flex items-center justify-center font-black text-xs text-slate-800" id="donut-pct">0%</div></div>
                         </div>
                     </div>
-                    <!-- Bar Chart JS -->
+                    <!-- Bar Chart JS Analitik -->
                     <div class="lg:col-span-8 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm h-full flex flex-col">
                         <div class="flex items-center justify-between mb-4"><h4 class="font-bold text-sm text-slate-900">Grafik Kategori Pendaftar</h4><i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i></div>
-                        <div class="w-full flex-1 min-h-[160px]"><canvas id="visitorChart"></canvas></div>
+                        <div class="w-full flex-1 min-h-[160px]"><canvas id="visitorChartAnalitik"></canvas></div>
                     </div>
                 </div>
 
-                <!-- TABEL ANALITIK JADWAL PER HARI (Senin-Jumat) -->
+                <!-- TABEL ANALITIK JADWAL -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm mt-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
@@ -302,9 +314,7 @@
                                     <th class="px-4 py-3 font-bold text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="analytics-schedule-body" class="divide-y divide-slate-100">
-                                <!-- Diisi Otomatis via JS -->
-                            </tbody>
+                            <tbody id="analytics-schedule-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
@@ -330,7 +340,7 @@
                                 <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Asal Instansi</p><p id="v-res-instansi" class="font-semibold text-slate-800">-</p></div>
                                 <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Kategori</p><p id="v-res-kategori" class="font-semibold text-slate-800">-</p></div>
                                 <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Jadwal Tanggal</p><p id="v-res-date" class="font-semibold text-slate-800">-</p></div>
-                                <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Jam Form Masuk</p><p id="v-res-time" class="font-semibold text-slate-800">-</p></div>
+                                <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Rencana Tiba</p><p id="v-res-time" class="font-semibold text-slate-800">-</p></div>
                             </div>
                             <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-1">Keperluan / Tujuan</p><p id="v-res-tujuan" class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">-</p></div>
                         </div>
@@ -403,8 +413,8 @@
                     <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                         <div><p class="text-[9px] uppercase font-bold text-slate-400">Kode Tiket</p><p id="detail-code" class="font-mono font-bold text-rose-600">-</p></div>
                         <div><p class="text-[9px] uppercase font-bold text-slate-400">Status</p><span id="detail-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Jam Masuk</p><p id="detail-datetime" class="font-semibold text-slate-800">-</p></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Jam Keluar</p><p id="detail-outtime" class="font-semibold text-slate-500">-</p></div>
+                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Rencana Jam Tiba</p><p id="detail-datetime" class="font-semibold text-slate-800">-</p></div>
+                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Waktu Keluar</p><p id="detail-outtime" class="font-semibold text-slate-500">-</p></div>
                     </div>
                     <div><p class="text-[10px] uppercase font-bold text-slate-400">Nama Tamu</p><p id="detail-name" class="text-base font-bold text-slate-900">-</p></div>
                     <div><p class="text-[10px] uppercase font-bold text-slate-400">Instansi & Kategori</p><p id="detail-instansi" class="font-medium text-slate-700">-</p></div>
