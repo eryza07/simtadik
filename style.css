@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-body { 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
-    -webkit-font-smoothing: antialiased; 
-    background-color: #f8f9fc;
-}
+body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; background-color: #f8f9fc; }
 
 .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -19,34 +15,51 @@ body {
 .kelas-inner { overflow: hidden; }
 
 .fade-in { animation: smoothFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-@keyframes smoothFade { 
-    0% { opacity: 0; transform: translateY(15px) scale(0.98); } 
-    100% { opacity: 1; transform: translateY(0) scale(1); } 
-}
+@keyframes smoothFade { 0% { opacity: 0; transform: translateY(15px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 
-@keyframes iconBounce {
-    0% { transform: scale(1); }
-    40% { transform: scale(0.7) translateY(2px); }
-    70% { transform: scale(1.15) translateY(-2px); }
-    100% { transform: scale(1) translateY(0); }
-}
+@keyframes iconBounce { 0% { transform: scale(1); } 40% { transform: scale(0.7) translateY(2px); } 70% { transform: scale(1.15) translateY(-2px); } 100% { transform: scale(1) translateY(0); } }
 .animate-icon svg { animation: iconBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
 .sliding-indicator { transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
 
+/* =========================================
+   ANIMASI NOTIFIKASI TOAST (BARU)
+   ========================================= */
+.toast-enter { animation: toastSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.toast-leave { animation: toastFadeOut 0.5s ease-in forwards; }
+
+@keyframes toastSlideIn {
+    0% { transform: translateX(120%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes toastFadeOut {
+    0% { transform: translateX(0); opacity: 1; height: auto; }
+    100% { transform: translateX(120%); opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; }
+}
+
+/* Animasi Titik Merah (Pulse) */
+.red-dot-pulse { animation: redDotPulse 2s infinite; }
+@keyframes redDotPulse {
+    0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+}
+
+/* Transisi Form */
+input, select, textarea { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; transform: scale(1); position: relative; }
+input:focus, select:focus, textarea:focus { transform: scale(1.025); background-color: #ffffff !important; border-color: #e11d48 !important; box-shadow: 0 15px 30px -5px rgba(225, 29, 72, 0.15), 0 8px 10px -6px rgba(225, 29, 72, 0.1) !important; z-index: 10; outline: none !important; }
+
 button, .nav-tab-btn, .m-nav-btn, .m-admin-btn { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { transform: scale(0.95); }
+button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { transform: scale(0.94) !important; }
 
 .donut-ring { transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
 
 @media print {
-    .no-print, header, aside, nav, button, .app-view, #right-panel { display: none !important; }
+    .no-print, header, aside, nav, button, .app-view, #right-panel, #toast-container { display: none !important; }
     body, main { background: white !important; overflow: visible !important; height: auto !important; width: 100% !important; display: block !important; }
-    
     body.print-mode-ticket #view-success { display: flex !important; padding: 0 !important; align-items: flex-start; justify-content: flex-start; }
     body.print-mode-ticket .print-card { box-shadow: none !important; border: 3px solid #0f172a !important; margin: 0 !important; max-width: 300px !important; }
     body.print-mode-ticket #view-success h3, body.print-mode-ticket #view-success p.text-slate-500 { display: none !important; }
-    
     body.print-mode-report #print-report-container { display: block !important; width: 100%; color: black; }
     body.print-mode-report #print-report-container table { width: 100%; border-collapse: collapse; }
     body.print-mode-report #print-report-container th, body.print-mode-report #print-report-container td { border: 1px solid #000; padding: 8px; font-size: 12px; }
