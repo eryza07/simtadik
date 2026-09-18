@@ -1,7 +1,6 @@
 lucide.createIcons();
 
 const guestsDatabase = {};
-// Menggunakan Sistem Role (guest, admin, kepsek)
 let currentUserRole = 'guest'; 
 
 let chartOverview = null;
@@ -13,6 +12,72 @@ if (dateInput) { const today = new Date(); dateInput.value = today.toISOString()
 const timeInput = document.getElementById('guest-time');
 if (timeInput) { const now = new Date(); timeInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; }
 const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+// =========================================================
+// FITUR BARU: GENERATOR SUARA "TING!" (Tanpa MP3)
+// =========================================================
+function playTingSound() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    try {
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime); // Nada A5 (Tinggi & Renyah)
+        osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
+
+        gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+    } catch (e) { console.log("Audio API not supported or blocked"); }
+}
+
+// =========================================================
+// FITUR BARU: NOTIFIKASI TOAST POP-UP & RED DOT
+// =========================================================
+function showNotification(title, message) {
+    const container = document.getElementById('toast-container');
+    if(!container) return;
+
+    // Bunyikan suara
+    playTingSound();
+
+    // Buat elemen pop-up
+    const toast = document.createElement('div');
+    toast.className = 'bg-white p-4 rounded-2xl shadow-xl border border-rose-200 w-72 flex gap-3 items-start toast-enter';
+    toast.innerHTML = `
+        <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
+            <i data-lucide="bell-ring" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <h4 class="text-sm font-bold text-slate-900">${title}</h4>
+            <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">${message}</p>
+        </div>
+    `;
+    
+    container.appendChild(toast);
+    lucide.createIcons();
+
+    // Hapus otomatis setelah 5 detik
+    setTimeout(() => {
+        toast.classList.replace('toast-enter', 'toast-leave');
+        setTimeout(() => toast.remove(), 500); // Tunggu animasi fade out selesai
+    }, 5000);
+}
+
+// Menyalakan atau Mematikan Titik Merah di Sidebar Admin
+function setRedDotStatus(show) {
+    document.querySelectorAll('.nav-red-dot').forEach(dot => {
+        if (show) dot.classList.remove('hidden');
+        else dot.classList.add('hidden');
+    });
+}
 
 // =========================================================
 // ANIMASI IKON BOUNCE & SLIDING
@@ -45,6 +110,12 @@ window.addEventListener('resize', () => { setTimeout(updateIndicators, 100); });
 // =========================================================
 function switchAppView(targetId) {
     currentActiveView = targetId;
+
+    // JIKA ADMIN KLIK MENU BERANDA ATAU VERIFIKASI, MATIKAN TITIK MERAH
+    if (currentUserRole === 'admin' && (targetId === 'view-admin-overview' || targetId === 'view-admin-verify')) {
+        setRedDotStatus(false);
+    }
+
     document.querySelectorAll('.app-view').forEach(view => { view.classList.remove('block', 'flex'); view.classList.add('hidden'); });
     const target = document.getElementById(targetId);
     if (!target) return;
@@ -72,42 +143,22 @@ function bindNavEvents() {
 function renderMobileNav() {
     const nav = document.getElementById('mobile-bottom-nav');
     if (currentUserRole === 'guest') {
-        nav.innerHTML = `
-            <div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div>
-            <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-rose-600" data-target="view-guest-form"><i data-lucide="user-plus" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-bold">Buku Tamu</span></button>
-            <button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-track"><i data-lucide="search" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Cek Tiket</span></button>
-            <button class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="triggerIconAnimation(this); switchAppView('view-login')"><i data-lucide="lock" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Login TU</span></button>
-        `;
+        nav.innerHTML = `<div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div><button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-rose-600" data-target="view-guest-form"><i data-lucide="user-plus" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-bold">Buku Tamu</span></button><button class="m-nav-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-track"><i data-lucide="search" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Cek Tiket</span></button><button class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="triggerIconAnimation(this); switchAppView('view-login')"><i data-lucide="lock" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Login TU</span></button>`;
     } else if (currentUserRole === 'admin') {
-        nav.innerHTML = `
-            <div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div>
-            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-rose-600" data-target="view-admin-overview"><i data-lucide="home" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-bold">Beranda</span></button>
-            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Analitik</span></button>
-            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-verify"><i data-lucide="scan" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Verifikasi</span></button>
-            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Riwayat</span></button>
-            <button class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="triggerIconAnimation(this); processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Keluar</span></button>
-        `;
+        nav.innerHTML = `<div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div><button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-rose-600 relative" data-target="view-admin-overview"><div class="relative"><i data-lucide="home" class="w-5 h-5 mb-0.5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[9px] font-bold">Beranda</span></button><button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Analitik</span></button><button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400 relative" data-target="view-admin-verify"><div class="relative"><i data-lucide="scan" class="w-5 h-5 mb-0.5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[9px] font-medium">Verifikasi</span></button><button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Riwayat</span></button><button class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="triggerIconAnimation(this); processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Keluar</span></button>`;
     } else if (currentUserRole === 'kepsek') {
-        nav.innerHTML = `
-            <div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-emerald-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div>
-            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-emerald-600" data-target="view-kepsek-overview"><i data-lucide="monitor" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-bold">Layar Pimpinan</span></button>
-            <button class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="triggerIconAnimation(this); processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Keluar</span></button>
-        `;
+        nav.innerHTML = `<div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-emerald-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div><button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-emerald-600" data-target="view-kepsek-overview"><i data-lucide="monitor" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-bold">Layar Pimpinan</span></button><button class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="triggerIconAnimation(this); processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Keluar</span></button>`;
     }
     lucide.createIcons(); bindNavEvents();
 }
 renderMobileNav(); setTimeout(updateIndicators, 100);
 
 // =========================================================
-// GRAFIK KATEGORI TAMU (CHART.JS) 
+// GRAFIK KATEGORI TAMU (CHART.JS)
 // =========================================================
 function createChartConfig() {
     return {
-        type: 'bar',
-        data: {
-            labels: ['Siswa', 'Dinas', 'Guru', 'Umum'],
-            datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }]
-        },
+        type: 'bar', data: { labels: ['Siswa', 'Dinas', 'Guru', 'Umum'], datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }, animation: { duration: 1000, easing: 'easeOutQuart' } }
     };
 }
@@ -124,54 +175,41 @@ function updateChartData(siswa, dinas, guru, umum) {
 }
 
 // =========================================================
-// LOGIN MULTI-ROLE LENGKAP (ADMIN TU & KEPSEK)
+// LOGIN AMAN
 // =========================================================
 document.getElementById('login-form')?.addEventListener('submit', function(e) {
     e.preventDefault(); 
     
     const userVal = document.getElementById('username-input').value.trim().toLowerCase();
+    const passVal = document.getElementById('password-input').value.trim();
     
-    document.getElementById('btn-do-login').disabled = true;
-    document.getElementById('login-text').classList.add('hidden');
-    document.getElementById('login-spinner').classList.remove('hidden');
+    if(!userVal || !passVal) { alert("Username dan Password tidak boleh kosong!"); return; }
+
+    let roleValid = null;
+    if (userVal === 'admin' && passVal === 'admin') roleValid = 'admin';
+    else if (userVal === 'kepsek' && passVal === 'password') roleValid = 'kepsek';
+
+    if (!roleValid) { alert("Akses Ditolak: Username atau Password salah!"); return; }
+    
+    document.getElementById('btn-do-login').disabled = true; document.getElementById('login-text').classList.add('hidden'); document.getElementById('login-spinner').classList.remove('hidden');
 
     setTimeout(() => {
-        document.getElementById('btn-do-login').disabled = false;
-        document.getElementById('login-text').classList.remove('hidden');
-        document.getElementById('login-spinner').classList.add('hidden');
+        document.getElementById('btn-do-login').disabled = false; document.getElementById('login-text').classList.remove('hidden'); document.getElementById('login-spinner').classList.add('hidden');
         
-        // HIDE SEMUA MENU DULU
-        document.getElementById('guest-nav-group').classList.add('hidden');
-        document.getElementById('admin-nav-group').classList.add('hidden');
-        document.getElementById('kepsek-nav-group').classList.add('hidden');
+        document.getElementById('guest-nav-group').classList.add('hidden'); document.getElementById('admin-nav-group').classList.add('hidden'); document.getElementById('kepsek-nav-group').classList.add('hidden');
 
-        // LOGIKA ROLE
-        if(userVal === 'kepsek') {
-            currentUserRole = 'kepsek';
-            document.getElementById('kepsek-nav-group').classList.remove('hidden');
-            document.getElementById('kepsek-nav-group').classList.add('flex');
-            switchAppView('view-kepsek-overview');
-        } else {
-            currentUserRole = 'admin'; // Default Admin TU
-            document.getElementById('admin-nav-group').classList.remove('hidden'); 
-            document.getElementById('admin-nav-group').classList.add('flex');
-            switchAppView('view-admin-overview'); 
+        if(roleValid === 'kepsek') {
+            currentUserRole = 'kepsek'; document.getElementById('kepsek-nav-group').classList.remove('hidden'); document.getElementById('kepsek-nav-group').classList.add('flex'); switchAppView('view-kepsek-overview');
+        } else if (roleValid === 'admin') {
+            currentUserRole = 'admin'; document.getElementById('admin-nav-group').classList.remove('hidden'); document.getElementById('admin-nav-group').classList.add('flex'); switchAppView('view-admin-overview'); 
         }
         
-        // GANTI TOMBOL KIRI BAWAH JADI LOGOUT
         const btnAction = document.getElementById('btn-sidebar-action');
         btnAction.classList.replace('bg-rose-500', 'bg-slate-800'); btnAction.classList.replace('hover:bg-rose-600', 'hover:bg-slate-700'); btnAction.classList.replace('shadow-rose-500/25', 'shadow-slate-800/25');
         document.getElementById('sidebar-icon').setAttribute('data-lucide', 'log-out'); document.getElementById('sidebar-text').innerText = "Keluar";
         
-        lucide.createIcons();
-        renderMobileNav(); 
-        refreshDashboardMetrics();
+        lucide.createIcons(); renderMobileNav(); refreshDashboardMetrics(); document.getElementById('login-form').reset();
     }, 800);
-});
-
-document.getElementById('btn-sidebar-action')?.addEventListener('click', function() {
-    triggerIconAnimation(this);
-    if(currentUserRole === 'guest') switchAppView('view-login'); else processLogout();
 });
 
 window.processLogout = function() {
@@ -183,9 +221,7 @@ window.processLogout = function() {
     const btnAction = document.getElementById('btn-sidebar-action');
     btnAction.classList.replace('bg-slate-800', 'bg-rose-500'); btnAction.classList.replace('hover:bg-slate-700', 'hover:bg-rose-600'); btnAction.classList.replace('shadow-slate-800/25', 'shadow-rose-500/25');
     document.getElementById('sidebar-icon').setAttribute('data-lucide', 'lock'); document.getElementById('sidebar-text').innerText = "Login";
-    lucide.createIcons();
-
-    renderMobileNav(); switchAppView('view-guest-form');
+    lucide.createIcons(); renderMobileNav(); switchAppView('view-guest-form'); setRedDotStatus(false);
 }
 
 // =========================================================
@@ -196,15 +232,10 @@ document.getElementById('kategori-select')?.addEventListener('change', function 
     if (this.value === 'siswa') container.classList.add('is-active'); else container.classList.remove('is-active');
 });
 
-const cameraVideo = document.getElementById('camera-video');
-const cameraCanvas = document.getElementById('camera-canvas');
-const cameraResult = document.getElementById('camera-result');
-let videoStream = null;
+const cameraVideo = document.getElementById('camera-video'); const cameraCanvas = document.getElementById('camera-canvas'); const cameraResult = document.getElementById('camera-result'); let videoStream = null;
 
 async function startCamera() {
-    try {
-        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        cameraVideo.srcObject = videoStream; document.getElementById('camera-idle').classList.add('hidden'); cameraVideo.classList.remove('hidden'); document.getElementById('btn-capture').classList.remove('hidden');
+    try { videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); cameraVideo.srcObject = videoStream; document.getElementById('camera-idle').classList.add('hidden'); cameraVideo.classList.remove('hidden'); document.getElementById('btn-capture').classList.remove('hidden');
     } catch (err) { alert("Kamera diblokir oleh browser."); }
 }
 function takeSnapshot() {
@@ -218,7 +249,7 @@ function retakePhoto() { cameraResult.classList.add('hidden'); document.getEleme
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
-// MANAJEMEN STATISTIK & REFRESH DATA GLOBAL
+// REFRESH DASHBOARD
 // =========================================================
 function refreshDashboardMetrics() {
     let menunggu = 0, bertemu = 0, selesai = 0, ditolak = 0;
@@ -226,11 +257,7 @@ function refreshDashboardMetrics() {
 
     for (const code in guestsDatabase) {
         const item = guestsDatabase[code];
-        if (item.status === 'menunggu') menunggu++;
-        else if (item.status === 'bertemu') bertemu++;
-        else if (item.status === 'selesai') selesai++;
-        else if (item.status === 'ditolak') ditolak++;
-
+        if (item.status === 'menunggu') menunggu++; else if (item.status === 'bertemu') bertemu++; else if (item.status === 'selesai') selesai++; else if (item.status === 'ditolak') ditolak++;
         const k = item.kategori.toLowerCase();
         if (k.includes('siswa')) siswa++; else if (k.includes('dinas')) dinas++; else if (k.includes('guru')) guru++; else umum++;
     }
@@ -238,120 +265,69 @@ function refreshDashboardMetrics() {
     const totalTamu = menunggu + bertemu + selesai;
     updateChartData(siswa, dinas, guru, umum); 
 
-    // Update Beranda TU
     if(document.getElementById('stat-bertemu')) {
-        document.getElementById('stat-bertemu').innerText = bertemu;
-        document.getElementById('stat-menunggu-ratio').innerText = menunggu;
-        document.getElementById('stat-checkout-count').innerText = selesai;
-        
+        document.getElementById('stat-bertemu').innerText = bertemu; document.getElementById('stat-menunggu-ratio').innerText = menunggu; document.getElementById('stat-checkout-count').innerText = selesai;
         const roomBadge = document.getElementById('room-status-badge');
         if (bertemu > 0) { roomBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-rose-100 text-rose-700"; roomBadge.innerText = "Terisi"; } 
         else { roomBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600"; roomBadge.innerText = "Kosong"; }
-        
         renderActiveGuestsGrid();
     }
 
-    // Update Analitik
     if(document.getElementById('stat-total-tamu')) {
         document.getElementById('stat-total-tamu').innerText = totalTamu;
         const donutPct = Math.min(100, Math.round((totalTamu / 20) * 100)); 
         const donutRing = document.getElementById('donut-progress');
-        if (donutRing) donutRing.setAttribute('stroke-dasharray', `${donutPct}, 100`);
-        document.getElementById('donut-pct').innerText = `${donutPct}%`;
+        if (donutRing) donutRing.setAttribute('stroke-dasharray', `${donutPct}, 100`); document.getElementById('donut-pct').innerText = `${donutPct}%`;
     }
 
-    renderScheduleAnalytics();
-    renderKepsekDashboard(); // Update Layar Kepsek
+    renderScheduleAnalytics(); renderKepsekDashboard();
 }
 
-// Tampilan Tabel di Beranda TU
 function renderActiveGuestsGrid() {
-    const grid = document.getElementById('active-guests-grid');
-    const emptyState = document.getElementById('empty-active-state');
-    if(!grid) return;
-    grid.innerHTML = "";
-
+    const grid = document.getElementById('active-guests-grid'); const emptyState = document.getElementById('empty-active-state');
+    if(!grid) return; grid.innerHTML = "";
     const activeList = Object.keys(guestsDatabase).map(code => ({ code, ...guestsDatabase[code] })).filter(g => g.status === 'menunggu' || g.status === 'bertemu').reverse();
     if (activeList.length === 0) { emptyState.classList.remove('hidden'); grid.classList.add('hidden'); return; }
-
     emptyState.classList.add('hidden'); grid.classList.remove('hidden');
 
     activeList.forEach(guest => {
         const isBertemu = guest.status === 'bertemu';
         const card = document.createElement('div');
         card.className = "bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between gap-3 hover:border-slate-300 transition fade-in";
-        card.innerHTML = `
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0"><img src="${guest.photo}" alt="Foto" class="w-full h-full object-cover"></div>
-                <div class="min-w-0"><p class="text-[9px] font-mono font-bold text-slate-400 truncate">${guest.code}</p><h5 class="font-bold text-slate-900 text-sm truncate">${guest.name}</h5><p class="text-[11px] text-slate-400 truncate">${guest.instansi}</p></div>
-            </div>
-            <div class="flex flex-col items-end gap-2 shrink-0">
-                <span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${isBertemu ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${isBertemu ? 'Di Ruangan' : 'Menunggu'}</span>
-                <button onclick="openDetailModal('${guest.code}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm"><i data-lucide="eye" class="w-3 h-3"></i></button>
-            </div>
-        `;
+        card.innerHTML = `<div class="flex items-center gap-3 min-w-0"><div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0"><img src="${guest.photo}" alt="Foto" class="w-full h-full object-cover"></div><div class="min-w-0"><p class="text-[9px] font-mono font-bold text-slate-400 truncate">${guest.code}</p><h5 class="font-bold text-slate-900 text-sm truncate">${guest.name}</h5><p class="text-[11px] text-slate-400 truncate">${guest.instansi}</p></div></div><div class="flex flex-col items-end gap-2 shrink-0"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${isBertemu ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${isBertemu ? 'Di Ruangan' : 'Menunggu'}</span><button onclick="openDetailModal('${guest.code}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm"><i data-lucide="eye" class="w-3 h-3"></i></button></div>`;
         grid.appendChild(card);
     });
     lucide.createIcons();
 }
 
-// Tampilan Dashboard VIP Khusus Kepala Sekolah
 function renderKepsekDashboard() {
-    const grid = document.getElementById('kepsek-guests-grid');
-    const emptyState = document.getElementById('kepsek-empty-state');
-    if(!grid) return;
-    grid.innerHTML = "";
-
+    const grid = document.getElementById('kepsek-guests-grid'); const emptyState = document.getElementById('kepsek-empty-state');
+    if(!grid) return; grid.innerHTML = "";
     const activeList = Object.keys(guestsDatabase).map(code => ({ code, ...guestsDatabase[code] })).filter(g => g.status === 'menunggu' || g.status === 'bertemu').reverse();
     if (activeList.length === 0) { emptyState.classList.remove('hidden'); grid.classList.add('hidden'); return; }
-
     emptyState.classList.add('hidden'); grid.classList.remove('hidden');
 
     activeList.forEach(guest => {
         const isBertemu = guest.status === 'bertemu';
         const card = document.createElement('div');
         card.className = `p-4 md:p-6 rounded-3xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 transition fade-in ${isBertemu ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-200/80 hover:border-slate-300'}`;
-        card.innerHTML = `
-            <div class="flex items-center gap-4 min-w-0 w-full md:w-auto">
-                <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden bg-slate-100 border-2 ${isBertemu ? 'border-emerald-300' : 'border-slate-200'} shrink-0"><img src="${guest.photo}" class="w-full h-full object-cover"></div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-[10px] font-bold ${isBertemu ? 'text-emerald-600' : 'text-slate-400'} tracking-wider uppercase mb-0.5">${isBertemu ? 'Sedang Bertemu Anda' : 'Menunggu Panggilan'}</p>
-                    <h5 class="font-black text-slate-900 text-base md:text-lg truncate">${guest.name}</h5>
-                    <p class="text-xs text-slate-500 truncate">${guest.instansi} - ${guest.tujuan}</p>
-                </div>
-            </div>
-            <div class="flex gap-2 shrink-0 w-full md:w-auto justify-end">
-                ${!isBertemu ? `<button onclick="changeGuestStatus('${guest.code}', 'bertemu')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition active:scale-95 shadow-lg shadow-blue-500/25 flex-1 md:flex-none">Panggil Masuk</button>` : ''}
-                ${isBertemu ? `<button onclick="changeGuestStatus('${guest.code}', 'selesai')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition active:scale-95 shadow-lg shadow-emerald-500/25 flex-1 md:flex-none"><i data-lucide="check-check" class="w-4 h-4 inline mr-1"></i>Selesaikan Pertemuan</button>` : ''}
-            </div>
-        `;
+        card.innerHTML = `<div class="flex items-center gap-4 min-w-0 w-full md:w-auto"><div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden bg-slate-100 border-2 ${isBertemu ? 'border-emerald-300' : 'border-slate-200'} shrink-0"><img src="${guest.photo}" class="w-full h-full object-cover"></div><div class="min-w-0 flex-1"><p class="text-[10px] font-bold ${isBertemu ? 'text-emerald-600' : 'text-slate-400'} tracking-wider uppercase mb-0.5">${isBertemu ? 'Sedang Bertemu Anda' : 'Menunggu Panggilan'}</p><h5 class="font-black text-slate-900 text-base md:text-lg truncate">${guest.name}</h5><p class="text-xs text-slate-500 truncate">${guest.instansi} - ${guest.tujuan}</p></div></div><div class="flex gap-2 shrink-0 w-full md:w-auto justify-end">${!isBertemu ? `<button onclick="changeGuestStatus('${guest.code}', 'bertemu')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition active:scale-95 shadow-lg shadow-blue-500/25 flex-1 md:flex-none">Panggil Masuk</button>` : ''}${isBertemu ? `<button onclick="changeGuestStatus('${guest.code}', 'selesai')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition active:scale-95 shadow-lg shadow-emerald-500/25 flex-1 md:flex-none"><i data-lucide="check-check" class="w-4 h-4 inline mr-1"></i>Selesaikan Pertemuan</button>` : ''}</div>`;
         grid.appendChild(card);
     });
     lucide.createIcons();
 }
 
 function renderScheduleAnalytics() {
-    const tbody = document.getElementById('analytics-schedule-body');
-    if (!tbody) return;
-    tbody.innerHTML = '';
+    const tbody = document.getElementById('analytics-schedule-body'); if (!tbody) return; tbody.innerHTML = '';
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => { const dateA = new Date(a.date + 'T' + a.time.replace(' WIB', '')); const dateB = new Date(b.date + 'T' + b.time.replace(' WIB', '')); return dateB - dateA; });
     if (sortedGuests.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 text-xs">Belum ada data jadwal kunjungan.</td></tr>`; return; }
 
     sortedGuests.forEach(data => {
-        const dateObj = new Date(data.date);
-        const hari = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
-        const tgl = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-        
-        let badgeClass = "bg-amber-100 text-amber-700";
-        if (data.status === 'bertemu') badgeClass = "bg-blue-100 text-blue-700";
-        if (data.status === 'selesai') badgeClass = "bg-emerald-100 text-emerald-700";
-        if (data.status === 'ditolak') badgeClass = "bg-rose-100 text-rose-700";
+        const dateObj = new Date(data.date); const hari = dateObj.toLocaleDateString('id-ID', { weekday: 'long' }); const tgl = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        let badgeClass = "bg-amber-100 text-amber-700"; if (data.status === 'bertemu') badgeClass = "bg-blue-100 text-blue-700"; if (data.status === 'selesai') badgeClass = "bg-emerald-100 text-emerald-700"; if (data.status === 'ditolak') badgeClass = "bg-rose-100 text-rose-700";
+        const jamKeluar = data.outTime !== '-' ? data.outTime : 'Selesai'; const rentangWaktu = `${data.planTime} - ${jamKeluar}`;
 
-        const jamKeluar = data.outTime !== '-' ? data.outTime : 'Selesai';
-        const rentangWaktu = `${data.planTime} - ${jamKeluar}`;
-
-        const tr = document.createElement('tr');
-        tr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors";
+        const tr = document.createElement('tr'); tr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors";
         tr.innerHTML = `<td class="px-4 py-3"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-[10px] uppercase border border-slate-200 shadow-sm">${hari.substring(0,3)}</div><div><p class="font-bold text-slate-900">${hari}</p><p class="text-[10px] text-slate-500">${tgl}</p></div></div></td><td class="px-4 py-3 font-mono text-rose-600 font-bold text-xs text-center"><div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 inline-block">${rentangWaktu}</div></td><td class="px-4 py-3"><p class="font-bold text-slate-900">${data.name}</p><p class="text-[10px] text-slate-500">${data.instansi} (${data.kategori})</p></td><td class="px-4 py-3 text-xs text-slate-600 max-w-[150px] truncate" title="${data.tujuan}">${data.tujuan}</td><td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[9px] font-bold ${badgeClass}">${data.status.toUpperCase()}</span></td>`;
         tbody.appendChild(tr);
     });
@@ -362,33 +338,30 @@ function renderScheduleAnalytics() {
 // =========================================================
 document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
+
     const guestName = document.getElementById('guest-name').value;
     const instansi = document.getElementById('guest-instansi').value;
     const guestDate = document.getElementById('guest-date').value;
     const guestTimeInput = document.getElementById('guest-time').value; 
     const planTimeWIB = guestTimeInput ? guestTimeInput + ' WIB' : '-';
-
     const kategoriSel = document.getElementById('kategori-select');
     const kategori = kategoriSel.options[kategoriSel.selectedIndex].text;
     let kelas = document.getElementById('input-kelas').value;
     if (kelas && kategoriSel.value === 'siswa') kelas = " - " + kelas; else kelas = "";
     const tujuan = document.getElementById('guest-tujuan').value;
-
     const photoSrc = cameraResult.src || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" fill="%2394a3b8">Tanpa Foto</text></svg>';
     const dateObj = new Date(guestDate);
     const displayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
 
-    // CEK BENTROK LOGIKA 2 JAM
+    // Cek Bentrok
     const newTimeParts = guestTimeInput.split(':');
     const newTotalMins = parseInt(newTimeParts[0]) * 60 + parseInt(newTimeParts[1]);
-
     let conflictData = null;
     for (const code in guestsDatabase) {
         const data = guestsDatabase[code];
         if (data.date === guestDate && data.status !== 'selesai' && data.status !== 'ditolak') {
             const existParts = data.planTime.replace(' WIB','').split(':');
             const existTotalMins = parseInt(existParts[0]) * 60 + parseInt(existParts[1]);
-            
             if (Math.abs(newTotalMins - existTotalMins) < 120) {
                 let nextMins = existTotalMins + 120;
                 let nH = Math.floor(nextMins / 60); let nM = nextMins % 60;
@@ -400,13 +373,8 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     }
 
     if (conflictData) {
-        document.getElementById('conflict-date-text').innerText = displayDate;
-        document.getElementById('conflict-time-text').innerText = conflictData.existTime;
-        document.getElementById('conflict-name-text').innerText = conflictData.name;
-        document.getElementById('conflict-suggest-time').innerText = conflictData.suggestTime + ' WIB';
-        document.getElementById('btn-accept-suggestion').dataset.suggestTime = conflictData.suggestTime;
-        document.getElementById('conflict-modal').classList.remove('hidden');
-        setTimeout(() => { document.getElementById('conflict-card').classList.replace('scale-95', 'scale-100'); document.getElementById('conflict-card').classList.replace('opacity-0', 'opacity-100'); }, 10);
+        document.getElementById('conflict-date-text').innerText = displayDate; document.getElementById('conflict-time-text').innerText = conflictData.existTime; document.getElementById('conflict-name-text').innerText = conflictData.name; document.getElementById('conflict-suggest-time').innerText = conflictData.suggestTime + ' WIB'; document.getElementById('btn-accept-suggestion').dataset.suggestTime = conflictData.suggestTime;
+        document.getElementById('conflict-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('conflict-card').classList.replace('scale-95', 'scale-100'); document.getElementById('conflict-card').classList.replace('opacity-0', 'opacity-100'); }, 10);
         return;
     }
 
@@ -420,13 +388,18 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     submitBtn.disabled = true; document.getElementById('submit-text').innerText = "Memproses Tiket..."; document.getElementById('submit-icon').classList.add('hidden'); document.getElementById('submit-spinner').classList.remove('hidden');
 
     setTimeout(() => {
-        document.getElementById('ticket-name').innerText = guestName;
-        document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`;
-        document.getElementById('ticket-code').innerText = code;
+        document.getElementById('ticket-name').innerText = guestName; document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`; document.getElementById('ticket-code').innerText = code;
         document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
 
         switchAppView('view-success');
-        appendHistoryRow(code); refreshDashboardMetrics();
+        appendHistoryRow(code);
+        refreshDashboardMetrics();
+
+        // MUNCULKAN NOTIFIKASI TOAST + SUARA JIKA SEDANG TIDAK DI BERANDA ADMIN
+        if (currentUserRole !== 'admin') {
+            setRedDotStatus(true); // Nyalakan titik merah
+        }
+        showNotification("Ada Tamu Baru Masuk!", `${guestName} dari ${instansi} sedang menunggu verifikasi Anda.`);
 
         submitBtn.disabled = false; document.getElementById('submit-text').innerText = "Kirim & Buat Tiket Kunjungan"; document.getElementById('submit-icon').classList.remove('hidden'); document.getElementById('submit-spinner').classList.add('hidden');
         document.getElementById('guest-form').reset(); document.getElementById('guest-date').value = new Date().toISOString().split('T')[0]; document.getElementById('guest-time').value = `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`; document.getElementById('kelas-container').classList.remove('is-active');
@@ -441,10 +414,7 @@ document.getElementById('btn-accept-suggestion')?.addEventListener('click', func
     document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0');
     setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('btn-submit-guest').click(); }, 300);
 });
-document.getElementById('btn-change-schedule')?.addEventListener('click', () => {
-    document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0');
-    setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300);
-});
+document.getElementById('btn-change-schedule')?.addEventListener('click', () => { document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300); });
 document.getElementById('btn-next-guest')?.addEventListener('click', () => { switchAppView('view-guest-form'); });
 
 // =========================================================
@@ -469,8 +439,6 @@ window.changeGuestStatus = function(code, newStatus) {
     if (newStatus === 'selesai' || newStatus === 'ditolak') {
         const o = new Date();
         data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')} WIB` : 'Ditolak';
-        const ovRow = document.getElementById(`ov-row-${code}`);
-        if(ovRow) { ovRow.classList.add('opacity-0', 'scale-95'); setTimeout(() => ovRow.remove(), 300); }
     }
 
     const histBadge = document.getElementById(`hist-badge-${code}`);
@@ -502,22 +470,17 @@ window.openDetailModal = function (code) {
     document.getElementById('detail-photo').src = data.photo; document.getElementById('detail-code').innerText = code; document.getElementById('detail-datetime').innerText = `${data.displayDate} - ${data.planTime}`; document.getElementById('detail-outtime').innerText = data.outTime; document.getElementById('detail-name').innerText = data.name; document.getElementById('detail-instansi').innerText = `${data.instansi} (${data.kategori})`; document.getElementById('detail-tujuan').innerText = data.tujuan;
 
     updateModalBadgeUI(data.status);
-    const actionFooter = document.getElementById('modal-action-footer');
-    const btnBertemu = document.getElementById('btn-mdl-bertemu');
+    const actionFooter = document.getElementById('modal-action-footer'); const btnBertemu = document.getElementById('btn-mdl-bertemu');
     
-    // Modal Admin TU
     if (data.status === 'selesai' || data.status === 'ditolak' || data.status === 'menunggu') actionFooter.classList.add('hidden'); 
     else { actionFooter.classList.remove('hidden'); if(data.status === 'bertemu') btnBertemu.classList.add('hidden'); else btnBertemu.classList.remove('hidden'); }
 
-    const modal = document.getElementById('detail-modal');
-    const card = document.getElementById('detail-card');
-    modal.classList.remove('hidden');
-    setTimeout(() => { card.classList.replace('scale-95', 'scale-100'); card.classList.replace('opacity-0', 'opacity-100'); }, 10);
+    const modal = document.getElementById('detail-modal'); const card = document.getElementById('detail-card');
+    modal.classList.remove('hidden'); setTimeout(() => { card.classList.replace('scale-95', 'scale-100'); card.classList.replace('opacity-0', 'opacity-100'); }, 10);
 };
 
 window.closeDetailModal = function () {
-    const modal = document.getElementById('detail-modal');
-    const card = document.getElementById('detail-card');
+    const modal = document.getElementById('detail-modal'); const card = document.getElementById('detail-card');
     card.classList.replace('scale-100', 'scale-95'); card.classList.replace('opacity-100', 'opacity-0');
     setTimeout(() => { modal.classList.add('hidden'); activeDetailCode = null; }, 250);
 };
@@ -539,8 +502,7 @@ document.getElementById('track-input')?.addEventListener('input', (e) => e.targe
 document.getElementById('btn-do-track')?.addEventListener('click', () => {
     const code = document.getElementById('track-input').value.trim().toUpperCase();
     if (!code) return;
-    const resContainer = document.getElementById('track-result-container');
-    resContainer.classList.remove('hidden');
+    const resContainer = document.getElementById('track-result-container'); resContainer.classList.remove('hidden');
     if (guestsDatabase[code]) {
         const data = guestsDatabase[code];
         document.getElementById('track-not-found').classList.add('hidden'); document.getElementById('track-found').classList.remove('hidden');
@@ -560,33 +522,27 @@ let codeToVerify = null;
 function executeVerification(code) {
     if (!code) return;
     const data = guestsDatabase[code];
-    const notFound = document.getElementById('verify-not-found');
-    const resultCard = document.getElementById('verify-result-card');
+    const notFound = document.getElementById('verify-not-found'); const resultCard = document.getElementById('verify-result-card');
 
     if (data) {
-        codeToVerify = code;
-        notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
-
+        codeToVerify = code; notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
         document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
 
         const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
 
-        if (data.status === 'menunggu') {
-            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan";
-            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
+        if (data.status === 'menunggu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
         } else {
             if (data.status === 'bertemu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu"; msgStatus.innerText = "Sedang Bertemu"; msgStatus.className = "text-blue-600"; } 
             else if (data.status === 'selesai') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; msgStatus.innerText = "Selesai"; msgStatus.className = "text-emerald-600"; } 
             else if (data.status === 'ditolak') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700"; badge.innerText = "Ditolak"; msgStatus.innerText = "Ditolak"; msgStatus.className = "text-rose-600"; }
             footer.classList.add('hidden'); footer.classList.remove('flex'); msgDone.classList.remove('hidden');
         }
-    } else {
-        resultCard.classList.add('hidden'); notFound.classList.remove('hidden');
-    }
+    } else { resultCard.classList.add('hidden'); notFound.classList.remove('hidden'); }
 }
 
 document.getElementById('admin-verify-input')?.addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-admin-verify').click(); } });
 document.getElementById('btn-admin-verify')?.addEventListener('click', () => { executeVerification(document.getElementById('admin-verify-input').value.trim().toUpperCase()); });
+
 document.getElementById('quick-verify-input')?.addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-quick-verify-go').click(); } });
 document.getElementById('btn-quick-verify-go')?.addEventListener('click', () => { const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code); });
 
@@ -594,55 +550,30 @@ document.getElementById('btn-verify-approve')?.addEventListener('click', () => {
 document.getElementById('btn-verify-reject')?.addEventListener('click', () => { if (codeToVerify) { changeGuestStatus(codeToVerify, 'ditolak'); executeVerification(codeToVerify); } });
 
 // =========================================================
-// FITUR BARU 1: EXPORT CSV (EXCEL)
+// EXPORT CSV & PDF
 // =========================================================
 window.exportToCSV = function() {
     let csv = "Kode Tiket,Tanggal Pertemuan,Rencana Jam Tiba,Nama Lengkap,Asal Instansi,Kategori,Keperluan,Status Akhir,Waktu Form Masuk,Waktu Keluar\n";
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
-    
     sortedGuests.forEach(d => {
         const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === d);
-        // Hapus tanda kutip & koma berlebih agar tidak merusak format Excel
-        const name = `"${d.name.replace(/"/g, '""')}"`;
-        const instansi = `"${d.instansi.replace(/"/g, '""')}"`;
-        const tujuan = `"${d.tujuan.replace(/"/g, '""')}"`;
-        
+        const name = `"${d.name.replace(/"/g, '""')}"`; const instansi = `"${d.instansi.replace(/"/g, '""')}"`; const tujuan = `"${d.tujuan.replace(/"/g, '""')}"`;
         csv += `${code},${d.displayDate},${d.planTime},${name},${instansi},${d.kategori},${tujuan},${d.status.toUpperCase()},${d.time},${d.outTime}\n`;
     });
-
-    // Menggunakan Blob dengan BOM untuk dukungan UTF-8 di Excel
-    const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Rekap_Tamu_SMAN1_${new Date().getTime()}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url); link.setAttribute("download", `Rekap_Tamu_SMAN1_${new Date().getTime()}.csv`); link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
-// =========================================================
-// FITUR BARU 2: GENERATE LAPORAN PDF
-// =========================================================
 window.generateReportPDF = function() {
-    const tbody = document.getElementById('print-report-tbody');
-    tbody.innerHTML = '';
-    
-    let no = 1;
-    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
-
+    const tbody = document.getElementById('print-report-tbody'); tbody.innerHTML = '';
+    let no = 1; const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
     sortedGuests.forEach(data => {
-        let statText = data.status.toUpperCase();
-        if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI";
-
+        let statText = data.status.toUpperCase(); if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI";
         const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data);
         const tr = document.createElement('tr');
         tr.innerHTML = `<td class="border border-slate-900 p-2 text-center">${no++}</td><td class="border border-slate-900 p-2 font-mono">${code}</td><td class="border border-slate-900 p-2">${data.displayDate}</td><td class="border border-slate-900 p-2 font-bold">${data.name}</td><td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td><td class="border border-slate-900 p-2">${data.tujuan}</td><td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td><td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>`;
         tbody.appendChild(tr);
     });
-    
-    document.body.classList.remove('print-mode-ticket'); document.body.classList.add('print-mode-report');
-    document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
+    document.body.classList.remove('print-mode-ticket'); document.body.classList.add('print-mode-report'); document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
     setTimeout(() => { window.print(); }, 300);
 }
