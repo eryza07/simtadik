@@ -19,47 +19,35 @@ body {
 .kelas-wrapper.is-active { grid-template-rows: 1fr; }
 .kelas-inner { overflow: hidden; }
 
-/* Animasi Beralih Tab Super Mulus */
-.fade-in { 
-    animation: smoothFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-}
+/* Animasi Beralih Layar (Super Mulus) */
+.fade-in { animation: smoothFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes smoothFade { 
     0% { opacity: 0; transform: translateY(15px) scale(0.98); } 
     100% { opacity: 1; transform: translateY(0) scale(1); } 
 }
 
-/* Transisi Tombol & Hover Default */
-button, .nav-tab-btn, .m-nav-btn, .m-admin-btn {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { 
-    transform: scale(0.95); 
-}
-
-/* =========================================
-   ANIMASI IKON SAAT DI-KLIK (Micro-interactions)
-   ========================================= */
-@keyframes iconPop {
+/* Animasi Bouncing Ikon saat diklik */
+@keyframes iconBounce {
     0% { transform: scale(1); }
-    40% { transform: scale(0.75) translateY(2px); }
+    40% { transform: scale(0.7) translateY(2px); }
     70% { transform: scale(1.15) translateY(-2px); }
     100% { transform: scale(1) translateY(0); }
 }
+.animate-icon svg { animation: iconBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-.animate-icon svg {
-    animation: iconPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Animasi Sliding Indicator (Garis Ajaib) */
+.sliding-indicator {
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Donut Chart Animation */
-.donut-ring {
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-}
+/* Transisi Tombol Dasar */
+button, .nav-tab-btn, .m-nav-btn, .m-admin-btn { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { transform: scale(0.95); }
 
-/* =========================================
-   MODE CETAK (PRINT & SAVE TO PDF)
-   ========================================= */
+/* Chart Animation */
+.donut-ring { transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
+
+/* Mode Cetak PDF Laporan */
 @media print {
     .no-print, header, aside, nav, button, .app-view, #right-panel { display: none !important; }
     body, main { background: white !important; overflow: visible !important; height: auto !important; width: 100% !important; display: block !important; }
