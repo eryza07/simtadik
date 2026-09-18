@@ -12,27 +12,40 @@
 </head>
 <body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800">
 
+    <!-- WADAH NOTIFIKASI TOAST (BARU) -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
+
     <!-- SIDEBAR KIRI -->
     <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
         <nav class="flex flex-col items-center gap-6 w-full relative" id="desktop-sidebar-nav">
             <div id="sliding-indicator" class="sliding-indicator absolute right-0 w-[3px] bg-rose-600 rounded-l-full opacity-0 pointer-events-none z-10" style="top: 0; height: 0;"></div>
             <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 overflow-hidden p-1"><img src="logo.png" alt="Logo" class="w-full h-full object-contain"></div>
 
-            <!-- Menu Tamu -->
             <div id="guest-nav-group" class="w-full flex flex-col gap-2">
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 group transition" data-target="view-guest-form"><i data-lucide="user-plus" class="w-5 h-5"></i><span class="text-[10px] font-bold tracking-tight mt-0.5 text-center leading-tight">Buku<br>Tamu</span></button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-track"><i data-lucide="search" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Cek<br>Tiket</span></button>
             </div>
 
-            <!-- Menu Admin TU -->
+            <!-- MENU ADMIN (DENGAN TITIK MERAH NOTIFIKASI) -->
             <div id="admin-nav-group" class="w-full hidden flex-col gap-2">
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-overview"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Beranda</span></button>
+                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-overview">
+                    <div class="relative">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span>
+                    </div>
+                    <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Beranda</span>
+                </button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Analitik</span></button>
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-verify"><i data-lucide="scan" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Verifikasi</span></button>
+                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-verify">
+                    <div class="relative">
+                        <i data-lucide="scan" class="w-5 h-5"></i>
+                        <span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span>
+                    </div>
+                    <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Verifikasi</span>
+                </button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Riwayat</span></button>
             </div>
 
-            <!-- Menu Khusus KEPALA SEKOLAH -->
             <div id="kepsek-nav-group" class="w-full hidden flex-col gap-2">
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 group transition" data-target="view-kepsek-overview"><i data-lucide="monitor" class="w-5 h-5"></i><span class="text-[10px] font-bold tracking-tight mt-0.5 text-center leading-tight">Layar<br>Pimpinan</span></button>
             </div>
@@ -135,13 +148,13 @@
                     <p class="text-slate-400 text-xs text-center mb-6">Login sebagai <b>admin</b> (Petugas TU) atau <b>kepsek</b> (Pimpinan).</p>
                     <form id="login-form" class="space-y-4">
                         <input type="text" id="username-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-rose-500 text-sm transition" placeholder="Username (admin / kepsek)">
-                        <input type="password" id="password-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-rose-500 text-sm transition" placeholder="Password (sama dengan username)">
+                        <input type="password" id="password-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-rose-500 text-sm transition" placeholder="Password">
                         <button type="submit" id="btn-do-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-4 py-3.5 text-sm flex justify-center items-center transition"><span id="login-text">Masuk Dashboard</span><div id="login-spinner" class="spinner hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div></button>
                     </form>
                 </div>
             </div>
 
-            <!-- VIEW 5: ADMIN BERANDA (PETUGAS TU) -->
+            <!-- VIEW 5: ADMIN BERANDA -->
             <div id="view-admin-overview" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     <div class="lg:col-span-8 space-y-6">
@@ -154,7 +167,7 @@
                         <div>
                             <div class="flex items-center justify-between mb-4"><h3 class="text-lg font-bold text-slate-900 tracking-tight">Pantauan Kilat Harian</h3><span class="text-[11px] font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full border border-slate-200/80" id="current-date-badge">Hari Ini</span></div>
                             <div class="grid grid-cols-3 gap-3 md:gap-4">
-                                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center"><p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu (Lobi)</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3></div>
+                                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center"><p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3></div>
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center"><p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Di Ruang Kepsek</p><h3 id="stat-bertemu" class="text-2xl md:text-3xl font-black text-blue-500 mt-1">0</h3></div>
                                 <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center"><p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Selesai Hari Ini</p><h3 id="stat-checkout-count" class="text-2xl md:text-3xl font-black text-emerald-500 mt-1">0</h3></div>
                             </div>
@@ -194,7 +207,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 7: ADMIN VERIFIKASI (PETUGAS TU) -->
+            <!-- VIEW 7: ADMIN VERIFIKASI -->
             <div id="view-admin-verify" class="app-view hidden fade-in max-w-4xl mx-auto">
                 <div class="text-center mb-6"><span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold tracking-wider rounded-full mb-2">Pintu Masuk TU</span><h2 class="text-2xl font-black text-slate-900 mb-1">Verifikasi & Persetujuan</h2></div>
                 <form id="form-admin-verify" onsubmit="event.preventDefault(); document.getElementById('btn-admin-verify').click();" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6 max-w-md mx-auto">
@@ -222,22 +235,15 @@
                 <div id="verify-not-found" class="bg-rose-50 text-rose-700 p-5 rounded-2xl border border-rose-100 text-center hidden fade-in mt-6 max-w-md mx-auto"><p class="font-bold text-xs">Kode Tiket Bodong / Tidak Valid</p></div>
             </div>
 
-            <!-- VIEW 8: ADMIN RIWAYAT DENGAN EXPORT CSV & PDF -->
+            <!-- VIEW 8: ADMIN RIWAYAT -->
             <div id="view-admin-history" class="app-view hidden fade-in max-w-5xl mx-auto">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
                     <div><h2 class="text-2xl font-black text-slate-900 tracking-tight">Log Riwayat Tamu</h2><p class="text-xs text-slate-400">Rekapitulasi tamu yang telah selesai berkunjung atau dibatalkan.</p></div>
-                    
-                    <!-- DUA TOMBOL EXPORT KEREN! -->
                     <div class="flex w-full sm:w-auto gap-2">
-                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export Excel
-                        </button>
-                        <button onclick="generateReportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none">
-                            <i data-lucide="file-text" class="w-4 h-4"></i> Cetak PDF
-                        </button>
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export Excel</button>
+                        <button onclick="generateReportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none"><i data-lucide="file-text" class="w-4 h-4"></i> Cetak PDF</button>
                     </div>
                 </div>
-
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
                     <div class="overflow-x-auto hide-scroll">
                         <table class="w-full text-left text-xs whitespace-nowrap md:whitespace-normal">
@@ -250,36 +256,18 @@
                 </div>
             </div>
 
-            <!-- =========================================================
-                 VIEW 9: DASHBOARD KEPALA SEKOLAH (VIP MODE)
-                 ========================================================= -->
+            <!-- VIEW 9: DASHBOARD KEPALA SEKOLAH (VIP MODE) -->
             <div id="view-kepsek-overview" class="app-view hidden fade-in max-w-4xl mx-auto">
                 <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 text-white p-8 md:p-10 shadow-lg border border-emerald-800 mb-8">
                     <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-500 via-transparent to-transparent pointer-events-none"></div>
                     <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-inner"><i data-lucide="crown" class="w-8 h-8"></i></div>
-                            <div>
-                                <h2 class="text-2xl md:text-3xl font-black tracking-tight">Selamat Datang, Bapak Kepala Sekolah</h2>
-                                <p class="text-emerald-200 text-sm mt-1">Berikut adalah pantauan langsung jadwal pertemuan Anda hari ini.</p>
-                            </div>
-                        </div>
+                        <div class="flex items-center gap-5"><div class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-inner"><i data-lucide="crown" class="w-8 h-8"></i></div><div><h2 class="text-2xl md:text-3xl font-black tracking-tight">Selamat Datang, Bapak Kepala Sekolah</h2><p class="text-emerald-200 text-sm mt-1">Berikut adalah pantauan langsung jadwal pertemuan Anda hari ini.</p></div></div>
                     </div>
                 </div>
-
                 <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-sm">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Antrean Pertemuan Hari Ini</h3>
-                        <i data-lucide="users" class="w-6 h-6 text-emerald-500"></i>
-                    </div>
-                    <div id="kepsek-guests-grid" class="grid grid-cols-1 gap-4">
-                        <!-- Grid Khusus Kepsek Diisi JS -->
-                    </div>
-                    <div id="kepsek-empty-state" class="bg-slate-50 rounded-2xl p-10 text-center border border-slate-100">
-                        <div class="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300"><i data-lucide="coffee" class="w-7 h-7"></i></div>
-                        <p class="font-bold text-slate-700">Ruangan Anda Kosong</p>
-                        <p class="text-xs text-slate-400 mt-1">Belum ada tamu yang menunggu atau sedang bertemu dengan Anda saat ini.</p>
-                    </div>
+                    <div class="flex items-center justify-between mb-6"><h3 class="text-xl font-bold text-slate-900 tracking-tight">Antrean Pertemuan Hari Ini</h3><i data-lucide="users" class="w-6 h-6 text-emerald-500"></i></div>
+                    <div id="kepsek-guests-grid" class="grid grid-cols-1 gap-4"></div>
+                    <div id="kepsek-empty-state" class="bg-slate-50 rounded-2xl p-10 text-center border border-slate-100"><div class="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300"><i data-lucide="coffee" class="w-7 h-7"></i></div><p class="font-bold text-slate-700">Ruangan Anda Kosong</p><p class="text-xs text-slate-400 mt-1">Belum ada tamu yang menunggu atau sedang bertemu dengan Anda saat ini.</p></div>
                 </div>
             </div>
 
@@ -288,21 +276,10 @@
 
     <!-- WADAH CETAK LAPORAN (PDF) -->
     <div id="print-report-container" class="hidden bg-white min-h-screen relative z-[99999]">
-        <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4">
-            <h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1>
-            <h2 class="text-3xl font-black uppercase text-slate-900 mt-1">Dinas Pendidikan SMAN 1 Kandangan</h2>
-            <p class="text-sm text-slate-600 mt-2">Jl. Kaswari No.1, Kandangan, Kec. Kandangan, Kabupaten Kediri, Jawa Timur 64294</p>
-        </div>
+        <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4"><h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1><h2 class="text-3xl font-black uppercase text-slate-900 mt-1">Dinas Pendidikan SMAN 1 Kandangan</h2><p class="text-sm text-slate-600 mt-2">Jl. Kaswari No.1, Kandangan, Kec. Kandangan, Kabupaten Kediri, Jawa Timur 64294</p></div>
         <h3 class="text-center font-bold text-lg mb-6 uppercase underline">Laporan Rekapitulasi Kunjungan Tamu</h3>
-        <table class="w-full text-sm text-left border-collapse border border-slate-900">
-            <thead class="bg-slate-100">
-                <tr><th class="border border-slate-900 p-2">No</th><th class="border border-slate-900 p-2">Kode Tiket</th><th class="border border-slate-900 p-2">Tanggal</th><th class="border border-slate-900 p-2">Nama Tamu</th><th class="border border-slate-900 p-2">Instansi / Kategori</th><th class="border border-slate-900 p-2">Keperluan</th><th class="border border-slate-900 p-2 text-center">In - Out</th><th class="border border-slate-900 p-2 text-center">Status</th></tr>
-            </thead>
-            <tbody id="print-report-tbody"></tbody>
-        </table>
-        <div class="flex justify-end mt-16 pr-8">
-            <div class="text-center"><p class="text-sm mb-16" id="print-date-signature">Kandangan, ........................</p><p class="text-sm font-bold underline">Kepala Tata Usaha</p><p class="text-xs">NIP. ..............................</p></div>
-        </div>
+        <table class="w-full text-sm text-left border-collapse border border-slate-900"><thead class="bg-slate-100"><tr><th class="border border-slate-900 p-2">No</th><th class="border border-slate-900 p-2">Kode Tiket</th><th class="border border-slate-900 p-2">Tanggal</th><th class="border border-slate-900 p-2">Nama Tamu</th><th class="border border-slate-900 p-2">Instansi / Kategori</th><th class="border border-slate-900 p-2">Keperluan</th><th class="border border-slate-900 p-2 text-center">In - Out</th><th class="border border-slate-900 p-2 text-center">Status</th></tr></thead><tbody id="print-report-tbody"></tbody></table>
+        <div class="flex justify-end mt-16 pr-8"><div class="text-center"><p class="text-sm mb-16" id="print-date-signature">Kandangan, ........................</p><p class="text-sm font-bold underline">Kepala Tata Usaha</p><p class="text-xs">NIP. ..............................</p></div></div>
     </div>
 
     <!-- MODAL DETAIL -->
@@ -314,14 +291,10 @@
                 <div class="w-full md:w-2/5 shrink-0"><div class="w-36 h-48 md:w-full md:h-64 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 mx-auto"><img id="detail-photo" src="" alt="Foto" class="w-full h-full object-cover"></div></div>
                 <div class="flex-1 space-y-3.5 text-xs">
                     <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Kode Tiket</p><p id="detail-code" class="font-mono font-bold text-rose-600">-</p></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Status</p><span id="detail-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Rencana Jam Tiba</p><p id="detail-datetime" class="font-semibold text-slate-800">-</p></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Waktu Keluar</p><p id="detail-outtime" class="font-semibold text-slate-500">-</p></div>
+                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Kode Tiket</p><p id="detail-code" class="font-mono font-bold text-rose-600">-</p></div><div><p class="text-[9px] uppercase font-bold text-slate-400">Status</p><span id="detail-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span></div>
+                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Rencana Jam Tiba</p><p id="detail-datetime" class="font-semibold text-slate-800">-</p></div><div><p class="text-[9px] uppercase font-bold text-slate-400">Waktu Keluar</p><p id="detail-outtime" class="font-semibold text-slate-500">-</p></div>
                     </div>
-                    <div><p class="text-[10px] uppercase font-bold text-slate-400">Nama Tamu</p><p id="detail-name" class="text-base font-bold text-slate-900">-</p></div>
-                    <div><p class="text-[10px] uppercase font-bold text-slate-400">Instansi & Kategori</p><p id="detail-instansi" class="font-medium text-slate-700">-</p></div>
-                    <div><p class="text-[10px] uppercase font-bold text-slate-400">Tujuan / Keperluan</p><p id="detail-tujuan" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">-</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-slate-400">Nama Tamu</p><p id="detail-name" class="text-base font-bold text-slate-900">-</p></div><div><p class="text-[10px] uppercase font-bold text-slate-400">Instansi & Kategori</p><p id="detail-instansi" class="font-medium text-slate-700">-</p></div><div><p class="text-[10px] uppercase font-bold text-slate-400">Tujuan / Keperluan</p><p id="detail-tujuan" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">-</p></div>
                 </div>
             </div>
             <div id="modal-action-footer" class="p-4 bg-slate-50 border-t border-slate-100 flex flex-col gap-2">
@@ -334,15 +307,10 @@
     <!-- MODAL KONFLIK JADWAL -->
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" id="conflict-overlay"></div>
-        <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card">
-            <div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div>
-            <h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3>
-            <p class="text-xs text-slate-500 mb-4 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p>
-            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5"><p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p><p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p></div>
-            <div class="flex flex-col gap-2"><button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25">Gunakan Jam Ini</button><button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95">Pilih Waktu Lain</button></div>
-        </div>
+        <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p><div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5"><p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p><p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p></div><div class="flex flex-col gap-2"><button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25">Gunakan Jam Ini</button><button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95">Pilih Waktu Lain</button></div></div>
     </div>
 
+    <!-- BOTTOM NAVBAR MOBILE -->
     <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200/80 flex justify-around items-center h-[68px] z-40 shadow-lg px-2 relative transition-transform duration-300 transform translate-y-0" id="mobile-bottom-nav"></nav>
 
     <script src="app.js"></script>
