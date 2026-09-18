@@ -6,15 +6,24 @@ let visitorChartInstance = null;
 let currentActiveView = 'view-guest-form';
 
 const dateInput = document.getElementById('guest-date');
-if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+if (dateInput) {
+    const today = new Date();
+    dateInput.value = today.toISOString().split('T')[0];
+}
+const timeInput = document.getElementById('guest-time');
+if (timeInput) {
+    const now = new Date();
+    timeInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+}
+
 const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 // =========================================================
-// ANIMASI IKON BOUNCE (Micro-interaction)
+// ANIMASI IKON BOUNCE
 // =========================================================
 function triggerIconAnimation(element) {
     element.classList.remove('animate-icon');
-    void element.offsetWidth; // Memicu reflow browser
+    void element.offsetWidth; 
     element.classList.add('animate-icon');
 }
 
@@ -22,33 +31,25 @@ function triggerIconAnimation(element) {
 // ANIMASI MAGIC SLIDING INDICATOR
 // =========================================================
 function updateIndicators() {
-    // 1. Sidebar Desktop Kanan
     const activeDesktop = document.querySelector(`.nav-tab-btn[data-target="${currentActiveView}"]`);
     const desktopIndicator = document.getElementById('sliding-indicator');
-    
     if (activeDesktop && activeDesktop.offsetParent !== null) {
         const navRect = activeDesktop.closest('nav').getBoundingClientRect();
         const btnRect = activeDesktop.getBoundingClientRect();
         desktopIndicator.style.top = `${btnRect.top - navRect.top}px`;
         desktopIndicator.style.height = `${btnRect.height}px`;
         desktopIndicator.style.opacity = '1';
-    } else if (desktopIndicator) {
-        desktopIndicator.style.opacity = '0';
-    }
+    } else if (desktopIndicator) desktopIndicator.style.opacity = '0';
 
-    // 2. Mobile Bottom Nav Atas
     const activeMobile = document.querySelector(`.m-nav-btn[data-target="${currentActiveView}"], .m-admin-btn[data-target="${currentActiveView}"]`);
     const mobileIndicator = document.getElementById('mobile-sliding-indicator');
-    
     if (activeMobile && activeMobile.offsetParent !== null && mobileIndicator) {
         const navRect = activeMobile.closest('nav').getBoundingClientRect();
         const btnRect = activeMobile.getBoundingClientRect();
         mobileIndicator.style.left = `${btnRect.left - navRect.left}px`;
         mobileIndicator.style.width = `${btnRect.width}px`;
         mobileIndicator.style.opacity = '1';
-    } else if (mobileIndicator) {
-        mobileIndicator.style.opacity = '0';
-    }
+    } else if (mobileIndicator) mobileIndicator.style.opacity = '0';
 }
 window.addEventListener('resize', () => { setTimeout(updateIndicators, 100); });
 
@@ -57,7 +58,6 @@ window.addEventListener('resize', () => { setTimeout(updateIndicators, 100); });
 // =========================================================
 function switchAppView(targetId) {
     currentActiveView = targetId;
-
     document.querySelectorAll('.app-view').forEach(view => {
         view.classList.remove('block', 'flex'); view.classList.add('hidden');
     });
@@ -90,14 +90,13 @@ function switchAppView(targetId) {
         }
     });
 
-    setTimeout(updateIndicators, 50); // Picu garis sliding bergerak
+    setTimeout(updateIndicators, 50); 
 }
 
 function bindNavEvents() {
     document.querySelectorAll('.nav-tab-btn, .m-nav-btn, .m-admin-btn').forEach(btn => {
         btn.addEventListener('click', function () { 
-            triggerIconAnimation(this); // Ikon mental-mental pas diklik
-            switchAppView(this.getAttribute('data-target')); 
+            triggerIconAnimation(this); switchAppView(this.getAttribute('data-target')); 
         });
     });
 }
@@ -115,25 +114,23 @@ function renderMobileNav() {
         nav.innerHTML = `
             <div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div>
             <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-rose-600" data-target="view-admin-overview"><i data-lucide="home" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-bold">Beranda</span></button>
-            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Statistik</span></button>
+            <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Analitik</span></button>
             <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-verify"><i data-lucide="scan" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Verifikasi</span></button>
             <button class="m-admin-btn flex-1 flex flex-col items-center justify-center h-full text-slate-400" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Riwayat</span></button>
             <button class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="triggerIconAnimation(this); processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px] font-medium">Keluar</span></button>
         `;
     }
-    lucide.createIcons(); 
-    bindNavEvents();
+    lucide.createIcons(); bindNavEvents();
 }
-
-renderMobileNav(); 
-setTimeout(updateIndicators, 100);
+renderMobileNav(); setTimeout(updateIndicators, 100);
 
 // =========================================================
-// FITUR GRAFIK KATEGORI TAMU (CHART.JS) DI TAB STATISTIK
+// FITUR GRAFIK (CHART.JS) DI TAB ANALITIK
 // =========================================================
 function initChart() {
-    const ctx = document.getElementById('visitorChart').getContext('2d');
-    visitorChartInstance = new Chart(ctx, {
+    const ctx = document.getElementById('visitorChart');
+    if(!ctx) return;
+    visitorChartInstance = new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: ['Siswa/Siswi', 'Dinas/Instansi', 'Guru/Pendidik', 'Umum/Wali Murid'],
@@ -149,7 +146,7 @@ function updateChartData(siswa, dinas, guru, umum) {
 }
 
 // =========================================================
-// LOGIN & LOGOUT LOGIC
+// LOGIN & LOGOUT
 // =========================================================
 document.getElementById('login-form')?.addEventListener('submit', function(e) {
     e.preventDefault(); 
@@ -221,14 +218,11 @@ function takeSnapshot() {
     cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden');
     cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); stopCamera();
 }
-
-function retakePhoto() {
-    cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); startCamera();
-}
+function retakePhoto() { cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); startCamera(); }
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
-// MANAJEMEN STATISTIK (DASHBOARD KIRI & TAB STATISTIK)
+// MANAJEMEN STATISTIK (DASHBOARD KIRI & TAB ANALITIK)
 // =========================================================
 function refreshDashboardMetrics() {
     let menunggu = 0, bertemu = 0, selesai = 0, ditolak = 0;
@@ -251,7 +245,7 @@ function refreshDashboardMetrics() {
     const totalTamu = menunggu + bertemu + selesai;
     updateChartData(siswa, dinas, guru, umum); 
 
-    // Update Angka di Monitor Overview
+    // Update Beranda
     if(document.getElementById('stat-bertemu')) {
         document.getElementById('stat-bertemu').innerText = bertemu;
         document.getElementById('stat-menunggu-ratio').innerText = menunggu;
@@ -264,20 +258,17 @@ function refreshDashboardMetrics() {
         renderActiveGuestsGrid();
     }
 
-    // Update Angka di Tab Statistik
+    // Update Tab Analitik
     if(document.getElementById('stat-total-tamu')) {
         document.getElementById('stat-total-tamu').innerText = totalTamu;
         const baseTotal = totalTamu === 0 ? 1 : totalTamu;
-        document.getElementById('bar-checkin').style.width = `${Math.round((menunggu / baseTotal) * 100)}%`;
-        document.getElementById('bar-checkout').style.width = `${Math.round((selesai / baseTotal) * 100)}%`;
-
         const donutPct = Math.min(100, Math.round((totalTamu / 20) * 100)); 
         const donutRing = document.getElementById('donut-progress');
         if (donutRing) donutRing.setAttribute('stroke-dasharray', `${donutPct}, 100`);
         document.getElementById('donut-pct').innerText = `${donutPct}%`;
     }
 
-    // Generate Tabel Jadwal Analitik
+    // Render Tabel Jadwal Mingguan
     renderScheduleAnalytics();
 }
 
@@ -303,30 +294,26 @@ function renderActiveGuestsGrid() {
             </div>
             <div class="flex flex-col items-end gap-2 shrink-0">
                 <span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${isBertemu ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${isBertemu ? 'Di Ruangan' : 'Menunggu'}</span>
-                <button onclick="openDetailModal('${guest.code}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90">Cek Detail</button>
+                <button onclick="openDetailModal('${guest.code}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm"><i data-lucide="eye" class="w-3 h-3"></i></button>
             </div>
         `;
         grid.appendChild(card);
     });
+    lucide.createIcons();
 }
 
 // =========================================================
-// TABEL ANALITIK JADWAL (FITUR BARU)
+// TABEL ANALITIK JADWAL (MENGELOMPOKKAN HARI SENIN-JUMAT)
 // =========================================================
 function renderScheduleAnalytics() {
     const tbody = document.getElementById('analytics-schedule-body');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    // Urutkan berdasarkan Tanggal (Terbaru ke Terlama)
-    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => {
-        const dateA = new Date(a.date + 'T' + a.time);
-        const dateB = new Date(b.date + 'T' + b.time);
-        return dateB - dateA; 
-    });
+    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (sortedGuests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 text-xs">Belum ada data jadwal kunjungan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 text-xs">Belum ada jadwal kunjungan terdaftar.</td></tr>`;
         return;
     }
 
@@ -340,26 +327,30 @@ function renderScheduleAnalytics() {
         if (data.status === 'selesai') badgeClass = "bg-emerald-100 text-emerald-700";
         if (data.status === 'ditolak') badgeClass = "bg-rose-100 text-rose-700";
 
+        // Tampilkan rencana jam tiba hingga jam keluar
+        const jamKeluar = data.outTime !== '-' ? data.outTime : 'Selesai';
+        const rentangWaktu = `${data.planTime} - ${jamKeluar}`;
+
         const tr = document.createElement('tr');
         tr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors";
         tr.innerHTML = `
             <td class="px-4 py-3">
-                <p class="font-bold text-slate-900">${hari}</p>
-                <p class="text-[10px] text-slate-500">${tgl}</p>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-[10px] uppercase border border-slate-200 shadow-sm">${hari.substring(0,3)}</div>
+                    <div><p class="font-bold text-slate-900">${hari}</p><p class="text-[10px] text-slate-500">${tgl}</p></div>
+                </div>
             </td>
-            <td class="px-4 py-3 font-mono text-slate-700 font-bold">${data.time}</td>
-            <td class="px-4 py-3">
-                <p class="font-bold text-slate-900">${data.name}</p>
-                <p class="text-[10px] text-slate-500">${data.instansi} (${data.kategori})</p>
-            </td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded text-[9px] font-bold ${badgeClass}">${data.status.toUpperCase()}</span></td>
+            <td class="px-4 py-3 font-mono text-rose-600 font-bold text-xs text-center"><div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 inline-block">${rentangWaktu}</div></td>
+            <td class="px-4 py-3"><p class="font-bold text-slate-900">${data.name}</p><p class="text-[10px] text-slate-500">${data.instansi}</p></td>
+            <td class="px-4 py-3 text-xs text-slate-600 max-w-[150px] truncate" title="${data.tujuan}">${data.tujuan}</td>
+            <td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[9px] font-bold ${badgeClass}">${data.status.toUpperCase()}</span></td>
         `;
         tbody.appendChild(tr);
     });
 }
 
 // =========================================================
-// SUBMIT FORM TAMU
+// SUBMIT FORM TAMU (DENGAN JAM RENCANA TIBA)
 // =========================================================
 document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -367,6 +358,7 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     const guestName = document.getElementById('guest-name').value;
     const instansi = document.getElementById('guest-instansi').value;
     const guestDate = document.getElementById('guest-date').value;
+    const guestTime = document.getElementById('guest-time').value; // Jam Baru
     const kategoriSel = document.getElementById('kategori-select');
     const kategori = kategoriSel.options[kategoriSel.selectedIndex].text;
     let kelas = document.getElementById('input-kelas').value;
@@ -396,35 +388,37 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
-    guestsDatabase[code] = { name: guestName, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, date: guestDate, displayDate: displayDate, time: timeStr, outTime: '-', status: 'menunggu' };
+    // Simpan data lengkap beserta planTime (Jam rencana)
+    guestsDatabase[code] = { 
+        name: guestName, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, 
+        date: guestDate, displayDate: displayDate, planTime: guestTime, time: timeStr, outTime: '-', status: 'menunggu' 
+    };
 
     const submitBtn = document.getElementById('btn-submit-guest');
     submitBtn.disabled = true; document.getElementById('submit-text').innerText = "Memproses Tiket..."; document.getElementById('submit-icon').classList.add('hidden'); document.getElementById('submit-spinner').classList.remove('hidden');
 
     setTimeout(() => {
         document.getElementById('ticket-name').innerText = guestName;
-        document.getElementById('ticket-date-display').innerText = displayDate;
+        document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${guestTime}`;
         document.getElementById('ticket-code').innerText = code;
         
-        document.body.classList.remove('print-mode-report');
-        document.body.classList.add('print-mode-ticket');
+        document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
 
         switchAppView('view-success');
         appendHistoryRow(code);
         refreshDashboardMetrics();
 
         submitBtn.disabled = false; document.getElementById('submit-text').innerText = "Kirim & Buat Tiket Kunjungan"; document.getElementById('submit-icon').classList.remove('hidden'); document.getElementById('submit-spinner').classList.add('hidden');
-        document.getElementById('guest-form').reset(); document.getElementById('guest-date').value = new Date().toISOString().split('T')[0]; document.getElementById('kelas-container').classList.remove('is-active');
+        document.getElementById('guest-form').reset(); 
+        document.getElementById('guest-date').value = new Date().toISOString().split('T')[0]; 
+        document.getElementById('guest-time').value = `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`;
+        document.getElementById('kelas-container').classList.remove('is-active');
         if (videoStream) stopCamera();
         cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); document.getElementById('camera-idle').classList.remove('hidden'); cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden');
     }, 1200);
 });
 
-window.printTicket = function() {
-    document.body.classList.remove('print-mode-report');
-    document.body.classList.add('print-mode-ticket');
-    window.print();
-}
+window.printTicket = function() { document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket'); window.print(); }
 
 document.getElementById('btn-change-schedule')?.addEventListener('click', () => {
     document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0');
@@ -449,8 +443,7 @@ function appendHistoryRow(code) {
         <td class="px-5 py-3.5"><span id="hist-badge-${code}" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 w-max block mx-auto text-center">Menunggu</span></td>
         <td class="px-5 py-3.5 text-center"><button onclick="openDetailModal('${code}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm"><i data-lucide="user" class="w-4 h-4"></i></button></td>
     `;
-    tbody.prepend(tr);
-    lucide.createIcons();
+    tbody.prepend(tr); lucide.createIcons();
 }
 
 function changeGuestStatus(code, newStatus) {
@@ -538,13 +531,9 @@ document.getElementById('btn-do-track')?.addEventListener('click', () => {
     resContainer.classList.remove('hidden');
     if (guestsDatabase[code]) {
         const data = guestsDatabase[code];
-        document.getElementById('track-not-found').classList.add('hidden');
-        document.getElementById('track-found').classList.remove('hidden');
-        document.getElementById('track-res-name').innerText = data.name;
-        document.getElementById('track-res-date').innerText = data.displayDate;
-        const statusEl = document.getElementById('track-res-status');
-        const dotEl = document.getElementById('track-res-dot');
-        const barEl = document.getElementById('track-color-bar');
+        document.getElementById('track-not-found').classList.add('hidden'); document.getElementById('track-found').classList.remove('hidden');
+        document.getElementById('track-res-name').innerText = data.name; document.getElementById('track-res-date').innerText = `${data.displayDate} | ${data.planTime}`;
+        const statusEl = document.getElementById('track-res-status'); const dotEl = document.getElementById('track-res-dot'); const barEl = document.getElementById('track-color-bar');
 
         if (data.status === 'menunggu') { statusEl.innerText = "Menunggu Persetujuan"; statusEl.className = "text-sm font-black text-amber-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-amber-500"; } 
         else if (data.status === 'bertemu') { statusEl.innerText = "Sedang Bertemu Kepsek"; statusEl.className = "text-sm font-black text-blue-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-blue-500"; } 
@@ -564,22 +553,11 @@ function executeVerification(code) {
 
     if (data) {
         codeToVerify = code;
-        notFound.classList.add('hidden');
-        resultCard.classList.remove('hidden');
+        notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
 
-        document.getElementById('v-res-photo').src = data.photo;
-        document.getElementById('v-res-code').innerText = code;
-        document.getElementById('v-res-name').innerText = data.name;
-        document.getElementById('v-res-instansi').innerText = data.instansi;
-        document.getElementById('v-res-kategori').innerText = data.kategori;
-        document.getElementById('v-res-date').innerText = data.displayDate;
-        document.getElementById('v-res-time').innerText = data.time;
-        document.getElementById('v-res-tujuan').innerText = data.tujuan;
+        document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.time; document.getElementById('v-res-tujuan').innerText = data.tujuan;
 
-        const badge = document.getElementById('v-res-status-badge');
-        const footer = document.getElementById('v-res-action-footer');
-        const msgDone = document.getElementById('v-res-msg-done');
-        const msgStatus = document.getElementById('v-res-msg-status');
+        const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
 
         if (data.status === 'menunggu') {
             badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan";
@@ -612,35 +590,19 @@ window.generateReportPDF = function() {
     tbody.innerHTML = '';
     
     let no = 1;
-    // Sort chronological before printing
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
 
     sortedGuests.forEach(data => {
         let statText = data.status.toUpperCase();
-        if(data.status === 'menunggu') statText = "DALAM ANTREAN";
-        else if (data.status === 'bertemu') statText = "SEDANG BERTEMU";
-        else if (data.status === 'selesai') statText = "SELESAI";
+        if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI";
 
-        // Find code for the data object
         const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data);
-
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="border border-slate-900 p-2 text-center">${no++}</td>
-            <td class="border border-slate-900 p-2 font-mono">${code}</td>
-            <td class="border border-slate-900 p-2">${data.displayDate}</td>
-            <td class="border border-slate-900 p-2 font-bold">${data.name}</td>
-            <td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td>
-            <td class="border border-slate-900 p-2">${data.tujuan}</td>
-            <td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td>
-            <td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>
-        `;
+        tr.innerHTML = `<td class="border border-slate-900 p-2 text-center">${no++}</td><td class="border border-slate-900 p-2 font-mono">${code}</td><td class="border border-slate-900 p-2">${data.displayDate}</td><td class="border border-slate-900 p-2 font-bold">${data.name}</td><td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td><td class="border border-slate-900 p-2">${data.tujuan}</td><td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td><td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>`;
         tbody.appendChild(tr);
     });
     
-    document.body.classList.remove('print-mode-ticket');
-    document.body.classList.add('print-mode-report');
+    document.body.classList.remove('print-mode-ticket'); document.body.classList.add('print-mode-report');
     document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
-    
     setTimeout(() => { window.print(); }, 300);
 }
