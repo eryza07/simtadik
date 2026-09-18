@@ -12,8 +12,8 @@
 </head>
 <body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800">
 
-    <!-- WADAH NOTIFIKASI TOAST (BARU) -->
-    <div id="toast-container" class="fixed top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
+    <!-- WADAH NOTIFIKASI TOAST (MUNCUL OTOMATIS) -->
+    <div id="toast-container" class="fixed top-20 md:top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- SIDEBAR KIRI -->
     <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
@@ -29,18 +29,12 @@
             <!-- MENU ADMIN (DENGAN TITIK MERAH NOTIFIKASI) -->
             <div id="admin-nav-group" class="w-full hidden flex-col gap-2">
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-overview">
-                    <div class="relative">
-                        <i data-lucide="home" class="w-5 h-5"></i>
-                        <span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span>
-                    </div>
+                    <div class="relative"><i data-lucide="home" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div>
                     <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Beranda</span>
                 </button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Analitik</span></button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-verify">
-                    <div class="relative">
-                        <i data-lucide="scan" class="w-5 h-5"></i>
-                        <span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span>
-                    </div>
+                    <div class="relative"><i data-lucide="scan" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div>
                     <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Verifikasi</span>
                 </button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Riwayat</span></button>
@@ -59,14 +53,43 @@
     <div class="flex-1 flex flex-col h-full overflow-hidden relative">
 
         <header class="bg-white border-b border-slate-200/80 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0 z-20">
+            <!-- Kiri: Mobile Logo / Desktop Title -->
             <div class="md:hidden flex items-center gap-3">
                 <div class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden p-1 shadow-sm"><img src="logo.png" alt="Logo" class="w-full h-full object-contain"></div>
                 <h1 class="font-extrabold text-sm tracking-widest uppercase text-slate-900">SMAN 1 Kandangan</h1>
             </div>
             <div class="hidden md:block"><h1 class="font-extrabold text-base md:text-lg text-slate-900 tracking-tight">Penerima Tamu</h1><p class="text-[11px] text-slate-400 hidden sm:block">Sistem Registrasi & Verifikasi Terpadu</p></div>
-            <div class="hidden md:flex items-center gap-3">
-                <div class="text-right"><p class="text-xs font-bold text-slate-800 leading-tight">SMAN 1 KANDANGAN</p><p class="text-[10px] text-slate-400 font-medium">Kab. Kediri, Jawa Timur</p></div>
-                <div class="w-10 h-10 rounded-xl border border-slate-200 overflow-hidden bg-white p-1 shadow-sm flex items-center justify-center"><img src="logo.png" alt="Logo SMAN 1" class="w-full h-full object-contain"></div>
+            
+            <!-- Kanan: Tombol Notifikasi + Info Sekolah -->
+            <div class="flex items-center gap-3 md:gap-5">
+                
+                <!-- TOMBOL LONCENG NOTIFIKASI (MUNCUL SAAT LOGIN) -->
+                <div id="header-notif-container" class="relative hidden">
+                    <button id="btn-header-notif" class="relative w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition active:scale-95 shadow-sm">
+                        <i data-lucide="bell" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        <span id="header-notif-dot" class="hidden absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span>
+                    </button>
+                    
+                    <!-- PANEL DROPDOWN NOTIF -->
+                    <div id="notif-dropdown" class="absolute top-full right-0 mt-3 w-[280px] md:w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-[100] transform origin-top-right transition-all duration-300 scale-95 opacity-0 pointer-events-none">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h4 class="font-bold text-sm text-slate-900">Notifikasi Terbaru</h4>
+                            <button id="btn-clear-notif" class="text-[10px] text-rose-500 font-bold hover:underline">Bersihkan</button>
+                        </div>
+                        <div id="notif-list" class="max-h-[60vh] overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1 bg-white">
+                            <div id="notif-empty" class="p-6 text-center text-slate-400 flex flex-col items-center">
+                                <i data-lucide="bell-off" class="w-6 h-6 mb-2 opacity-50"></i>
+                                <span class="text-xs">Belum ada notifikasi.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Sekolah -->
+                <div class="hidden md:flex items-center gap-3">
+                    <div class="text-right"><p class="text-xs font-bold text-slate-800 leading-tight">SMAN 1 KANDANGAN</p><p class="text-[10px] text-slate-400 font-medium">Kab. Kediri, Jawa Timur</p></div>
+                    <div class="w-10 h-10 rounded-xl border border-slate-200 overflow-hidden bg-white p-1 shadow-sm flex items-center justify-center"><img src="logo.png" alt="Logo SMAN 1" class="w-full h-full object-contain"></div>
+                </div>
             </div>
         </header>
 
@@ -189,6 +212,7 @@
                 </div>
             </div>
 
+            <!-- SISA TABEL & MODAL SAMA ... -->
             <!-- VIEW 6: TAB STATISTIK & ANALITIK (PETUGAS TU) -->
             <div id="view-admin-statistik" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="flex items-center justify-between mb-6"><div><h2 class="text-2xl font-black text-slate-900 tracking-tight">Statistik & Analisis Jadwal</h2><p class="text-xs text-slate-400">Pantauan grafik data pengunjung dan kalender jadwal mingguan.</p></div></div>
