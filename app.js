@@ -5,11 +5,13 @@ let isAdminLoggedIn = false;
 let visitorChartInstance = null;
 let currentActiveView = 'view-guest-form';
 
+// SET DEFAULT TANGGAL HARI INI
 const dateInput = document.getElementById('guest-date');
 if (dateInput) {
     const today = new Date();
     dateInput.value = today.toISOString().split('T')[0];
 }
+// SET DEFAULT JAM KE WAKTU SAAT INI (Format 24 Jam)
 const timeInput = document.getElementById('guest-time');
 if (timeInput) {
     const now = new Date();
@@ -146,7 +148,7 @@ function updateChartData(siswa, dinas, guru, umum) {
 }
 
 // =========================================================
-// LOGIN & LOGOUT
+// LOGIN & LOGOUT LOGIC
 // =========================================================
 document.getElementById('login-form')?.addEventListener('submit', function(e) {
     e.preventDefault(); 
@@ -303,17 +305,21 @@ function renderActiveGuestsGrid() {
 }
 
 // =========================================================
-// TABEL ANALITIK JADWAL (MENGELOMPOKKAN HARI SENIN-JUMAT)
+// TABEL ANALITIK JADWAL (FORMAT 24H WIB)
 // =========================================================
 function renderScheduleAnalytics() {
     const tbody = document.getElementById('analytics-schedule-body');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => {
+        const dateA = new Date(a.date + 'T' + a.time.replace(' WIB', ''));
+        const dateB = new Date(b.date + 'T' + b.time.replace(' WIB', ''));
+        return dateB - dateA; 
+    });
 
     if (sortedGuests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 text-xs">Belum ada jadwal kunjungan terdaftar.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 text-xs">Belum ada data jadwal kunjungan.</td></tr>`;
         return;
     }
 
@@ -327,7 +333,6 @@ function renderScheduleAnalytics() {
         if (data.status === 'selesai') badgeClass = "bg-emerald-100 text-emerald-700";
         if (data.status === 'ditolak') badgeClass = "bg-rose-100 text-rose-700";
 
-        // Tampilkan rencana jam tiba hingga jam keluar
         const jamKeluar = data.outTime !== '-' ? data.outTime : 'Selesai';
         const rentangWaktu = `${data.planTime} - ${jamKeluar}`;
 
@@ -341,7 +346,7 @@ function renderScheduleAnalytics() {
                 </div>
             </td>
             <td class="px-4 py-3 font-mono text-rose-600 font-bold text-xs text-center"><div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 inline-block">${rentangWaktu}</div></td>
-            <td class="px-4 py-3"><p class="font-bold text-slate-900">${data.name}</p><p class="text-[10px] text-slate-500">${data.instansi}</p></td>
+            <td class="px-4 py-3"><p class="font-bold text-slate-900">${data.name}</p><p class="text-[10px] text-slate-500">${data.instansi} (${data.kategori})</p></td>
             <td class="px-4 py-3 text-xs text-slate-600 max-w-[150px] truncate" title="${data.tujuan}">${data.tujuan}</td>
             <td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[9px] font-bold ${badgeClass}">${data.status.toUpperCase()}</span></td>
         `;
@@ -350,7 +355,7 @@ function renderScheduleAnalytics() {
 }
 
 // =========================================================
-// SUBMIT FORM TAMU (DENGAN JAM RENCANA TIBA)
+// SUBMIT FORM TAMU (FORMAT 24 JAM + WIB)
 // =========================================================
 document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -358,7 +363,11 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     const guestName = document.getElementById('guest-name').value;
     const instansi = document.getElementById('guest-instansi').value;
     const guestDate = document.getElementById('guest-date').value;
-    const guestTime = document.getElementById('guest-time').value; // Jam Baru
+    
+    // Ambil Jam Input & Pasang WIB
+    const guestTimeInput = document.getElementById('guest-time').value; 
+    const planTimeWIB = guestTimeInput ? guestTimeInput + ' WIB' : '-';
+
     const kategoriSel = document.getElementById('kategori-select');
     const kategori = kategoriSel.options[kategoriSel.selectedIndex].text;
     let kelas = document.getElementById('input-kelas').value;
@@ -384,14 +393,16 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
         return;
     }
 
+    // Jam Formulir Masuk Secara 24 Jam murni
     const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    const timeStrWIB = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' WIB';
+    
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
-    // Simpan data lengkap beserta planTime (Jam rencana)
+    // Simpan ke Data (dengan akhiran WIB)
     guestsDatabase[code] = { 
         name: guestName, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, 
-        date: guestDate, displayDate: displayDate, planTime: guestTime, time: timeStr, outTime: '-', status: 'menunggu' 
+        date: guestDate, displayDate: displayDate, planTime: planTimeWIB, time: timeStrWIB, outTime: '-', status: 'menunggu' 
     };
 
     const submitBtn = document.getElementById('btn-submit-guest');
@@ -399,7 +410,7 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
 
     setTimeout(() => {
         document.getElementById('ticket-name').innerText = guestName;
-        document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${guestTime}`;
+        document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`;
         document.getElementById('ticket-code').innerText = code;
         
         document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
@@ -427,7 +438,7 @@ document.getElementById('btn-change-schedule')?.addEventListener('click', () => 
 document.getElementById('btn-next-guest')?.addEventListener('click', () => { switchAppView('view-guest-form'); });
 
 // =========================================================
-// FUNGSI RIWAYAT & PERUBAHAN STATUS
+// FUNGSI RIWAYAT & PERUBAHAN STATUS (WIB LOGIC)
 // =========================================================
 function appendHistoryRow(code) {
     const data = guestsDatabase[code];
@@ -453,7 +464,8 @@ function changeGuestStatus(code, newStatus) {
 
     if (newStatus === 'selesai' || newStatus === 'ditolak') {
         const o = new Date();
-        data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')}` : 'Ditolak';
+        // Set Keluar Jam dengan format 24 jam + WIB
+        data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')} WIB` : 'Ditolak';
     }
 
     const histBadge = document.getElementById(`hist-badge-${code}`);
@@ -532,7 +544,8 @@ document.getElementById('btn-do-track')?.addEventListener('click', () => {
     if (guestsDatabase[code]) {
         const data = guestsDatabase[code];
         document.getElementById('track-not-found').classList.add('hidden'); document.getElementById('track-found').classList.remove('hidden');
-        document.getElementById('track-res-name').innerText = data.name; document.getElementById('track-res-date').innerText = `${data.displayDate} | ${data.planTime}`;
+        document.getElementById('track-res-name').innerText = data.name; 
+        document.getElementById('track-res-date').innerText = `${data.displayDate} | Rencana Tiba: ${data.planTime}`;
         const statusEl = document.getElementById('track-res-status'); const dotEl = document.getElementById('track-res-dot'); const barEl = document.getElementById('track-color-bar');
 
         if (data.status === 'menunggu') { statusEl.innerText = "Menunggu Persetujuan"; statusEl.className = "text-sm font-black text-amber-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-amber-500"; } 
