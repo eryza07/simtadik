@@ -3,18 +3,16 @@ lucide.createIcons();
 const guestsDatabase = {};
 let isAdminLoggedIn = false;
 
-// Variabel Penampung Grafik
 let chartOverview = null;
 let chartAnalitik = null;
 let currentActiveView = 'view-guest-form';
 
-// SET DEFAULT TANGGAL HARI INI
+// SET DEFAULT TANGGAL & JAM HARI INI
 const dateInput = document.getElementById('guest-date');
 if (dateInput) {
     const today = new Date();
     dateInput.value = today.toISOString().split('T')[0];
 }
-// SET DEFAULT JAM KE WAKTU SAAT INI
 const timeInput = document.getElementById('guest-time');
 if (timeInput) {
     const now = new Date();
@@ -235,7 +233,7 @@ function retakePhoto() { cameraResult.classList.add('hidden'); document.getEleme
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
-// MANAJEMEN STATISTIK & KALENDER
+// MANAJEMEN STATISTIK (DASHBOARD KIRI & TAB ANALITIK)
 // =========================================================
 function refreshDashboardMetrics() {
     let menunggu = 0, bertemu = 0, selesai = 0, ditolak = 0;
@@ -361,7 +359,7 @@ function renderScheduleAnalytics() {
 }
 
 // =========================================================
-// SUBMIT FORM TAMU (FORMAT 24 JAM + WIB)
+// SUBMIT FORM TAMU (FORMAT 24 JAM + WIB + JEDA 2 JAM)
 // =========================================================
 document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -370,7 +368,7 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     const instansi = document.getElementById('guest-instansi').value;
     const guestDate = document.getElementById('guest-date').value;
     
-    // Ambil Jam Input & Pasang WIB
+    // Ambil Jam Input Murni (Misal: "10:30")
     const guestTimeInput = document.getElementById('guest-time').value; 
     const planTimeWIB = guestTimeInput ? guestTimeInput + ' WIB' : '-';
 
@@ -384,28 +382,57 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     const dateObj = new Date(guestDate);
     const displayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
 
-    let conflictGuestName = null;
+    // CEK BENTROK LOGIKA 2 JAM
+    const newTimeParts = guestTimeInput.split(':');
+    const newTotalMins = parseInt(newTimeParts[0]) * 60 + parseInt(newTimeParts[1]);
+
+    let conflictData = null;
+
     for (const code in guestsDatabase) {
-        if (guestsDatabase[code].date === guestDate && guestsDatabase[code].status !== 'selesai' && guestsDatabase[code].status !== 'ditolak') {
-            conflictGuestName = guestsDatabase[code].name; break;
+        const data = guestsDatabase[code];
+        if (data.date === guestDate && data.status !== 'selesai' && data.status !== 'ditolak') {
+            const existParts = data.planTime.replace(' WIB','').split(':');
+            const existTotalMins = parseInt(existParts[0]) * 60 + parseInt(existParts[1]);
+            
+            // Jika selisih waktu dari jadwal yang ada kurang dari 120 menit (2 Jam)
+            if (Math.abs(newTotalMins - existTotalMins) < 120) {
+                // Cari saran waktu berikutnya (Tambah 2 jam dari jadwal lama)
+                let nextMins = existTotalMins + 120;
+                let nH = Math.floor(nextMins / 60);
+                let nM = nextMins % 60;
+                if (nH > 23) { nH = 23; nM = 59; } // Mentok jam 23:59
+                
+                const suggestStr = `${nH.toString().padStart(2,'0')}:${nM.toString().padStart(2,'0')}`;
+
+                conflictData = {
+                    name: data.name,
+                    existTime: data.planTime,
+                    suggestTime: suggestStr
+                };
+                break; 
+            }
         }
     }
 
-    if (conflictGuestName) {
+    if (conflictData) {
         document.getElementById('conflict-date-text').innerText = displayDate;
-        document.getElementById('conflict-name-text').innerText = conflictGuestName;
+        document.getElementById('conflict-time-text').innerText = conflictData.existTime;
+        document.getElementById('conflict-name-text').innerText = conflictData.name;
+        document.getElementById('conflict-suggest-time').innerText = conflictData.suggestTime + ' WIB';
+        
+        // Simpan saran di tombol
+        document.getElementById('btn-accept-suggestion').dataset.suggestTime = conflictData.suggestTime;
+
         document.getElementById('conflict-modal').classList.remove('hidden');
         setTimeout(() => { document.getElementById('conflict-card').classList.replace('scale-95', 'scale-100'); document.getElementById('conflict-card').classList.replace('opacity-0', 'opacity-100'); }, 10);
         return;
     }
 
-    // Jam Formulir Masuk Secara 24 Jam murni + WIB
+    // Lanjut Jika Tidak Bentrok
     const now = new Date();
     const timeStrWIB = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' WIB';
-    
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
-    // Simpan ke Data (dengan akhiran WIB)
     guestsDatabase[code] = { 
         name: guestName, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, 
         date: guestDate, displayDate: displayDate, planTime: planTimeWIB, time: timeStrWIB, outTime: '-', status: 'menunggu' 
@@ -437,10 +464,25 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
 
 window.printTicket = function() { document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket'); window.print(); }
 
+// TOMBOL MODAL KONFLIK: TERIMA SARAN JAM
+document.getElementById('btn-accept-suggestion')?.addEventListener('click', function() {
+    const suggestTime = this.dataset.suggestTime;
+    document.getElementById('guest-time').value = suggestTime; // Ubah paksa form
+    
+    document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0');
+    setTimeout(() => { 
+        document.getElementById('conflict-modal').classList.add('hidden'); 
+        // Langsung pencet tombol submit secara gaib!
+        document.getElementById('btn-submit-guest').click();
+    }, 300);
+});
+
+// TOMBOL MODAL KONFLIK: GANTI MANUAL
 document.getElementById('btn-change-schedule')?.addEventListener('click', () => {
     document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0');
-    setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-date').focus(); }, 300);
+    setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300);
 });
+
 document.getElementById('btn-next-guest')?.addEventListener('click', () => { switchAppView('view-guest-form'); });
 
 // =========================================================
@@ -518,13 +560,8 @@ window.openDetailModal = function (code) {
     const actionFooter = document.getElementById('modal-action-footer');
     const btnBertemu = document.getElementById('btn-mdl-bertemu');
     
-    if (data.status === 'selesai' || data.status === 'ditolak') {
-        actionFooter.classList.add('hidden'); 
-    } else {
-        actionFooter.classList.remove('hidden'); 
-        if(data.status === 'bertemu') btnBertemu.classList.add('hidden'); 
-        else btnBertemu.classList.remove('hidden'); 
-    }
+    if (data.status === 'selesai' || data.status === 'ditolak' || data.status === 'menunggu') actionFooter.classList.add('hidden'); 
+    else { actionFooter.classList.remove('hidden'); if(data.status === 'bertemu') btnBertemu.classList.add('hidden'); else btnBertemu.classList.remove('hidden'); }
 
     const modal = document.getElementById('detail-modal');
     const card = document.getElementById('detail-card');
@@ -552,6 +589,7 @@ function updateModalBadgeUI(status) {
 // =========================================================
 // CEK TIKET (TAMU) & VERIFIKASI APPROVAL (ADMIN)
 // =========================================================
+document.getElementById('track-input')?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
 document.getElementById('btn-do-track')?.addEventListener('click', () => {
     const code = document.getElementById('track-input').value.trim().toUpperCase();
     if (!code) return;
@@ -561,7 +599,7 @@ document.getElementById('btn-do-track')?.addEventListener('click', () => {
         const data = guestsDatabase[code];
         document.getElementById('track-not-found').classList.add('hidden'); document.getElementById('track-found').classList.remove('hidden');
         document.getElementById('track-res-name').innerText = data.name; 
-        document.getElementById('track-res-date').innerText = `${data.displayDate} | Rencana Tiba: ${data.planTime}`;
+        document.getElementById('track-res-date').innerText = `${data.displayDate} | Tiba: ${data.planTime}`;
         const statusEl = document.getElementById('track-res-status'); const dotEl = document.getElementById('track-res-dot'); const barEl = document.getElementById('track-color-bar');
 
         if (data.status === 'menunggu') { statusEl.innerText = "Menunggu Persetujuan"; statusEl.className = "text-sm font-black text-amber-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-amber-500"; } 
@@ -584,7 +622,14 @@ function executeVerification(code) {
         codeToVerify = code;
         notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
 
-        document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
+        document.getElementById('v-res-photo').src = data.photo; 
+        document.getElementById('v-res-code').innerText = code; 
+        document.getElementById('v-res-name').innerText = data.name; 
+        document.getElementById('v-res-instansi').innerText = data.instansi; 
+        document.getElementById('v-res-kategori').innerText = data.kategori; 
+        document.getElementById('v-res-date').innerText = data.displayDate; 
+        document.getElementById('v-res-time').innerText = data.planTime; 
+        document.getElementById('v-res-tujuan').innerText = data.tujuan;
 
         const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
 
@@ -602,7 +647,14 @@ function executeVerification(code) {
     }
 }
 
+document.getElementById('admin-verify-input')?.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-admin-verify').click(); }
+});
 document.getElementById('btn-admin-verify')?.addEventListener('click', () => { executeVerification(document.getElementById('admin-verify-input').value.trim().toUpperCase()); });
+
+document.getElementById('quick-verify-input')?.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-quick-verify-go').click(); }
+});
 document.getElementById('btn-quick-verify-go')?.addEventListener('click', () => {
     const code = document.getElementById('quick-verify-input').value.trim().toUpperCase();
     if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code);
