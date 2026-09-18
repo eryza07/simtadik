@@ -14,27 +14,16 @@ if (timeInput) { const now = new Date(); timeInput.value = `${now.getHours().toS
 const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 // =========================================================
-// FITUR BARU: GENERATOR SUARA "TING!" (Tanpa MP3)
+// FITUR: GENERATOR SUARA "TING!" 
 // =========================================================
 function playTingSound() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     try {
-        const ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime); 
-        osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
-
-        gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.5);
+        const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gainNode = ctx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.5, ctx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        osc.connect(gainNode); gainNode.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.5);
     } catch (e) { console.log("Audio API blocked"); }
 }
 
@@ -49,12 +38,16 @@ document.getElementById('btn-header-notif')?.addEventListener('click', function(
     // Matikan titik merah saat lonceng diklik
     if(dot) dot.classList.add('hidden');
 
-    if (dropdown.classList.contains('opacity-0')) {
-        dropdown.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-        dropdown.classList.add('opacity-100', 'scale-100');
+    if (dropdown.classList.contains('hidden') || dropdown.classList.contains('opacity-0')) {
+        dropdown.classList.remove('hidden'); // BUGFIX: Lepas display hidden dulu
+        setTimeout(() => {
+            dropdown.classList.remove('opacity-0', 'scale-95');
+            dropdown.classList.add('opacity-100', 'scale-100');
+        }, 10);
     } else {
         dropdown.classList.remove('opacity-100', 'scale-100');
-        dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        dropdown.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => dropdown.classList.add('hidden'), 200); // Sembunyikan setelah animasi selesai
     }
 });
 
@@ -62,9 +55,10 @@ document.getElementById('btn-header-notif')?.addEventListener('click', function(
 document.addEventListener('click', function(e) {
     const dropdown = document.getElementById('notif-dropdown');
     const btn = document.getElementById('btn-header-notif');
-    if (dropdown && !dropdown.classList.contains('opacity-0') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+    if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
         dropdown.classList.remove('opacity-100', 'scale-100');
-        dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        dropdown.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => dropdown.classList.add('hidden'), 200);
     }
 });
 
@@ -75,16 +69,8 @@ function addNotificationToList(title, message, timeStr) {
 
     const item = document.createElement('div');
     item.className = "p-3 hover:bg-slate-50 rounded-xl transition cursor-pointer border border-transparent hover:border-slate-100 flex gap-3 fade-in";
-    item.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="bell" class="w-4 h-4"></i></div>
-        <div>
-            <h5 class="text-xs font-bold text-slate-900">${title}</h5>
-            <p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${message}</p>
-            <span class="text-[9px] font-bold text-slate-400 mt-1 block">${timeStr}</span>
-        </div>
-    `;
-    list.prepend(item);
-    lucide.createIcons();
+    item.innerHTML = `<div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="bell" class="w-4 h-4"></i></div><div><h5 class="text-xs font-bold text-slate-900">${title}</h5><p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${message}</p><span class="text-[9px] font-bold text-slate-400 mt-1 block">${timeStr}</span></div>`;
+    list.prepend(item); lucide.createIcons();
 }
 
 document.getElementById('btn-clear-notif')?.addEventListener('click', () => {
@@ -96,37 +82,24 @@ document.getElementById('btn-clear-notif')?.addEventListener('click', () => {
 function showNotification(title, message) {
     const container = document.getElementById('toast-container');
     if(!container) return;
-
-    // 1. Bunyikan suara
     playTingSound();
 
-    // 2. Tampilkan Pop-up Toast
     const toast = document.createElement('div');
     toast.className = 'bg-white p-4 rounded-2xl shadow-xl border border-rose-200 w-72 flex gap-3 items-start toast-enter';
     toast.innerHTML = `<div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0"><i data-lucide="bell-ring" class="w-5 h-5"></i></div><div><h4 class="text-sm font-bold text-slate-900">${title}</h4><p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${message}</p></div>`;
-    container.appendChild(toast);
-    lucide.createIcons();
+    container.appendChild(toast); lucide.createIcons();
 
-    setTimeout(() => {
-        toast.classList.replace('toast-enter', 'toast-leave');
-        setTimeout(() => toast.remove(), 500); 
-    }, 5000);
+    setTimeout(() => { toast.classList.replace('toast-enter', 'toast-leave'); setTimeout(() => toast.remove(), 500); }, 5000);
 
-    // 3. Tambahkan ke Panel Dropdown Lonceng
-    const now = new Date();
-    const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} WIB`;
+    const now = new Date(); const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} WIB`;
     addNotificationToList(title, message, timeStr);
-
-    // 4. Nyalakan titik merah di Menu dan di Lonceng
     setRedDotStatus(true);
 }
 
 function setRedDotStatus(show) {
-    // Di Lonceng Header
     const dotHeader = document.getElementById('header-notif-dot');
     if(dotHeader) { if(show) dotHeader.classList.remove('hidden'); else dotHeader.classList.add('hidden'); }
     
-    // Di Menu Sidebar Admin
     document.querySelectorAll('.nav-red-dot').forEach(dot => {
         if (show) dot.classList.remove('hidden'); else dot.classList.add('hidden');
     });
@@ -137,15 +110,13 @@ function setRedDotStatus(show) {
 // =========================================================
 function triggerIconAnimation(element) { element.classList.remove('animate-icon'); void element.offsetWidth; element.classList.add('animate-icon'); }
 function updateIndicators() {
-    const activeDesktop = document.querySelector(`.nav-tab-btn[data-target="${currentActiveView}"]`);
-    const desktopIndicator = document.getElementById('sliding-indicator');
+    const activeDesktop = document.querySelector(`.nav-tab-btn[data-target="${currentActiveView}"]`); const desktopIndicator = document.getElementById('sliding-indicator');
     if (activeDesktop && activeDesktop.offsetParent !== null) {
         const navRect = activeDesktop.closest('nav').getBoundingClientRect(); const btnRect = activeDesktop.getBoundingClientRect();
         desktopIndicator.style.top = `${btnRect.top - navRect.top}px`; desktopIndicator.style.height = `${btnRect.height}px`; desktopIndicator.style.opacity = '1';
     } else if (desktopIndicator) desktopIndicator.style.opacity = '0';
 
-    const activeMobile = document.querySelector(`.m-nav-btn[data-target="${currentActiveView}"], .m-admin-btn[data-target="${currentActiveView}"]`);
-    const mobileIndicator = document.getElementById('mobile-sliding-indicator');
+    const activeMobile = document.querySelector(`.m-nav-btn[data-target="${currentActiveView}"], .m-admin-btn[data-target="${currentActiveView}"]`); const mobileIndicator = document.getElementById('mobile-sliding-indicator');
     if (activeMobile && activeMobile.offsetParent !== null && mobileIndicator) {
         const navRect = activeMobile.closest('nav').getBoundingClientRect(); const btnRect = activeMobile.getBoundingClientRect();
         mobileIndicator.style.left = `${btnRect.left - navRect.left}px`; mobileIndicator.style.width = `${btnRect.width}px`; mobileIndicator.style.opacity = '1';
@@ -155,9 +126,7 @@ window.addEventListener('resize', () => { setTimeout(updateIndicators, 100); });
 
 function switchAppView(targetId) {
     currentActiveView = targetId;
-    if (currentUserRole === 'admin' && (targetId === 'view-admin-overview' || targetId === 'view-admin-verify')) {
-        document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.add('hidden')); // Matikan titik di menu
-    }
+    if (currentUserRole === 'admin' && (targetId === 'view-admin-overview' || targetId === 'view-admin-verify')) { document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.add('hidden')); }
 
     document.querySelectorAll('.app-view').forEach(view => { view.classList.remove('block', 'flex'); view.classList.add('hidden'); });
     const target = document.getElementById(targetId); if (!target) return; target.classList.remove('hidden');
@@ -175,11 +144,7 @@ function switchAppView(targetId) {
     setTimeout(updateIndicators, 50); 
 }
 
-function bindNavEvents() {
-    document.querySelectorAll('.nav-tab-btn, .m-nav-btn, .m-admin-btn').forEach(btn => {
-        btn.addEventListener('click', function () { triggerIconAnimation(this); switchAppView(this.getAttribute('data-target')); });
-    });
-}
+function bindNavEvents() { document.querySelectorAll('.nav-tab-btn, .m-nav-btn, .m-admin-btn').forEach(btn => { btn.addEventListener('click', function () { triggerIconAnimation(this); switchAppView(this.getAttribute('data-target')); }); }); }
 
 function renderMobileNav() {
     const nav = document.getElementById('mobile-bottom-nav');
@@ -197,28 +162,17 @@ renderMobileNav(); setTimeout(updateIndicators, 100);
 // =========================================================
 // GRAFIK KATEGORI TAMU
 // =========================================================
-function createChartConfig() {
-    return { type: 'bar', data: { labels: ['Siswa', 'Dinas', 'Guru', 'Umum'], datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }, animation: { duration: 1000, easing: 'easeOutQuart' } } };
-}
-function initChart() {
-    const ctxOverview = document.getElementById('visitorChartOverview'); const ctxAnalitik = document.getElementById('visitorChartAnalitik');
-    if(ctxOverview) chartOverview = new Chart(ctxOverview.getContext('2d'), createChartConfig());
-    if(ctxAnalitik) chartAnalitik = new Chart(ctxAnalitik.getContext('2d'), createChartConfig());
-}
+function createChartConfig() { return { type: 'bar', data: { labels: ['Siswa', 'Dinas', 'Guru', 'Umum'], datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }, animation: { duration: 1000, easing: 'easeOutQuart' } } }; }
+function initChart() { const ctxOverview = document.getElementById('visitorChartOverview'); const ctxAnalitik = document.getElementById('visitorChartAnalitik'); if(ctxOverview) chartOverview = new Chart(ctxOverview.getContext('2d'), createChartConfig()); if(ctxAnalitik) chartAnalitik = new Chart(ctxAnalitik.getContext('2d'), createChartConfig()); }
 initChart(); 
-function updateChartData(siswa, dinas, guru, umum) {
-    const dataObj = [siswa, dinas, guru, umum];
-    if (chartOverview) { chartOverview.data.datasets[0].data = dataObj; chartOverview.update(); }
-    if (chartAnalitik) { chartAnalitik.data.datasets[0].data = dataObj; chartAnalitik.update(); }
-}
+function updateChartData(siswa, dinas, guru, umum) { const dataObj = [siswa, dinas, guru, umum]; if (chartOverview) { chartOverview.data.datasets[0].data = dataObj; chartOverview.update(); } if (chartAnalitik) { chartAnalitik.data.datasets[0].data = dataObj; chartAnalitik.update(); } }
 
 // =========================================================
 // LOGIN AMAN
 // =========================================================
 document.getElementById('login-form')?.addEventListener('submit', function(e) {
     e.preventDefault(); 
-    const userVal = document.getElementById('username-input').value.trim().toLowerCase();
-    const passVal = document.getElementById('password-input').value.trim();
+    const userVal = document.getElementById('username-input').value.trim().toLowerCase(); const passVal = document.getElementById('password-input').value.trim();
     if(!userVal || !passVal) { alert("Username dan Password tidak boleh kosong!"); return; }
 
     let roleValid = null;
@@ -239,7 +193,6 @@ document.getElementById('login-form')?.addEventListener('submit', function(e) {
             currentUserRole = 'admin'; document.getElementById('admin-nav-group').classList.remove('hidden'); document.getElementById('admin-nav-group').classList.add('flex'); switchAppView('view-admin-overview'); 
         }
         
-        // Munculkan lonceng
         document.getElementById('header-notif-container').classList.remove('hidden');
 
         const btnAction = document.getElementById('btn-sidebar-action');
@@ -255,8 +208,6 @@ window.processLogout = function() {
     document.getElementById('admin-nav-group').classList.add('hidden'); document.getElementById('admin-nav-group').classList.remove('flex');
     document.getElementById('kepsek-nav-group').classList.add('hidden'); document.getElementById('kepsek-nav-group').classList.remove('flex');
     document.getElementById('guest-nav-group').classList.remove('hidden'); document.getElementById('guest-nav-group').classList.add('flex');
-
-    // Sembunyikan lonceng
     document.getElementById('header-notif-container').classList.add('hidden');
 
     const btnAction = document.getElementById('btn-sidebar-action');
@@ -269,21 +220,13 @@ window.processLogout = function() {
 // KAMERA WEBRTC
 // =========================================================
 document.getElementById('kategori-select')?.addEventListener('change', function () {
-    const container = document.getElementById('kelas-container');
-    if (this.value === 'siswa') container.classList.add('is-active'); else container.classList.remove('is-active');
+    const container = document.getElementById('kelas-container'); if (this.value === 'siswa') container.classList.add('is-active'); else container.classList.remove('is-active');
 });
 
 const cameraVideo = document.getElementById('camera-video'); const cameraCanvas = document.getElementById('camera-canvas'); const cameraResult = document.getElementById('camera-result'); let videoStream = null;
 
-async function startCamera() {
-    try { videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); cameraVideo.srcObject = videoStream; document.getElementById('camera-idle').classList.add('hidden'); cameraVideo.classList.remove('hidden'); document.getElementById('btn-capture').classList.remove('hidden');
-    } catch (err) { alert("Kamera diblokir oleh browser."); }
-}
-function takeSnapshot() {
-    if (!videoStream) return; cameraCanvas.width = cameraVideo.videoWidth; cameraCanvas.height = cameraVideo.videoHeight;
-    cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0); cameraResult.src = cameraCanvas.toDataURL('image/jpeg', 0.85);
-    cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden'); cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); stopCamera();
-}
+async function startCamera() { try { videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); cameraVideo.srcObject = videoStream; document.getElementById('camera-idle').classList.add('hidden'); cameraVideo.classList.remove('hidden'); document.getElementById('btn-capture').classList.remove('hidden'); } catch (err) { alert("Kamera diblokir oleh browser."); } }
+function takeSnapshot() { if (!videoStream) return; cameraCanvas.width = cameraVideo.videoWidth; cameraCanvas.height = cameraVideo.videoHeight; cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0); cameraResult.src = cameraCanvas.toDataURL('image/jpeg', 0.85); cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden'); cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); stopCamera(); }
 function retakePhoto() { cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); startCamera(); }
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
@@ -409,7 +352,7 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
 
         switchAppView('view-success'); appendHistoryRow(code); refreshDashboardMetrics();
 
-        // TAMPILKAN NOTIFIKASI JIKA ADA TAB LAIN / SIMULASI REALTIME
+        // TAMPILKAN NOTIFIKASI
         showNotification("Tamu Baru Terdaftar!", `${guestName} dari ${instansi} telah mengisi buku tamu.`);
 
         submitBtn.disabled = false; document.getElementById('submit-text').innerText = "Kirim & Buat Tiket Kunjungan"; document.getElementById('submit-icon').classList.remove('hidden'); document.getElementById('submit-spinner').classList.add('hidden');
