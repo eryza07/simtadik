@@ -35,12 +35,10 @@ body {
 }
 .animate-icon svg { animation: iconBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-/* Animasi Sliding Indicator (Garis Ajaib) */
-.sliding-indicator {
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-}
+/* Animasi Sliding Indicator */
+.sliding-indicator { transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
 
-/* Transisi Tombol Dasar */
+/* Transisi Tombol */
 button, .nav-tab-btn, .m-nav-btn, .m-admin-btn { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
 button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { transform: scale(0.95); }
 
