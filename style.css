@@ -1,3 +1,4 @@
+/* Import Font */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 body { 
@@ -38,9 +39,32 @@ body {
 /* Animasi Sliding Indicator */
 .sliding-indicator { transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
 
-/* Transisi Tombol */
+/* =========================================
+   FITUR BARU: ANIMASI INPUT NGE-POP SAAT NGETIK
+   ========================================= */
+input, select, textarea {
+    /* Transisi memantul (bouncing) yang super smooth */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    transform: scale(1);
+    position: relative;
+}
+
+/* Saat kolom diklik / sedang diketik */
+input:focus, select:focus, textarea:focus {
+    transform: scale(1.025); /* Membesar 2.5% */
+    background-color: #ffffff !important; /* Warna berubah jadi putih terang */
+    border-color: #e11d48 !important; /* Warna garis berubah merah rose */
+    /* Bayangan bersinar agar terlihat melayang (3D) */
+    box-shadow: 0 15px 30px -5px rgba(225, 29, 72, 0.15), 0 8px 10px -6px rgba(225, 29, 72, 0.1) !important; 
+    z-index: 10; /* Agar tidak tertumpuk elemen lain saat membesar */
+    outline: none !important;
+}
+
+/* Transisi Tombol (Mengecil saat diklik) */
 button, .nav-tab-btn, .m-nav-btn, .m-admin-btn { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { transform: scale(0.95); }
+button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { 
+    transform: scale(0.94) !important; /* Sedikit ditekan ke dalam */
+}
 
 /* Chart Animation */
 .donut-ring { transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
