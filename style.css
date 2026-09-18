@@ -28,11 +28,27 @@ body {
     100% { opacity: 1; transform: translateY(0) scale(1); } 
 }
 
-/* Transisi Tombol & Hover */
+/* Transisi Tombol & Hover Default */
 button, .nav-tab-btn, .m-nav-btn, .m-admin-btn {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-button:active { transform: scale(0.95); }
+button:active:not(.nav-tab-btn):not(.m-nav-btn):not(.m-admin-btn) { 
+    transform: scale(0.95); 
+}
+
+/* =========================================
+   ANIMASI IKON SAAT DI-KLIK (Micro-interactions)
+   ========================================= */
+@keyframes iconPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.75) translateY(2px); }
+    70% { transform: scale(1.15) translateY(-2px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+.animate-icon svg {
+    animation: iconPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
 /* Donut Chart Animation */
 .donut-ring {
@@ -45,16 +61,13 @@ button:active { transform: scale(0.95); }
    MODE CETAK (PRINT & SAVE TO PDF)
    ========================================= */
 @media print {
-    /* Sembunyikan UI Aplikasi Utama */
     .no-print, header, aside, nav, button, .app-view, #right-panel { display: none !important; }
     body, main { background: white !important; overflow: visible !important; height: auto !important; width: 100% !important; display: block !important; }
     
-    /* MODE 1: CETAK TIKET TAMU */
     body.print-mode-ticket #view-success { display: flex !important; padding: 0 !important; align-items: flex-start; justify-content: flex-start; }
     body.print-mode-ticket .print-card { box-shadow: none !important; border: 3px solid #0f172a !important; margin: 0 !important; max-width: 300px !important; }
     body.print-mode-ticket #view-success h3, body.print-mode-ticket #view-success p.text-slate-500 { display: none !important; }
     
-    /* MODE 2: CETAK LAPORAN PDF KEPSEK */
     body.print-mode-report #print-report-container { display: block !important; width: 100%; color: black; }
     body.print-mode-report #print-report-container table { width: 100%; border-collapse: collapse; }
     body.print-mode-report #print-report-container th, body.print-mode-report #print-report-container td { border: 1px solid #000; padding: 8px; font-size: 12px; }
