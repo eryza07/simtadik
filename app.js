@@ -2,7 +2,10 @@ lucide.createIcons();
 
 const guestsDatabase = {};
 let isAdminLoggedIn = false;
-let visitorChartInstance = null;
+
+// Variabel Penampung Grafik
+let chartOverview = null;
+let chartAnalitik = null;
 let currentActiveView = 'view-guest-form';
 
 // SET DEFAULT TANGGAL HARI INI
@@ -11,7 +14,7 @@ if (dateInput) {
     const today = new Date();
     dateInput.value = today.toISOString().split('T')[0];
 }
-// SET DEFAULT JAM KE WAKTU SAAT INI (Format 24 Jam)
+// SET DEFAULT JAM KE WAKTU SAAT INI
 const timeInput = document.getElementById('guest-time');
 if (timeInput) {
     const now = new Date();
@@ -127,24 +130,32 @@ function renderMobileNav() {
 renderMobileNav(); setTimeout(updateIndicators, 100);
 
 // =========================================================
-// FITUR GRAFIK (CHART.JS) DI TAB ANALITIK
+// FITUR GRAFIK (CHART.JS) DUA INSTANSI
 // =========================================================
-function initChart() {
-    const ctx = document.getElementById('visitorChart');
-    if(!ctx) return;
-    visitorChartInstance = new Chart(ctx.getContext('2d'), {
+function createChartConfig() {
+    return {
         type: 'bar',
         data: {
-            labels: ['Siswa/Siswi', 'Dinas/Instansi', 'Guru/Pendidik', 'Umum/Wali Murid'],
-            datasets: [{ label: 'Jumlah Pendaftar', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }]
+            labels: ['Siswa', 'Dinas', 'Guru', 'Umum'],
+            datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }, animation: { duration: 1000, easing: 'easeOutQuart' } }
-    });
+    };
+}
+
+function initChart() {
+    const ctxOverview = document.getElementById('visitorChartOverview');
+    const ctxAnalitik = document.getElementById('visitorChartAnalitik');
+    
+    if(ctxOverview) chartOverview = new Chart(ctxOverview.getContext('2d'), createChartConfig());
+    if(ctxAnalitik) chartAnalitik = new Chart(ctxAnalitik.getContext('2d'), createChartConfig());
 }
 initChart(); 
 
 function updateChartData(siswa, dinas, guru, umum) {
-    if (visitorChartInstance) { visitorChartInstance.data.datasets[0].data = [siswa, dinas, guru, umum]; visitorChartInstance.update(); }
+    const dataObj = [siswa, dinas, guru, umum];
+    if (chartOverview) { chartOverview.data.datasets[0].data = dataObj; chartOverview.update(); }
+    if (chartAnalitik) { chartAnalitik.data.datasets[0].data = dataObj; chartAnalitik.update(); }
 }
 
 // =========================================================
@@ -224,7 +235,7 @@ function retakePhoto() { cameraResult.classList.add('hidden'); document.getEleme
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
-// MANAJEMEN STATISTIK (DASHBOARD KIRI & TAB ANALITIK)
+// MANAJEMEN STATISTIK & KALENDER
 // =========================================================
 function refreshDashboardMetrics() {
     let menunggu = 0, bertemu = 0, selesai = 0, ditolak = 0;
@@ -263,14 +274,12 @@ function refreshDashboardMetrics() {
     // Update Tab Analitik
     if(document.getElementById('stat-total-tamu')) {
         document.getElementById('stat-total-tamu').innerText = totalTamu;
-        const baseTotal = totalTamu === 0 ? 1 : totalTamu;
         const donutPct = Math.min(100, Math.round((totalTamu / 20) * 100)); 
         const donutRing = document.getElementById('donut-progress');
         if (donutRing) donutRing.setAttribute('stroke-dasharray', `${donutPct}, 100`);
         document.getElementById('donut-pct').innerText = `${donutPct}%`;
     }
 
-    // Render Tabel Jadwal Mingguan
     renderScheduleAnalytics();
 }
 
@@ -304,9 +313,6 @@ function renderActiveGuestsGrid() {
     lucide.createIcons();
 }
 
-// =========================================================
-// TABEL ANALITIK JADWAL (FORMAT 24H WIB)
-// =========================================================
 function renderScheduleAnalytics() {
     const tbody = document.getElementById('analytics-schedule-body');
     if (!tbody) return;
@@ -393,7 +399,7 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
         return;
     }
 
-    // Jam Formulir Masuk Secara 24 Jam murni
+    // Jam Formulir Masuk Secara 24 Jam murni + WIB
     const now = new Date();
     const timeStrWIB = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' WIB';
     
@@ -464,8 +470,13 @@ function changeGuestStatus(code, newStatus) {
 
     if (newStatus === 'selesai' || newStatus === 'ditolak') {
         const o = new Date();
-        // Set Keluar Jam dengan format 24 jam + WIB
         data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')} WIB` : 'Ditolak';
+        
+        const ovRow = document.getElementById(`ov-row-${code}`);
+        if(ovRow) {
+            ovRow.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => ovRow.remove(), 300);
+        }
     }
 
     const histBadge = document.getElementById(`hist-badge-${code}`);
@@ -496,7 +507,7 @@ window.openDetailModal = function (code) {
 
     document.getElementById('detail-photo').src = data.photo;
     document.getElementById('detail-code').innerText = code;
-    document.getElementById('detail-datetime').innerText = `${data.displayDate} - ${data.time}`;
+    document.getElementById('detail-datetime').innerText = `${data.displayDate} - ${data.planTime}`;
     document.getElementById('detail-outtime').innerText = data.outTime;
     document.getElementById('detail-name').innerText = data.name;
     document.getElementById('detail-instansi').innerText = `${data.instansi} (${data.kategori})`;
@@ -507,8 +518,13 @@ window.openDetailModal = function (code) {
     const actionFooter = document.getElementById('modal-action-footer');
     const btnBertemu = document.getElementById('btn-mdl-bertemu');
     
-    if (data.status === 'selesai' || data.status === 'ditolak' || data.status === 'menunggu') actionFooter.classList.add('hidden'); 
-    else { actionFooter.classList.remove('hidden'); if(data.status === 'bertemu') btnBertemu.classList.add('hidden'); else btnBertemu.classList.remove('hidden'); }
+    if (data.status === 'selesai' || data.status === 'ditolak') {
+        actionFooter.classList.add('hidden'); 
+    } else {
+        actionFooter.classList.remove('hidden'); 
+        if(data.status === 'bertemu') btnBertemu.classList.add('hidden'); 
+        else btnBertemu.classList.remove('hidden'); 
+    }
 
     const modal = document.getElementById('detail-modal');
     const card = document.getElementById('detail-card');
@@ -568,7 +584,7 @@ function executeVerification(code) {
         codeToVerify = code;
         notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
 
-        document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.time; document.getElementById('v-res-tujuan').innerText = data.tujuan;
+        document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
 
         const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
 
