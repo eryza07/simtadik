@@ -15,15 +15,12 @@
 
     <!-- SIDEBAR KIRI (DESKTOP) -->
     <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
-        
         <nav class="flex flex-col items-center gap-6 w-full relative" id="desktop-sidebar-nav">
             
-            <!-- GARIS MAGIC SLIDING DESKTOP -->
             <div id="sliding-indicator" class="sliding-indicator absolute right-0 w-[3px] bg-rose-600 rounded-l-full opacity-0 pointer-events-none z-10" style="top: 0; height: 0;"></div>
 
-            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-black text-sm mb-2 shadow-sm border border-rose-100 overflow-hidden p-0.5">
-                <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <span class="hidden">ST</span>
+            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 overflow-hidden p-1">
+                <img src="logo.png" alt="Logo" class="w-full h-full object-contain">
             </div>
 
             <!-- Menu Tamu -->
@@ -44,6 +41,10 @@
                     <i data-lucide="home" class="w-5 h-5"></i>
                     <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Beranda</span>
                 </button>
+                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-statistik">
+                    <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Analitik</span>
+                </button>
                 <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-verify">
                     <i data-lucide="scan" class="w-5 h-5"></i>
                     <span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight">Verifikasi</span>
@@ -54,8 +55,6 @@
                 </button>
             </div>
         </nav>
-
-        <!-- Tombol Aksi Bawah -->
         <div class="flex flex-col items-center gap-3 w-full px-2">
             <button id="btn-sidebar-action" class="w-12 h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-lg shadow-rose-500/25 transition">
                 <i data-lucide="lock" class="w-5 h-5" id="sidebar-icon"></i><span class="text-[9px] font-bold mt-0.5" id="sidebar-text">Login</span>
@@ -67,19 +66,20 @@
     <div class="flex-1 flex flex-col h-full overflow-hidden relative">
 
         <header class="bg-white border-b border-slate-200/80 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0 z-20">
-            <div>
+            <div class="md:hidden flex items-center gap-3">
+                <div class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden p-1 shadow-sm"><img src="logo.png" alt="Logo" class="w-full h-full object-contain"></div>
+                <h1 class="font-extrabold text-sm tracking-widest uppercase text-slate-900">SMAN 1 Kandangan</h1>
+            </div>
+            <div class="hidden md:block">
                 <h1 class="font-extrabold text-base md:text-lg text-slate-900 tracking-tight">Penerima Tamu</h1>
                 <p class="text-[11px] text-slate-400 hidden sm:block">Sistem Registrasi & Verifikasi Terpadu</p>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="text-right hidden sm:block">
+            <div class="hidden md:flex items-center gap-3">
+                <div class="text-right">
                     <p class="text-xs font-bold text-slate-800 leading-tight">SMAN 1 KANDANGAN</p>
                     <p class="text-[10px] text-slate-400 font-medium">Kab. Kediri, Jawa Timur</p>
                 </div>
-                <div class="w-9 h-9 rounded-xl border border-slate-200 overflow-hidden bg-white p-0.5 shadow-sm flex items-center justify-center">
-                    <img src="logo.png" alt="Logo SMAN 1" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="hidden w-full h-full bg-rose-500 text-white items-center justify-center text-xs font-black">S1</div>
-                </div>
+                <div class="w-10 h-10 rounded-xl border border-slate-200 overflow-hidden bg-white p-1 shadow-sm flex items-center justify-center"><img src="logo.png" alt="Logo SMAN 1" class="w-full h-full object-contain"></div>
             </div>
         </header>
 
@@ -98,10 +98,20 @@
                             <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap *</label><input type="text" id="guest-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
                             <div><label class="block text-xs font-bold text-slate-700 mb-1.5">No. WhatsApp *</label><input type="tel" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
                         </div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Asal Instansi / Lembaga *</label><input type="text" id="guest-instansi" required placeholder="Contoh: Dinas, Wali Murid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
+                        
+                        <!-- BARU: BARIS TANGGAL & JAM -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Asal Instansi / Lembaga *</label><input type="text" id="guest-instansi" required placeholder="Contoh: Dinas Pendidikan, Wali Murid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Pertemuan *</label><input type="date" id="guest-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 cursor-pointer transition"></div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5 flex justify-between"><span>Tgl Pertemuan *</span><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i></label>
+                                <input type="date" id="guest-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 cursor-pointer transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5 flex justify-between"><span>Rencana Jam Tiba *</span><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i></label>
+                                <input type="time" id="guest-time" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 cursor-pointer transition">
+                            </div>
                         </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1.5">Kategori Tamu *</label>
@@ -111,7 +121,7 @@
                             </div>
                             <div id="kelas-container" class="kelas-wrapper"><div class="kelas-inner pt-0"><label class="block text-xs font-bold text-slate-700 mb-1.5">Kelas / Jurusan</label><input type="text" id="input-kelas" placeholder="Contoh: X MIPA 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div></div>
                         </div>
-                        <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Tujuan Bertemu / Keperluan *</label><textarea id="guest-tujuan" rows="2" required placeholder="Jelaskan keperluan Anda secara singkat..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 resize-none transition"></textarea></div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Tujuan Bertemu / Keperluan *</label><textarea id="guest-tujuan" rows="2" required placeholder="Jelaskan keperluan secara singkat..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 resize-none transition"></textarea></div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Foto Identitas (Live Camera)</label>
                             <div class="relative border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center min-h-[220px]">
@@ -123,7 +133,7 @@
                             </div>
                         </div>
                         <div class="pt-2">
-                            <button type="submit" id="btn-submit-guest" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-4 text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-lg shadow-rose-600/25">
+                            <button type="submit" id="btn-submit-guest" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-4 text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/25 transition-all">
                                 <span id="submit-text">Kirim & Buat Tiket Kunjungan</span><i data-lucide="arrow-right" id="submit-icon" class="w-4 h-4"></i><div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             </button>
                         </div>
@@ -142,7 +152,7 @@
                             <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tiket Masuk Tamu</p><h4 class="text-base font-extrabold text-slate-900">SMAN 1 Kandangan</h4></div><i data-lucide="ticket" class="w-6 h-6 text-rose-500"></i>
                         </div>
                         <div class="mb-3"><p class="text-[10px] text-slate-400 uppercase font-bold">Nama Tamu</p><p id="ticket-name" class="font-bold text-slate-900 text-sm">-</p></div>
-                        <div class="mb-5"><p class="text-[10px] text-slate-400 uppercase font-bold">Tanggal Pertemuan</p><p id="ticket-date-display" class="font-bold text-rose-600 text-sm">-</p></div>
+                        <div class="mb-5"><p class="text-[10px] text-slate-400 uppercase font-bold">Jadwal Pertemuan</p><p id="ticket-date-display" class="font-bold text-rose-600 text-sm">-</p></div>
                         <div class="bg-slate-950 p-4 rounded-2xl text-center"><p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Kode Pelacakan</p><p id="ticket-code" class="text-2xl font-black text-white tracking-widest font-mono">SMAN1-XXXX</p></div>
                     </div>
                     <div class="flex gap-2 no-print">
@@ -165,7 +175,7 @@
                         <div class="absolute top-0 right-0 w-2 h-full bg-rose-500" id="track-color-bar"></div>
                         <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Informasi Kunjungan</h4>
                         <div class="mb-3"><p class="text-[10px] text-slate-400 uppercase font-bold">Nama Tamu</p><p id="track-res-name" class="font-bold text-slate-900 text-sm">-</p></div>
-                        <div class="mb-4"><p class="text-[10px] text-slate-400 uppercase font-bold">Tanggal Pertemuan</p><p id="track-res-date" class="font-bold text-rose-600 text-xs">-</p></div>
+                        <div class="mb-4"><p class="text-[10px] text-slate-400 uppercase font-bold">Jadwal Pertemuan</p><p id="track-res-date" class="font-bold text-rose-600 text-xs">-</p></div>
                         <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
                             <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Status Saat Ini:</p>
                             <div class="flex items-center gap-2"><span id="track-res-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span><p id="track-res-status" class="text-sm font-black text-amber-600">Menunggu</p></div>
@@ -189,7 +199,9 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: DASHBOARD ADMIN OVERVIEW -->
+            <!-- =========================================================
+                 VIEW 5: ADMIN BERANDA (LIVE MONITOR SINGKAT)
+                 ========================================================= -->
             <div id="view-admin-overview" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
@@ -199,48 +211,33 @@
                             <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div class="flex items-center gap-4">
                                     <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center font-extrabold text-xl shadow-inner">TU</div>
-                                    <div><h2 class="text-xl md:text-2xl font-black tracking-tight">Petugas TU - SMAN 1 Kandangan</h2><div class="flex flex-wrap items-center gap-2 text-xs text-slate-300 mt-1"><span class="font-mono bg-white/10 px-2 py-0.5 rounded-md font-semibold text-rose-300">POS-01</span><span>•</span><span class="text-emerald-400 font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Sesi Aktif</span></div></div>
+                                    <div><h2 class="text-xl md:text-2xl font-black tracking-tight">Petugas TU - SMAN 1 Kandangan</h2><div class="flex flex-wrap items-center gap-2 text-xs text-slate-300 mt-1"><span class="font-mono bg-white/10 px-2 py-0.5 rounded-md font-semibold text-rose-300">POS-01</span><span>•</span><span class="text-emerald-400 font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Aktif</span></div></div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- 3 Angka Pantauan Cepat (Disederhanakan) -->
                         <div>
                             <div class="flex items-center justify-between mb-4">
-                                <div><h3 class="text-lg font-bold text-slate-900 tracking-tight">Statistik Tamu Harian</h3></div>
+                                <h3 class="text-lg font-bold text-slate-900 tracking-tight">Pantauan Kilat Harian</h3>
                                 <span class="text-[11px] font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full border border-slate-200/80" id="current-date-badge">Hari Ini</span>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
-                                    <div class="flex items-start justify-between">
-                                        <div><p class="text-xs font-bold text-slate-500 mb-1">Live report di ruang Kepsek</p><div class="flex items-baseline gap-2 mt-2"><i data-lucide="users" class="w-5 h-5 text-rose-600"></i><h4 class="text-3xl font-black text-slate-900" id="stat-bertemu">0</h4><span class="text-xs text-slate-400 font-medium">Orang</span></div></div>
-                                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
-                                    </div>
+                            <div class="grid grid-cols-3 gap-3 md:gap-4">
+                                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Menunggu (Lobi)</p><h3 id="stat-menunggu-ratio" class="text-2xl md:text-3xl font-black text-amber-500 mt-1">0</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
-                                    <div><p class="text-xs font-bold text-slate-500 mb-1">Total Tamu Terdaftar</p><div class="flex items-baseline gap-1 mt-2"><h4 class="text-3xl font-black text-slate-900" id="stat-total-tamu">0</h4><span class="text-xs text-slate-400 font-medium">/ Hari ini</span></div></div>
-                                    <div class="relative w-16 h-16 shrink-0"><svg class="w-full h-full" viewBox="0 0 36 36"><path class="text-slate-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path id="donut-progress" class="donut-ring text-rose-500" stroke-width="4" stroke-dasharray="0, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg><div class="absolute inset-0 flex items-center justify-center font-black text-[10px] text-slate-800" id="donut-pct">0%</div></div>
+                                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Di Ruang Kepsek</p><h3 id="stat-bertemu" class="text-2xl md:text-3xl font-black text-blue-500 mt-1">0</h3>
                                 </div>
-                                <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm sm:col-span-2 flex flex-col sm:flex-row gap-6">
-                                    <div class="flex-1"><div class="flex justify-between items-center mb-2"><p class="text-xs font-bold text-slate-500">Menunggu Verifikasi (Lobi)</p><span class="text-xs font-extrabold text-slate-900" id="stat-menunggu-ratio">0</span></div><div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2"><div id="bar-checkin" class="bg-rose-500 h-full rounded-full transition-all duration-500"></div></div></div>
-                                    <div class="flex-1"><div class="flex justify-between items-center mb-2"><p class="text-xs font-bold text-slate-500">Selesai Kunjungan (Keluar)</p><span class="text-xs font-extrabold text-slate-900" id="stat-checkout-count">0</span></div><div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2"><div id="bar-checkout" class="bg-emerald-500 h-full rounded-full transition-all duration-500"></div></div></div>
+                                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-center">
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Selesai Hari Ini</p><h3 id="stat-checkout-count" class="text-2xl md:text-3xl font-black text-emerald-500 mt-1">0</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- FITUR GRAFIK (CHART.JS) BARU -->
-                        <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm mt-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-bold text-sm text-slate-900">Grafik Kategori Tamu</h4>
-                                <i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i>
-                            </div>
-                            <div class="w-full h-[220px]">
-                                <canvas id="visitorChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Antrean Aktif -->
+                        <!-- Antrean Aktif (Hanya Menunggu & Bertemu) -->
                         <div class="mt-6">
-                            <h3 class="text-lg font-bold text-slate-900 tracking-tight mb-4">Antrean Aktif Saat Ini</h3>
+                            <h3 class="text-lg font-bold text-slate-900 tracking-tight mb-4">Antrean Tamu Aktif Saat Ini</h3>
                             <div id="active-guests-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
                             <div id="empty-active-state" class="bg-white rounded-2xl p-8 border border-dashed border-slate-200 text-center"><div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400"><i data-lucide="inbox"></i></div><p class="font-bold text-sm text-slate-700">Belum Ada Tamu Aktif</p></div>
                         </div>
@@ -248,7 +245,7 @@
 
                     <div class="lg:col-span-4 space-y-6">
                         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
-                            <div class="flex items-center justify-between mb-5"><div><h4 class="font-bold text-sm text-slate-900">Ruang Kepala Sekolah</h4><p class="text-[11px] text-slate-400">Kapasitas</p></div><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600" id="room-status-badge">Kosong</span></div>
+                            <div class="flex items-center justify-between mb-5"><div><h4 class="font-bold text-sm text-slate-900">Ruang Kepala Sekolah</h4><p class="text-[11px] text-slate-400">Status Ketersediaan</p></div><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600" id="room-status-badge">Kosong</span></div>
                             <div class="flex items-center gap-5 p-4 rounded-2xl bg-slate-50/70 border border-slate-100"><div class="w-14 h-14 rounded-full bg-rose-50 border-4 border-rose-500/20 flex items-center justify-center text-rose-600 shrink-0"><i data-lucide="armchair" class="w-6 h-6"></i></div><div><p class="text-[10px] font-bold text-slate-500 uppercase">Kapasitas</p><p class="text-2xl font-black text-slate-900 mt-0.5">1 <span class="text-xs font-medium text-slate-400">Sesi</span></p></div></div>
                         </div>
                         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
@@ -259,7 +256,61 @@
                 </div>
             </div>
 
-            <!-- VIEW 6: ADMIN VERIFIKASI (Approval) -->
+            <!-- =========================================================
+                 VIEW 6: TAB BARU -> STATISTIK & ANALITIK JADWAL
+                 ========================================================= -->
+            <div id="view-admin-statistik" class="app-view hidden fade-in max-w-[1400px] mx-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Statistik & Analisis Jadwal</h2>
+                        <p class="text-xs text-slate-400">Pantauan grafik data pengunjung dan kalender jadwal mingguan.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
+                    <!-- Donut Chart -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex items-center justify-between">
+                            <div><p class="text-xs font-bold text-slate-500 mb-1">Total Pendaftar</p><div class="flex items-baseline gap-1 mt-2"><h4 class="text-4xl font-black text-slate-900" id="stat-total-tamu">0</h4></div></div>
+                            <div class="relative w-20 h-20 shrink-0"><svg class="w-full h-full" viewBox="0 0 36 36"><path class="text-slate-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path id="donut-progress" class="donut-ring text-rose-500" stroke-width="4" stroke-dasharray="0, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg><div class="absolute inset-0 flex items-center justify-center font-black text-xs text-slate-800" id="donut-pct">0%</div></div>
+                        </div>
+                    </div>
+                    <!-- Bar Chart JS -->
+                    <div class="lg:col-span-8 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm h-full flex flex-col">
+                        <div class="flex items-center justify-between mb-4"><h4 class="font-bold text-sm text-slate-900">Grafik Kategori Pendaftar</h4><i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i></div>
+                        <div class="w-full flex-1 min-h-[160px]"><canvas id="visitorChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- TABEL ANALITIK JADWAL PER HARI (Senin-Jumat) -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900">Kalender Jadwal Kunjungan Kepala Sekolah</h4>
+                            <p class="text-[11px] text-slate-400">Tabel jadwal harian, jam pertemuan, dan identitas instansi tamu.</p>
+                        </div>
+                        <i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i>
+                    </div>
+                    <div class="overflow-x-auto hide-scroll">
+                        <table class="w-full text-left text-xs whitespace-nowrap">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-100">
+                                <tr>
+                                    <th class="px-4 py-3 font-bold">Hari & Tanggal</th>
+                                    <th class="px-4 py-3 font-bold text-center">Rencana Jam Tiba</th>
+                                    <th class="px-4 py-3 font-bold">Identitas Tamu</th>
+                                    <th class="px-4 py-3 font-bold">Keperluan</th>
+                                    <th class="px-4 py-3 font-bold text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-schedule-body" class="divide-y divide-slate-100">
+                                <!-- Diisi Otomatis via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 7: ADMIN VERIFIKASI (Approval) -->
             <div id="view-admin-verify" class="app-view hidden fade-in max-w-4xl mx-auto">
                 <div class="text-center mb-6">
                     <span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold tracking-wider rounded-full mb-2">Pintu Masuk TU</span>
@@ -267,7 +318,7 @@
                 </div>
                 <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6 max-w-md mx-auto">
                     <input type="text" id="admin-verify-input" placeholder="Ketik Kode (SMAN1-...)" class="flex-1 bg-transparent px-4 py-3 outline-none text-slate-900 font-mono uppercase font-bold text-center sm:text-left text-sm" autocomplete="off">
-                    <button id="btn-admin-verify" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-6 py-3 font-bold text-xs transition">Tampilkan Profil</button>
+                    <button id="btn-admin-verify" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-6 py-3 font-bold text-xs transition active:scale-95">Tampilkan Profil</button>
                 </div>
                 <div id="verify-result-card" class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden hidden fade-in mt-6">
                     <div class="flex flex-col md:flex-row">
@@ -278,26 +329,25 @@
                             <div class="grid grid-cols-2 gap-4 mb-5 text-xs">
                                 <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Asal Instansi</p><p id="v-res-instansi" class="font-semibold text-slate-800">-</p></div>
                                 <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Kategori</p><p id="v-res-kategori" class="font-semibold text-slate-800">-</p></div>
-                                <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Tanggal Janji</p><p id="v-res-date" class="font-semibold text-slate-800">-</p></div>
-                                <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Jam Masuk</p><p id="v-res-time" class="font-semibold text-slate-800">-</p></div>
+                                <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Jadwal Tanggal</p><p id="v-res-date" class="font-semibold text-slate-800">-</p></div>
+                                <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-0.5">Jam Form Masuk</p><p id="v-res-time" class="font-semibold text-slate-800">-</p></div>
                             </div>
                             <div><p class="text-slate-400 font-bold uppercase text-[10px] mb-1">Keperluan / Tujuan</p><p id="v-res-tujuan" class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">-</p></div>
                         </div>
                     </div>
                     <div id="v-res-action-footer" class="p-5 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
-                        <button id="btn-verify-approve" class="flex-1 bg-emerald-600 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95"><i data-lucide="check-circle" class="w-4 h-4"></i> Setujui & Masukkan Ruangan</button>
+                        <button id="btn-verify-approve" class="flex-1 bg-emerald-600 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95"><i data-lucide="check-circle" class="w-4 h-4"></i> Setujui & Masukkan Ruang Kepsek</button>
                         <button id="btn-verify-reject" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95"><i data-lucide="x-circle" class="w-4 h-4"></i> Tolak Kunjungan</button>
                     </div>
-                    <p id="v-res-msg-done" class="text-center text-xs font-bold text-slate-500 hidden py-4 bg-slate-50 border-t border-slate-100"><i data-lucide="info" class="w-4 h-4 inline mr-1 text-rose-500"></i> Status Tamu: <span id="v-res-msg-status" class="text-rose-600">Selesai</span></p>
+                    <p id="v-res-msg-done" class="text-center text-xs font-bold text-slate-500 hidden py-4 bg-slate-50 border-t border-slate-100"><i data-lucide="info" class="w-4 h-4 inline mr-1 text-rose-500"></i> Status Akhir Tamu: <span id="v-res-msg-status" class="text-rose-600">Selesai</span></p>
                 </div>
                 <div id="verify-not-found" class="bg-rose-50 text-rose-700 p-5 rounded-2xl border border-rose-100 text-center hidden fade-in mt-6 max-w-md mx-auto"><p class="font-bold text-xs">Kode Tiket Bodong / Tidak Valid</p></div>
             </div>
 
-            <!-- VIEW 7: ADMIN RIWAYAT (DENGAN TOMBOL PDF) -->
+            <!-- VIEW 8: ADMIN RIWAYAT (DENGAN TOMBOL PDF) -->
             <div id="view-admin-history" class="app-view hidden fade-in max-w-5xl mx-auto">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
                     <div><h2 class="text-2xl font-black text-slate-900 tracking-tight">Log Riwayat Tamu</h2><p class="text-xs text-slate-400">Rekapitulasi tamu yang telah selesai berkunjung atau dibatalkan.</p></div>
-                    <!-- TOMBOL CETAK PDF -->
                     <button onclick="generateReportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center gap-2 shadow-sm transition active:scale-95 w-full sm:w-auto justify-center">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Cetak Laporan Kepala Sekolah
                     </button>
@@ -317,7 +367,7 @@
         </main>
     </div>
 
-    <!-- WADAH CETAK LAPORAN (Hanya Tampil Saat Print) -->
+    <!-- WADAH CETAK LAPORAN (Hanya Tampil Saat Print PDF) -->
     <div id="print-report-container" class="hidden bg-white min-h-screen relative z-[99999]">
         <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4">
             <h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1>
@@ -342,7 +392,7 @@
         </div>
     </div>
 
-    <!-- MODAL DETAIL -->
+    <!-- MODAL DETAIL FOTO -->
     <div id="detail-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeDetailModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden" id="detail-card">
@@ -353,8 +403,8 @@
                     <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                         <div><p class="text-[9px] uppercase font-bold text-slate-400">Kode Tiket</p><p id="detail-code" class="font-mono font-bold text-rose-600">-</p></div>
                         <div><p class="text-[9px] uppercase font-bold text-slate-400">Status</p><span id="detail-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Waktu Masuk</p><p id="detail-datetime" class="font-semibold text-slate-800">-</p></div>
-                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Waktu Keluar</p><p id="detail-outtime" class="font-semibold text-slate-500">-</p></div>
+                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Jam Masuk</p><p id="detail-datetime" class="font-semibold text-slate-800">-</p></div>
+                        <div><p class="text-[9px] uppercase font-bold text-slate-400">Jam Keluar</p><p id="detail-outtime" class="font-semibold text-slate-500">-</p></div>
                     </div>
                     <div><p class="text-[10px] uppercase font-bold text-slate-400">Nama Tamu</p><p id="detail-name" class="text-base font-bold text-slate-900">-</p></div>
                     <div><p class="text-[10px] uppercase font-bold text-slate-400">Instansi & Kategori</p><p id="detail-instansi" class="font-medium text-slate-700">-</p></div>
@@ -368,16 +418,16 @@
         </div>
     </div>
 
-    <!-- MODAL KONFLIK -->
+    <!-- MODAL KONFLIK JADWAL -->
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" id="conflict-overlay"></div>
-        <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="calendar-x" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Terisi</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> dibooking oleh <span id="conflict-name-text" class="font-bold text-rose-600"></span>.</p><button type="button" id="btn-change-schedule" class="w-full bg-slate-900 text-white font-bold rounded-xl py-3 text-xs transition">Ganti Jadwal</button></div>
+        <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="calendar-x" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Terisi</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> dibooking oleh <span id="conflict-name-text" class="font-bold text-rose-600"></span>.</p><button type="button" id="btn-change-schedule" class="w-full bg-slate-900 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95">Ganti Jadwal</button></div>
     </div>
 
-    <!-- BOTTOM NAVBAR MOBILE (Hanya Tampil di HP) -->
-    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200/80 flex justify-around items-center h-[68px] z-40 shadow-lg px-2 relative" id="mobile-bottom-nav">
+    <!-- BOTTOM NAVBAR MOBILE (Hanya Tampil di HP - Dengan Garis Animasi) -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200/80 flex justify-around items-center h-[68px] z-40 shadow-lg px-2 relative transition-transform duration-300 transform translate-y-0" id="mobile-bottom-nav">
         <!-- MAGIC LINE MOBILE -->
-        <div id="mobile-sliding-indicator" class="absolute top-0 h-[3px] bg-rose-600 rounded-b-full transition-all duration-400 ease-in-out opacity-0 z-10 pointer-events-none" style="left: 0; width: 0;"></div>
+        <div id="mobile-sliding-indicator" class="sliding-indicator absolute top-0 h-[3px] bg-rose-600 rounded-b-full opacity-0 pointer-events-none z-10" style="left: 0; width: 0;"></div>
         <!-- Diisi JS -->
     </nav>
 
