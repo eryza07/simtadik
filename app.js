@@ -25,7 +25,7 @@ function playTingSound() {
         const gainNode = ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime); // Nada A5 (Tinggi & Renyah)
+        osc.frequency.setValueAtTime(880, ctx.currentTime); 
         osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
 
         gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
@@ -35,91 +35,132 @@ function playTingSound() {
         gainNode.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
-    } catch (e) { console.log("Audio API not supported or blocked"); }
+    } catch (e) { console.log("Audio API blocked"); }
 }
 
 // =========================================================
-// FITUR BARU: NOTIFIKASI TOAST POP-UP & RED DOT
+// LOGIKA DROPDOWN TOMBOL LONCENG NOTIFIKASI
 // =========================================================
+document.getElementById('btn-header-notif')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('notif-dropdown');
+    const dot = document.getElementById('header-notif-dot');
+    
+    // Matikan titik merah saat lonceng diklik
+    if(dot) dot.classList.add('hidden');
+
+    if (dropdown.classList.contains('opacity-0')) {
+        dropdown.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        dropdown.classList.add('opacity-100', 'scale-100');
+    } else {
+        dropdown.classList.remove('opacity-100', 'scale-100');
+        dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+    }
+});
+
+// Tutup dropdown kalau klik di tempat lain
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('notif-dropdown');
+    const btn = document.getElementById('btn-header-notif');
+    if (dropdown && !dropdown.classList.contains('opacity-0') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.remove('opacity-100', 'scale-100');
+        dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+    }
+});
+
+function addNotificationToList(title, message, timeStr) {
+    const list = document.getElementById('notif-list');
+    const empty = document.getElementById('notif-empty');
+    if(empty) empty.classList.add('hidden');
+
+    const item = document.createElement('div');
+    item.className = "p-3 hover:bg-slate-50 rounded-xl transition cursor-pointer border border-transparent hover:border-slate-100 flex gap-3 fade-in";
+    item.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="bell" class="w-4 h-4"></i></div>
+        <div>
+            <h5 class="text-xs font-bold text-slate-900">${title}</h5>
+            <p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${message}</p>
+            <span class="text-[9px] font-bold text-slate-400 mt-1 block">${timeStr}</span>
+        </div>
+    `;
+    list.prepend(item);
+    lucide.createIcons();
+}
+
+document.getElementById('btn-clear-notif')?.addEventListener('click', () => {
+    const list = document.getElementById('notif-list');
+    list.innerHTML = `<div id="notif-empty" class="p-6 text-center text-slate-400 flex flex-col items-center"><i data-lucide="bell-off" class="w-6 h-6 mb-2 opacity-50"></i><span class="text-xs">Belum ada notifikasi.</span></div>`;
+    lucide.createIcons();
+});
+
 function showNotification(title, message) {
     const container = document.getElementById('toast-container');
     if(!container) return;
 
-    // Bunyikan suara
+    // 1. Bunyikan suara
     playTingSound();
 
-    // Buat elemen pop-up
+    // 2. Tampilkan Pop-up Toast
     const toast = document.createElement('div');
     toast.className = 'bg-white p-4 rounded-2xl shadow-xl border border-rose-200 w-72 flex gap-3 items-start toast-enter';
-    toast.innerHTML = `
-        <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
-            <i data-lucide="bell-ring" class="w-5 h-5"></i>
-        </div>
-        <div>
-            <h4 class="text-sm font-bold text-slate-900">${title}</h4>
-            <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">${message}</p>
-        </div>
-    `;
-    
+    toast.innerHTML = `<div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0"><i data-lucide="bell-ring" class="w-5 h-5"></i></div><div><h4 class="text-sm font-bold text-slate-900">${title}</h4><p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${message}</p></div>`;
     container.appendChild(toast);
     lucide.createIcons();
 
-    // Hapus otomatis setelah 5 detik
     setTimeout(() => {
         toast.classList.replace('toast-enter', 'toast-leave');
-        setTimeout(() => toast.remove(), 500); // Tunggu animasi fade out selesai
+        setTimeout(() => toast.remove(), 500); 
     }, 5000);
+
+    // 3. Tambahkan ke Panel Dropdown Lonceng
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} WIB`;
+    addNotificationToList(title, message, timeStr);
+
+    // 4. Nyalakan titik merah di Menu dan di Lonceng
+    setRedDotStatus(true);
 }
 
-// Menyalakan atau Mematikan Titik Merah di Sidebar Admin
 function setRedDotStatus(show) {
+    // Di Lonceng Header
+    const dotHeader = document.getElementById('header-notif-dot');
+    if(dotHeader) { if(show) dotHeader.classList.remove('hidden'); else dotHeader.classList.add('hidden'); }
+    
+    // Di Menu Sidebar Admin
     document.querySelectorAll('.nav-red-dot').forEach(dot => {
-        if (show) dot.classList.remove('hidden');
-        else dot.classList.add('hidden');
+        if (show) dot.classList.remove('hidden'); else dot.classList.add('hidden');
     });
 }
 
 // =========================================================
-// ANIMASI IKON BOUNCE & SLIDING
+// ROUTER & NAVIGATION ENGINE
 // =========================================================
-function triggerIconAnimation(element) {
-    element.classList.remove('animate-icon'); void element.offsetWidth; element.classList.add('animate-icon');
-}
-
+function triggerIconAnimation(element) { element.classList.remove('animate-icon'); void element.offsetWidth; element.classList.add('animate-icon'); }
 function updateIndicators() {
     const activeDesktop = document.querySelector(`.nav-tab-btn[data-target="${currentActiveView}"]`);
     const desktopIndicator = document.getElementById('sliding-indicator');
     if (activeDesktop && activeDesktop.offsetParent !== null) {
-        const navRect = activeDesktop.closest('nav').getBoundingClientRect();
-        const btnRect = activeDesktop.getBoundingClientRect();
+        const navRect = activeDesktop.closest('nav').getBoundingClientRect(); const btnRect = activeDesktop.getBoundingClientRect();
         desktopIndicator.style.top = `${btnRect.top - navRect.top}px`; desktopIndicator.style.height = `${btnRect.height}px`; desktopIndicator.style.opacity = '1';
     } else if (desktopIndicator) desktopIndicator.style.opacity = '0';
 
     const activeMobile = document.querySelector(`.m-nav-btn[data-target="${currentActiveView}"], .m-admin-btn[data-target="${currentActiveView}"]`);
     const mobileIndicator = document.getElementById('mobile-sliding-indicator');
     if (activeMobile && activeMobile.offsetParent !== null && mobileIndicator) {
-        const navRect = activeMobile.closest('nav').getBoundingClientRect();
-        const btnRect = activeMobile.getBoundingClientRect();
+        const navRect = activeMobile.closest('nav').getBoundingClientRect(); const btnRect = activeMobile.getBoundingClientRect();
         mobileIndicator.style.left = `${btnRect.left - navRect.left}px`; mobileIndicator.style.width = `${btnRect.width}px`; mobileIndicator.style.opacity = '1';
     } else if (mobileIndicator) mobileIndicator.style.opacity = '0';
 }
 window.addEventListener('resize', () => { setTimeout(updateIndicators, 100); });
 
-// =========================================================
-// ROUTER & NAVIGATION ENGINE
-// =========================================================
 function switchAppView(targetId) {
     currentActiveView = targetId;
-
-    // JIKA ADMIN KLIK MENU BERANDA ATAU VERIFIKASI, MATIKAN TITIK MERAH
     if (currentUserRole === 'admin' && (targetId === 'view-admin-overview' || targetId === 'view-admin-verify')) {
-        setRedDotStatus(false);
+        document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.add('hidden')); // Matikan titik di menu
     }
 
     document.querySelectorAll('.app-view').forEach(view => { view.classList.remove('block', 'flex'); view.classList.add('hidden'); });
-    const target = document.getElementById(targetId);
-    if (!target) return;
-    target.classList.remove('hidden');
+    const target = document.getElementById(targetId); if (!target) return; target.classList.remove('hidden');
     if (['view-success', 'view-track', 'view-login'].includes(targetId)) target.classList.add('flex'); else target.classList.add('block');
 
     document.querySelectorAll('.nav-tab-btn').forEach(btn => {
@@ -154,13 +195,10 @@ function renderMobileNav() {
 renderMobileNav(); setTimeout(updateIndicators, 100);
 
 // =========================================================
-// GRAFIK KATEGORI TAMU (CHART.JS)
+// GRAFIK KATEGORI TAMU
 // =========================================================
 function createChartConfig() {
-    return {
-        type: 'bar', data: { labels: ['Siswa', 'Dinas', 'Guru', 'Umum'], datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }, animation: { duration: 1000, easing: 'easeOutQuart' } }
-    };
+    return { type: 'bar', data: { labels: ['Siswa', 'Dinas', 'Guru', 'Umum'], datasets: [{ label: 'Jumlah', data: [0, 0, 0, 0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6, borderSkipped: false, barThickness: 24 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }, animation: { duration: 1000, easing: 'easeOutQuart' } } };
 }
 function initChart() {
     const ctxOverview = document.getElementById('visitorChartOverview'); const ctxAnalitik = document.getElementById('visitorChartAnalitik');
@@ -179,10 +217,8 @@ function updateChartData(siswa, dinas, guru, umum) {
 // =========================================================
 document.getElementById('login-form')?.addEventListener('submit', function(e) {
     e.preventDefault(); 
-    
     const userVal = document.getElementById('username-input').value.trim().toLowerCase();
     const passVal = document.getElementById('password-input').value.trim();
-    
     if(!userVal || !passVal) { alert("Username dan Password tidak boleh kosong!"); return; }
 
     let roleValid = null;
@@ -195,7 +231,6 @@ document.getElementById('login-form')?.addEventListener('submit', function(e) {
 
     setTimeout(() => {
         document.getElementById('btn-do-login').disabled = false; document.getElementById('login-text').classList.remove('hidden'); document.getElementById('login-spinner').classList.add('hidden');
-        
         document.getElementById('guest-nav-group').classList.add('hidden'); document.getElementById('admin-nav-group').classList.add('hidden'); document.getElementById('kepsek-nav-group').classList.add('hidden');
 
         if(roleValid === 'kepsek') {
@@ -204,6 +239,9 @@ document.getElementById('login-form')?.addEventListener('submit', function(e) {
             currentUserRole = 'admin'; document.getElementById('admin-nav-group').classList.remove('hidden'); document.getElementById('admin-nav-group').classList.add('flex'); switchAppView('view-admin-overview'); 
         }
         
+        // Munculkan lonceng
+        document.getElementById('header-notif-container').classList.remove('hidden');
+
         const btnAction = document.getElementById('btn-sidebar-action');
         btnAction.classList.replace('bg-rose-500', 'bg-slate-800'); btnAction.classList.replace('hover:bg-rose-600', 'hover:bg-slate-700'); btnAction.classList.replace('shadow-rose-500/25', 'shadow-slate-800/25');
         document.getElementById('sidebar-icon').setAttribute('data-lucide', 'log-out'); document.getElementById('sidebar-text').innerText = "Keluar";
@@ -217,6 +255,9 @@ window.processLogout = function() {
     document.getElementById('admin-nav-group').classList.add('hidden'); document.getElementById('admin-nav-group').classList.remove('flex');
     document.getElementById('kepsek-nav-group').classList.add('hidden'); document.getElementById('kepsek-nav-group').classList.remove('flex');
     document.getElementById('guest-nav-group').classList.remove('hidden'); document.getElementById('guest-nav-group').classList.add('flex');
+
+    // Sembunyikan lonceng
+    document.getElementById('header-notif-container').classList.add('hidden');
 
     const btnAction = document.getElementById('btn-sidebar-action');
     btnAction.classList.replace('bg-slate-800', 'bg-rose-500'); btnAction.classList.replace('hover:bg-slate-700', 'hover:bg-rose-600'); btnAction.classList.replace('shadow-slate-800/25', 'shadow-rose-500/25');
@@ -239,11 +280,9 @@ async function startCamera() {
     } catch (err) { alert("Kamera diblokir oleh browser."); }
 }
 function takeSnapshot() {
-    if (!videoStream) return;
-    cameraCanvas.width = cameraVideo.videoWidth; cameraCanvas.height = cameraVideo.videoHeight;
+    if (!videoStream) return; cameraCanvas.width = cameraVideo.videoWidth; cameraCanvas.height = cameraVideo.videoHeight;
     cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0); cameraResult.src = cameraCanvas.toDataURL('image/jpeg', 0.85);
-    cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden');
-    cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); stopCamera();
+    cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden'); cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); stopCamera();
 }
 function retakePhoto() { cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); startCamera(); }
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
@@ -252,14 +291,11 @@ function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => 
 // REFRESH DASHBOARD
 // =========================================================
 function refreshDashboardMetrics() {
-    let menunggu = 0, bertemu = 0, selesai = 0, ditolak = 0;
-    let siswa = 0, dinas = 0, guru = 0, umum = 0;
-
+    let menunggu = 0, bertemu = 0, selesai = 0, ditolak = 0; let siswa = 0, dinas = 0, guru = 0, umum = 0;
     for (const code in guestsDatabase) {
         const item = guestsDatabase[code];
         if (item.status === 'menunggu') menunggu++; else if (item.status === 'bertemu') bertemu++; else if (item.status === 'selesai') selesai++; else if (item.status === 'ditolak') ditolak++;
-        const k = item.kategori.toLowerCase();
-        if (k.includes('siswa')) siswa++; else if (k.includes('dinas')) dinas++; else if (k.includes('guru')) guru++; else umum++;
+        const k = item.kategori.toLowerCase(); if (k.includes('siswa')) siswa++; else if (k.includes('dinas')) dinas++; else if (k.includes('guru')) guru++; else umum++;
     }
 
     const totalTamu = menunggu + bertemu + selesai;
@@ -274,9 +310,7 @@ function refreshDashboardMetrics() {
     }
 
     if(document.getElementById('stat-total-tamu')) {
-        document.getElementById('stat-total-tamu').innerText = totalTamu;
-        const donutPct = Math.min(100, Math.round((totalTamu / 20) * 100)); 
-        const donutRing = document.getElementById('donut-progress');
+        document.getElementById('stat-total-tamu').innerText = totalTamu; const donutPct = Math.min(100, Math.round((totalTamu / 20) * 100)); const donutRing = document.getElementById('donut-progress');
         if (donutRing) donutRing.setAttribute('stroke-dasharray', `${donutPct}, 100`); document.getElementById('donut-pct').innerText = `${donutPct}%`;
     }
 
@@ -291,8 +325,7 @@ function renderActiveGuestsGrid() {
     emptyState.classList.add('hidden'); grid.classList.remove('hidden');
 
     activeList.forEach(guest => {
-        const isBertemu = guest.status === 'bertemu';
-        const card = document.createElement('div');
+        const isBertemu = guest.status === 'bertemu'; const card = document.createElement('div');
         card.className = "bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between gap-3 hover:border-slate-300 transition fade-in";
         card.innerHTML = `<div class="flex items-center gap-3 min-w-0"><div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0"><img src="${guest.photo}" alt="Foto" class="w-full h-full object-cover"></div><div class="min-w-0"><p class="text-[9px] font-mono font-bold text-slate-400 truncate">${guest.code}</p><h5 class="font-bold text-slate-900 text-sm truncate">${guest.name}</h5><p class="text-[11px] text-slate-400 truncate">${guest.instansi}</p></div></div><div class="flex flex-col items-end gap-2 shrink-0"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${isBertemu ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${isBertemu ? 'Di Ruangan' : 'Menunggu'}</span><button onclick="openDetailModal('${guest.code}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm"><i data-lucide="eye" class="w-3 h-3"></i></button></div>`;
         grid.appendChild(card);
@@ -308,8 +341,7 @@ function renderKepsekDashboard() {
     emptyState.classList.add('hidden'); grid.classList.remove('hidden');
 
     activeList.forEach(guest => {
-        const isBertemu = guest.status === 'bertemu';
-        const card = document.createElement('div');
+        const isBertemu = guest.status === 'bertemu'; const card = document.createElement('div');
         card.className = `p-4 md:p-6 rounded-3xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 transition fade-in ${isBertemu ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-200/80 hover:border-slate-300'}`;
         card.innerHTML = `<div class="flex items-center gap-4 min-w-0 w-full md:w-auto"><div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden bg-slate-100 border-2 ${isBertemu ? 'border-emerald-300' : 'border-slate-200'} shrink-0"><img src="${guest.photo}" class="w-full h-full object-cover"></div><div class="min-w-0 flex-1"><p class="text-[10px] font-bold ${isBertemu ? 'text-emerald-600' : 'text-slate-400'} tracking-wider uppercase mb-0.5">${isBertemu ? 'Sedang Bertemu Anda' : 'Menunggu Panggilan'}</p><h5 class="font-black text-slate-900 text-base md:text-lg truncate">${guest.name}</h5><p class="text-xs text-slate-500 truncate">${guest.instansi} - ${guest.tujuan}</p></div></div><div class="flex gap-2 shrink-0 w-full md:w-auto justify-end">${!isBertemu ? `<button onclick="changeGuestStatus('${guest.code}', 'bertemu')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition active:scale-95 shadow-lg shadow-blue-500/25 flex-1 md:flex-none">Panggil Masuk</button>` : ''}${isBertemu ? `<button onclick="changeGuestStatus('${guest.code}', 'selesai')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition active:scale-95 shadow-lg shadow-emerald-500/25 flex-1 md:flex-none"><i data-lucide="check-check" class="w-4 h-4 inline mr-1"></i>Selesaikan Pertemuan</button>` : ''}</div>`;
         grid.appendChild(card);
@@ -326,7 +358,6 @@ function renderScheduleAnalytics() {
         const dateObj = new Date(data.date); const hari = dateObj.toLocaleDateString('id-ID', { weekday: 'long' }); const tgl = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         let badgeClass = "bg-amber-100 text-amber-700"; if (data.status === 'bertemu') badgeClass = "bg-blue-100 text-blue-700"; if (data.status === 'selesai') badgeClass = "bg-emerald-100 text-emerald-700"; if (data.status === 'ditolak') badgeClass = "bg-rose-100 text-rose-700";
         const jamKeluar = data.outTime !== '-' ? data.outTime : 'Selesai'; const rentangWaktu = `${data.planTime} - ${jamKeluar}`;
-
         const tr = document.createElement('tr'); tr.className = "border-b border-slate-100 hover:bg-slate-50/50 transition-colors";
         tr.innerHTML = `<td class="px-4 py-3"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-[10px] uppercase border border-slate-200 shadow-sm">${hari.substring(0,3)}</div><div><p class="font-bold text-slate-900">${hari}</p><p class="text-[10px] text-slate-500">${tgl}</p></div></div></td><td class="px-4 py-3 font-mono text-rose-600 font-bold text-xs text-center"><div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 inline-block">${rentangWaktu}</div></td><td class="px-4 py-3"><p class="font-bold text-slate-900">${data.name}</p><p class="text-[10px] text-slate-500">${data.instansi} (${data.kategori})</p></td><td class="px-4 py-3 text-xs text-slate-600 max-w-[150px] truncate" title="${data.tujuan}">${data.tujuan}</td><td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[9px] font-bold ${badgeClass}">${data.status.toUpperCase()}</span></td>`;
         tbody.appendChild(tr);
@@ -338,36 +369,23 @@ function renderScheduleAnalytics() {
 // =========================================================
 document.getElementById('guest-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    const guestName = document.getElementById('guest-name').value;
-    const instansi = document.getElementById('guest-instansi').value;
-    const guestDate = document.getElementById('guest-date').value;
-    const guestTimeInput = document.getElementById('guest-time').value; 
-    const planTimeWIB = guestTimeInput ? guestTimeInput + ' WIB' : '-';
-    const kategoriSel = document.getElementById('kategori-select');
-    const kategori = kategoriSel.options[kategoriSel.selectedIndex].text;
-    let kelas = document.getElementById('input-kelas').value;
-    if (kelas && kategoriSel.value === 'siswa') kelas = " - " + kelas; else kelas = "";
+    const guestName = document.getElementById('guest-name').value; const instansi = document.getElementById('guest-instansi').value; const guestDate = document.getElementById('guest-date').value;
+    const guestTimeInput = document.getElementById('guest-time').value; const planTimeWIB = guestTimeInput ? guestTimeInput + ' WIB' : '-';
+    const kategoriSel = document.getElementById('kategori-select'); const kategori = kategoriSel.options[kategoriSel.selectedIndex].text;
+    let kelas = document.getElementById('input-kelas').value; if (kelas && kategoriSel.value === 'siswa') kelas = " - " + kelas; else kelas = "";
     const tujuan = document.getElementById('guest-tujuan').value;
     const photoSrc = cameraResult.src || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" fill="%2394a3b8">Tanpa Foto</text></svg>';
-    const dateObj = new Date(guestDate);
-    const displayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+    const dateObj = new Date(guestDate); const displayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
 
     // Cek Bentrok
-    const newTimeParts = guestTimeInput.split(':');
-    const newTotalMins = parseInt(newTimeParts[0]) * 60 + parseInt(newTimeParts[1]);
-    let conflictData = null;
+    const newTimeParts = guestTimeInput.split(':'); const newTotalMins = parseInt(newTimeParts[0]) * 60 + parseInt(newTimeParts[1]); let conflictData = null;
     for (const code in guestsDatabase) {
         const data = guestsDatabase[code];
         if (data.date === guestDate && data.status !== 'selesai' && data.status !== 'ditolak') {
-            const existParts = data.planTime.replace(' WIB','').split(':');
-            const existTotalMins = parseInt(existParts[0]) * 60 + parseInt(existParts[1]);
+            const existParts = data.planTime.replace(' WIB','').split(':'); const existTotalMins = parseInt(existParts[0]) * 60 + parseInt(existParts[1]);
             if (Math.abs(newTotalMins - existTotalMins) < 120) {
-                let nextMins = existTotalMins + 120;
-                let nH = Math.floor(nextMins / 60); let nM = nextMins % 60;
-                if (nH > 23) { nH = 23; nM = 59; } 
-                conflictData = { name: data.name, existTime: data.planTime, suggestTime: `${nH.toString().padStart(2,'0')}:${nM.toString().padStart(2,'0')}` };
-                break; 
+                let nextMins = existTotalMins + 120; let nH = Math.floor(nextMins / 60); let nM = nextMins % 60; if (nH > 23) { nH = 23; nM = 59; } 
+                conflictData = { name: data.name, existTime: data.planTime, suggestTime: `${nH.toString().padStart(2,'0')}:${nM.toString().padStart(2,'0')}` }; break; 
             }
         }
     }
@@ -378,28 +396,21 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
         return;
     }
 
-    const now = new Date();
-    const timeStrWIB = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' WIB';
+    const now = new Date(); const timeStrWIB = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' WIB';
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
     guestsDatabase[code] = { name: guestName, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, date: guestDate, displayDate: displayDate, planTime: planTimeWIB, time: timeStrWIB, outTime: '-', status: 'menunggu' };
 
-    const submitBtn = document.getElementById('btn-submit-guest');
-    submitBtn.disabled = true; document.getElementById('submit-text').innerText = "Memproses Tiket..."; document.getElementById('submit-icon').classList.add('hidden'); document.getElementById('submit-spinner').classList.remove('hidden');
+    const submitBtn = document.getElementById('btn-submit-guest'); submitBtn.disabled = true; document.getElementById('submit-text').innerText = "Memproses Tiket..."; document.getElementById('submit-icon').classList.add('hidden'); document.getElementById('submit-spinner').classList.remove('hidden');
 
     setTimeout(() => {
         document.getElementById('ticket-name').innerText = guestName; document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`; document.getElementById('ticket-code').innerText = code;
         document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
 
-        switchAppView('view-success');
-        appendHistoryRow(code);
-        refreshDashboardMetrics();
+        switchAppView('view-success'); appendHistoryRow(code); refreshDashboardMetrics();
 
-        // MUNCULKAN NOTIFIKASI TOAST + SUARA JIKA SEDANG TIDAK DI BERANDA ADMIN
-        if (currentUserRole !== 'admin') {
-            setRedDotStatus(true); // Nyalakan titik merah
-        }
-        showNotification("Ada Tamu Baru Masuk!", `${guestName} dari ${instansi} sedang menunggu verifikasi Anda.`);
+        // TAMPILKAN NOTIFIKASI JIKA ADA TAB LAIN / SIMULASI REALTIME
+        showNotification("Tamu Baru Terdaftar!", `${guestName} dari ${instansi} telah mengisi buku tamu.`);
 
         submitBtn.disabled = false; document.getElementById('submit-text').innerText = "Kirim & Buat Tiket Kunjungan"; document.getElementById('submit-icon').classList.remove('hidden'); document.getElementById('submit-spinner').classList.add('hidden');
         document.getElementById('guest-form').reset(); document.getElementById('guest-date').value = new Date().toISOString().split('T')[0]; document.getElementById('guest-time').value = `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`; document.getElementById('kelas-container').classList.remove('is-active');
@@ -409,11 +420,7 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
 
 window.printTicket = function() { document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket'); window.print(); }
 
-document.getElementById('btn-accept-suggestion')?.addEventListener('click', function() {
-    document.getElementById('guest-time').value = this.dataset.suggestTime;
-    document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0');
-    setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('btn-submit-guest').click(); }, 300);
-});
+document.getElementById('btn-accept-suggestion')?.addEventListener('click', function() { document.getElementById('guest-time').value = this.dataset.suggestTime; document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('btn-submit-guest').click(); }, 300); });
 document.getElementById('btn-change-schedule')?.addEventListener('click', () => { document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300); });
 document.getElementById('btn-next-guest')?.addEventListener('click', () => { switchAppView('view-guest-form'); });
 
@@ -421,28 +428,20 @@ document.getElementById('btn-next-guest')?.addEventListener('click', () => { swi
 // FUNGSI RIWAYAT & PERUBAHAN STATUS
 // =========================================================
 function appendHistoryRow(code) {
-    const data = guestsDatabase[code];
-    const tbody = document.getElementById('history-table-body');
-    if (!tbody) return;
-    const tr = document.createElement('tr');
-    tr.id = `hist-row-${code}`;
-    tr.className = "hover:bg-slate-50/70 transition fade-in";
+    const data = guestsDatabase[code]; const tbody = document.getElementById('history-table-body'); if (!tbody) return;
+    const tr = document.createElement('tr'); tr.id = `hist-row-${code}`; tr.className = "hover:bg-slate-50/70 transition fade-in";
     tr.innerHTML = `<td class="px-5 py-3.5"><p class="text-[10px] font-mono text-slate-400 font-bold">${code}</p><p class="font-bold text-slate-900">${data.name}</p><p class="text-[11px] text-slate-400">${data.instansi}</p></td><td class="px-5 py-3.5 text-slate-600">${data.displayDate} <br><span class="text-[10px] text-slate-400 font-mono">In: ${data.time} | <span id="hist-out-${code}">Out: -</span></span></td><td class="px-5 py-3.5"><span id="hist-badge-${code}" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 w-max block mx-auto text-center">Menunggu</span></td><td class="px-5 py-3.5 text-center"><button onclick="openDetailModal('${code}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm"><i data-lucide="user" class="w-4 h-4"></i></button></td>`;
     tbody.prepend(tr); lucide.createIcons();
 }
 
 window.changeGuestStatus = function(code, newStatus) {
-    const data = guestsDatabase[code];
-    if (!data || data.status === newStatus) return;
-    data.status = newStatus;
+    const data = guestsDatabase[code]; if (!data || data.status === newStatus) return; data.status = newStatus;
 
     if (newStatus === 'selesai' || newStatus === 'ditolak') {
-        const o = new Date();
-        data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')} WIB` : 'Ditolak';
+        const o = new Date(); data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')} WIB` : 'Ditolak';
     }
 
-    const histBadge = document.getElementById(`hist-badge-${code}`);
-    const histOut = document.getElementById(`hist-out-${code}`);
+    const histBadge = document.getElementById(`hist-badge-${code}`); const histOut = document.getElementById(`hist-out-${code}`);
     if (histBadge) {
         if (newStatus === 'bertemu') { histBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 w-max block mx-auto text-center"; histBadge.innerText = "Sedang Bertemu"; } 
         else if (newStatus === 'selesai') { histBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 w-max block mx-auto text-center"; histBadge.innerText = "Selesai"; if (histOut) histOut.innerText = `Out: ${data.outTime}`; } 
@@ -451,11 +450,7 @@ window.changeGuestStatus = function(code, newStatus) {
 
     refreshDashboardMetrics();
 
-    if (activeDetailCode === code) {
-        updateModalBadgeUI(newStatus);
-        document.getElementById('detail-outtime').innerText = data.outTime;
-        if (newStatus === 'selesai' || newStatus === 'ditolak') document.getElementById('modal-action-footer').classList.add('hidden');
-    }
+    if (activeDetailCode === code) { updateModalBadgeUI(newStatus); document.getElementById('detail-outtime').innerText = data.outTime; if (newStatus === 'selesai' || newStatus === 'ditolak') document.getElementById('modal-action-footer').classList.add('hidden'); }
 }
 
 // =========================================================
@@ -463,15 +458,11 @@ window.changeGuestStatus = function(code, newStatus) {
 // =========================================================
 let activeDetailCode = null;
 window.openDetailModal = function (code) {
-    const data = guestsDatabase[code];
-    if (!data) return;
-    activeDetailCode = code;
-
+    const data = guestsDatabase[code]; if (!data) return; activeDetailCode = code;
     document.getElementById('detail-photo').src = data.photo; document.getElementById('detail-code').innerText = code; document.getElementById('detail-datetime').innerText = `${data.displayDate} - ${data.planTime}`; document.getElementById('detail-outtime').innerText = data.outTime; document.getElementById('detail-name').innerText = data.name; document.getElementById('detail-instansi').innerText = `${data.instansi} (${data.kategori})`; document.getElementById('detail-tujuan').innerText = data.tujuan;
 
     updateModalBadgeUI(data.status);
     const actionFooter = document.getElementById('modal-action-footer'); const btnBertemu = document.getElementById('btn-mdl-bertemu');
-    
     if (data.status === 'selesai' || data.status === 'ditolak' || data.status === 'menunggu') actionFooter.classList.add('hidden'); 
     else { actionFooter.classList.remove('hidden'); if(data.status === 'bertemu') btnBertemu.classList.add('hidden'); else btnBertemu.classList.remove('hidden'); }
 
@@ -486,7 +477,6 @@ window.closeDetailModal = function () {
 };
 
 window.updateStatusFromModal = function (newStatus) { if (activeDetailCode) changeGuestStatus(activeDetailCode, newStatus); };
-
 function updateModalBadgeUI(status) {
     const badge = document.getElementById('detail-status-badge');
     if (status === 'menunggu') { badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; } 
@@ -500,36 +490,28 @@ function updateModalBadgeUI(status) {
 // =========================================================
 document.getElementById('track-input')?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
 document.getElementById('btn-do-track')?.addEventListener('click', () => {
-    const code = document.getElementById('track-input').value.trim().toUpperCase();
-    if (!code) return;
+    const code = document.getElementById('track-input').value.trim().toUpperCase(); if (!code) return;
     const resContainer = document.getElementById('track-result-container'); resContainer.classList.remove('hidden');
     if (guestsDatabase[code]) {
         const data = guestsDatabase[code];
         document.getElementById('track-not-found').classList.add('hidden'); document.getElementById('track-found').classList.remove('hidden');
-        document.getElementById('track-res-name').innerText = data.name; document.getElementById('track-res-date').innerText = `${data.displayDate} | Rencana Tiba: ${data.planTime}`;
+        document.getElementById('track-res-name').innerText = data.name; document.getElementById('track-res-date').innerText = `${data.displayDate} | Tiba: ${data.planTime}`;
         const statusEl = document.getElementById('track-res-status'); const dotEl = document.getElementById('track-res-dot'); const barEl = document.getElementById('track-color-bar');
 
         if (data.status === 'menunggu') { statusEl.innerText = "Menunggu Persetujuan"; statusEl.className = "text-sm font-black text-amber-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-amber-500"; } 
         else if (data.status === 'bertemu') { statusEl.innerText = "Sedang Bertemu Kepsek"; statusEl.className = "text-sm font-black text-blue-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-blue-500"; } 
         else if (data.status === 'selesai') { statusEl.innerText = "Selesai (Sudah Keluar)"; statusEl.className = "text-sm font-black text-emerald-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-emerald-500"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-emerald-500"; } 
         else if (data.status === 'ditolak') { statusEl.innerText = "Kunjungan Ditolak"; statusEl.className = "text-sm font-black text-rose-600"; dotEl.className = "w-2.5 h-2.5 rounded-full bg-rose-500"; barEl.className = "absolute top-0 right-0 w-2 h-full bg-rose-500"; }
-    } else {
-        document.getElementById('track-found').classList.add('hidden'); document.getElementById('track-not-found').classList.remove('hidden');
-    }
+    } else { document.getElementById('track-found').classList.add('hidden'); document.getElementById('track-not-found').classList.remove('hidden'); }
 });
 
 let codeToVerify = null;
 function executeVerification(code) {
-    if (!code) return;
-    const data = guestsDatabase[code];
-    const notFound = document.getElementById('verify-not-found'); const resultCard = document.getElementById('verify-result-card');
-
+    if (!code) return; const data = guestsDatabase[code]; const notFound = document.getElementById('verify-not-found'); const resultCard = document.getElementById('verify-result-card');
     if (data) {
         codeToVerify = code; notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
         document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
-
         const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
-
         if (data.status === 'menunggu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
         } else {
             if (data.status === 'bertemu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu"; msgStatus.innerText = "Sedang Bertemu"; msgStatus.className = "text-blue-600"; } 
@@ -542,10 +524,8 @@ function executeVerification(code) {
 
 document.getElementById('admin-verify-input')?.addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-admin-verify').click(); } });
 document.getElementById('btn-admin-verify')?.addEventListener('click', () => { executeVerification(document.getElementById('admin-verify-input').value.trim().toUpperCase()); });
-
 document.getElementById('quick-verify-input')?.addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-quick-verify-go').click(); } });
 document.getElementById('btn-quick-verify-go')?.addEventListener('click', () => { const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code); });
-
 document.getElementById('btn-verify-approve')?.addEventListener('click', () => { if (codeToVerify) { changeGuestStatus(codeToVerify, 'bertemu'); executeVerification(codeToVerify); } });
 document.getElementById('btn-verify-reject')?.addEventListener('click', () => { if (codeToVerify) { changeGuestStatus(codeToVerify, 'ditolak'); executeVerification(codeToVerify); } });
 
@@ -563,14 +543,12 @@ window.exportToCSV = function() {
     const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); const url = URL.createObjectURL(blob);
     link.setAttribute("href", url); link.setAttribute("download", `Rekap_Tamu_SMAN1_${new Date().getTime()}.csv`); link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
-
 window.generateReportPDF = function() {
-    const tbody = document.getElementById('print-report-tbody'); tbody.innerHTML = '';
-    let no = 1; const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const tbody = document.getElementById('print-report-tbody'); tbody.innerHTML = ''; let no = 1;
+    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
     sortedGuests.forEach(data => {
         let statText = data.status.toUpperCase(); if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI";
-        const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data);
-        const tr = document.createElement('tr');
+        const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data); const tr = document.createElement('tr');
         tr.innerHTML = `<td class="border border-slate-900 p-2 text-center">${no++}</td><td class="border border-slate-900 p-2 font-mono">${code}</td><td class="border border-slate-900 p-2">${data.displayDate}</td><td class="border border-slate-900 p-2 font-bold">${data.name}</td><td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td><td class="border border-slate-900 p-2">${data.tujuan}</td><td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td><td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>`;
         tbody.appendChild(tr);
     });
