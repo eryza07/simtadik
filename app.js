@@ -205,14 +205,58 @@ window.processLogout = function() {
 };
 
 // =========================================================
-// KAMERA WEBRTC
+// KAMERA WEBRTC & UPLOAD FILE (FITUR BARU)
 // =========================================================
 document.getElementById('kategori-select')?.addEventListener('change', function () { const container = document.getElementById('kelas-container'); if (this.value === 'siswa') container.classList.add('is-active'); else container.classList.remove('is-active'); });
 const cameraVideo = document.getElementById('camera-video'); const cameraCanvas = document.getElementById('camera-canvas'); const cameraResult = document.getElementById('camera-result'); let videoStream = null;
 
-async function startCamera() { try { videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); cameraVideo.srcObject = videoStream; document.getElementById('camera-idle').classList.add('hidden'); cameraVideo.classList.remove('hidden'); document.getElementById('btn-capture').classList.remove('hidden'); } catch (err) { alert("Kamera diblokir oleh browser."); } }
-function takeSnapshot() { if (!videoStream) return; cameraCanvas.width = cameraVideo.videoWidth; cameraCanvas.height = cameraVideo.videoHeight; cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0); cameraResult.src = cameraCanvas.toDataURL('image/jpeg', 0.85); cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden'); cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); stopCamera(); }
-function retakePhoto() { cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); startCamera(); }
+async function startCamera() { 
+    try { 
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); 
+        cameraVideo.srcObject = videoStream; 
+        document.getElementById('camera-idle').classList.add('hidden'); 
+        cameraVideo.classList.remove('hidden'); 
+        document.getElementById('btn-capture').classList.remove('hidden'); 
+    } catch (err) { alert("Kamera diblokir oleh browser."); } 
+}
+
+function takeSnapshot() { 
+    if (!videoStream) return; 
+    cameraCanvas.width = cameraVideo.videoWidth; cameraCanvas.height = cameraVideo.videoHeight; 
+    cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0); 
+    cameraResult.src = cameraCanvas.toDataURL('image/jpeg', 0.85); 
+    
+    cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden'); 
+    cameraResult.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden'); 
+    stopCamera(); 
+}
+
+window.handlePhotoUpload = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            cameraResult.src = e.target.result;
+            document.getElementById('camera-idle').classList.add('hidden');
+            cameraVideo.classList.add('hidden');
+            document.getElementById('btn-capture').classList.add('hidden');
+            
+            cameraResult.classList.remove('hidden');
+            document.getElementById('btn-retake').classList.remove('hidden');
+            if (videoStream) stopCamera(); 
+        }
+        reader.readAsDataURL(file);
+    }
+};
+
+window.retakePhoto = function() { 
+    cameraResult.classList.add('hidden'); 
+    document.getElementById('btn-retake').classList.add('hidden'); 
+    document.getElementById('camera-idle').classList.remove('hidden');
+    document.getElementById('upload-photo').value = ""; 
+    stopCamera();
+}
+
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
@@ -336,6 +380,9 @@ window.resetGuestForm = function() {
     const cIdle = document.getElementById('camera-idle'); if(cIdle) cIdle.classList.remove('hidden');
     const cVid = document.getElementById('camera-video'); if(cVid) cVid.classList.add('hidden');
     const bCap = document.getElementById('btn-capture'); if(bCap) bCap.classList.add('hidden');
+    
+    // Reset Upload
+    const upPhoto = document.getElementById('upload-photo'); if(upPhoto) upPhoto.value = "";
 };
 
 window.finishGuestRegistration = function() {
@@ -469,7 +516,7 @@ window.approveVerification = function() { try { if (codeToVerify) { changeGuestS
 window.finishVerification = function() { try { if (codeToVerify) { changeGuestStatus(codeToVerify, 'selesai'); } } catch(e) {} };
 
 // =========================================================
-// EXPORT CSV & CETAK PDF DENGAN HTML2PDF (ANTI-BLANK 100%)
+// EXPORT CSV MURNI (TANPA PDF SAMA SEKALI)
 // =========================================================
 window.exportToCSV = function() {
     let csv = "Kode Tiket,Tanggal Pertemuan,Rencana Jam Tiba,Nama Lengkap,Asal Instansi,Kategori,Keperluan,Status Akhir,Waktu Form Masuk,Waktu Keluar\n";
@@ -481,77 +528,4 @@ window.exportToCSV = function() {
     });
     const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); const url = URL.createObjectURL(blob);
     link.setAttribute("href", url); link.setAttribute("download", `Rekap_Tamu_SMAN1_${new Date().getTime()}.csv`); link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-};
-
-window.printTicket = function(btn) {
-    const ticketCard = document.querySelector('.print-card');
-    if(!ticketCard) { alert("Tiket tidak ditemukan!"); return; }
-    
-    const oldHtml = btn.innerHTML;
-    btn.innerHTML = `<div class="w-4 h-4 border-2 border-rose-200 border-t-white rounded-full animate-spin"></div> Mendownload...`;
-    
-    // KUNCI ANTI-BLANK: Scroll layar ke atas sebelum difoto!
-    window.scrollTo(0, 0);
-
-    const opt = {
-      margin:       0.3,
-      filename:     `Tiket_Tamu_${document.getElementById('ticket-code').innerText}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-      jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
-    };
-    
-    html2pdf().set(opt).from(ticketCard).save().then(() => {
-        btn.innerHTML = oldHtml;
-    }).catch(err => {
-        alert("Gagal mendownload tiket.");
-        btn.innerHTML = oldHtml;
-    });
-};
-
-window.generateReportPDF = function(btn) {
-    const tbody = document.getElementById('print-report-tbody'); tbody.innerHTML = ''; let no = 1;
-    const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    if (sortedGuests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="border border-slate-900 p-4 text-center font-bold text-slate-500">Belum ada data kunjungan.</td></tr>`;
-    } else {
-        sortedGuests.forEach(data => {
-            let statText = data.status.toUpperCase(); if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI"; else if (data.status === 'ditolak') statText = "BATAL";
-            const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data); const tr = document.createElement('tr');
-            tr.innerHTML = `<td class="border border-slate-900 p-2 text-center">${no++}</td><td class="border border-slate-900 p-2 font-mono">${code}</td><td class="border border-slate-900 p-2">${data.displayDate}</td><td class="border border-slate-900 p-2 font-bold">${data.name}</td><td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td><td class="border border-slate-900 p-2">${data.tujuan}</td><td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td><td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>`;
-            tbody.appendChild(tr);
-        });
-    }
-    document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
-    
-    const printContainer = document.getElementById('print-report-container');
-    
-    // KUNCI ANTI-BLANK 1: Munculkan Wadah Laporan ke Layar
-    printContainer.classList.remove('hidden');
-    
-    // KUNCI ANTI-BLANK 2: Scroll ke atas agar tidak terpotong
-    window.scrollTo(0, 0);
-
-    const oldHtml = btn.innerHTML;
-    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Merender...`;
-    
-    const opt = {
-      margin:       0.5,
-      filename:     `Laporan_Tamu_SMAN1_${new Date().getTime()}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
-    };
-    
-    // Proses cetak langsung jadi PDF
-    html2pdf().set(opt).from(printContainer).save().then(() => {
-        // Sembunyikan lagi kalau udah selesai
-        printContainer.classList.add('hidden');
-        btn.innerHTML = oldHtml;
-    }).catch(err => {
-        alert("Gagal merender PDF.");
-        printContainer.classList.add('hidden');
-        btn.innerHTML = oldHtml;
-    });
 };
