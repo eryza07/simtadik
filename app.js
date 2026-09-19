@@ -23,9 +23,9 @@ function formatPhone(phone) {
 // =========================================================
 // FITUR WHATSAPP & RESCHEDULE
 // =========================================================
-let codeToVerify = null; // Menyimpan data panel verifikasi
-let activeDetailCode = null; // Menyimpan data modal profil terbuka
-let rescheduleCode = null; // Menyimpan data untuk modal pembatalan
+let codeToVerify = null; 
+let activeDetailCode = null; 
+let rescheduleCode = null; 
 
 window.sendWAApprove = function() {
     let targetCode = activeDetailCode || codeToVerify;
@@ -68,14 +68,11 @@ window.submitReschedule = function() {
     const newDisplayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
     const newPlanTime = newTime ? newTime + " WIB" : "Waktu menyesuaikan";
 
-    // 1. Eksekusi Perubahan Data jadi Ditolak (Batal)
     changeGuestStatus(rescheduleCode, 'ditolak'); 
     
-    // 2. Buka WA
     const msg = `Mohon maaf Bapak/Ibu *${data.name}*, jadwal kunjungan Anda dengan Kode Tiket *${rescheduleCode}* terpaksa kami *BATALKAN* karena *${reason}*.\n\nSebagai gantinya, kami menyarankan Anda untuk datang kembali pada tanggal *${newDisplayDate}* pukul *${newPlanTime}*.\n\nSilakan balas pesan ini untuk mengonfirmasi ketersediaan Anda. Terima kasih.`;
     window.open(`https://wa.me/${formatPhone(data.phone)}?text=${encodeURIComponent(msg)}`, '_blank');
     
-    // 3. Tutup Modal
     closeRescheduleModal();
 };
 
@@ -88,6 +85,35 @@ function playTingSound() {
 }
 
 // =========================================================
+// FITUR BARU: NATIVE PUSH NOTIFICATION (OS LEVEL)
+// =========================================================
+function checkNotifPermission() {
+    if (!("Notification" in window)) return;
+    const btn = document.getElementById('btn-enable-notif');
+    if (Notification.permission !== "granted" && Notification.permission !== "denied" && currentUserRole !== 'guest') {
+        if(btn) btn.classList.remove('hidden');
+    } else {
+        if(btn) btn.classList.add('hidden');
+    }
+}
+
+window.requestDesktopNotif = function() {
+    if (!("Notification" in window)) {
+        alert("Browser ini tidak mendukung notifikasi OS Desktop.");
+        return;
+    }
+    Notification.requestPermission().then(permission => {
+        checkNotifPermission();
+        if (permission === "granted") {
+            new Notification("Notifikasi Aktif!", { 
+                body: "Anda akan menerima pemberitahuan tamu baru secara langsung di layar ini.", 
+                icon: "logo.png" 
+            });
+        }
+    });
+};
+
+// =========================================================
 // LOGIKA NOTIFIKASI DIAM-DIAM KE ADMIN
 // =========================================================
 window.silentAddNotification = function(title, message) {
@@ -98,10 +124,13 @@ window.silentAddNotification = function(title, message) {
     item.className = "p-3 hover:bg-slate-50 rounded-xl transition cursor-pointer border border-transparent hover:border-slate-100 flex gap-3 fade-in";
     item.innerHTML = `<div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="bell" class="w-4 h-4 pointer-events-none"></i></div><div><h5 class="text-xs font-bold text-slate-900">${title}</h5><p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${message}</p><span class="text-[9px] font-bold text-slate-400 mt-1 block">${timeStr}</span></div>`;
     list.prepend(item); lucide.createIcons();
-    
-    // Nyalakan titik merah supaya admin sadar pas buka menu
     const dotHeader = document.getElementById('header-notif-dot'); if(dotHeader) dotHeader.classList.remove('hidden');
     document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.remove('hidden'));
+
+    // BUM! NATIVE OS NOTIFICATION JIKA SUDAH DIIZINKAN
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(title, { body: message, icon: "logo.png" });
+    }
 }
 
 window.toggleNotifDropdown = function(e) {
@@ -186,6 +215,9 @@ window.executeSafeLogin = function() {
         document.getElementById('sidebar-icon').setAttribute('data-lucide', 'log-out'); document.getElementById('sidebar-text').innerText = "Keluar";
         
         lucide.createIcons(); renderMobileNav(); refreshDashboardMetrics(); document.getElementById('username-input').value = ""; document.getElementById('password-input').value = "";
+        
+        // Panggil Cek Permisi Layar
+        checkNotifPermission();
     }, 800);
 };
 
@@ -195,6 +227,9 @@ window.processLogout = function() {
     document.getElementById('sidebar-icon').setAttribute('data-lucide', 'lock'); document.getElementById('sidebar-text').innerText = "Login";
     lucide.createIcons(); renderMobileNav(); switchAppView('view-guest-form'); 
     const dotHeader = document.getElementById('header-notif-dot'); if(dotHeader) dotHeader.classList.add('hidden'); document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.add('hidden'));
+    
+    // Matikan tombol notif layar
+    const btnNotif = document.getElementById('btn-enable-notif'); if(btnNotif) btnNotif.classList.add('hidden');
 };
 
 // =========================================================
@@ -213,15 +248,13 @@ function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => 
 // =========================================================
 window.changeGuestStatus = function(code, newStatus) {
     const data = guestsDatabase[code]; 
-    if (!data || data.status === newStatus) return; // Cegah error kalau data kosong atau statusnya sama
+    if (!data || data.status === newStatus) return;
     
-    // Update Master Data
     data.status = newStatus;
     if (newStatus === 'selesai' || newStatus === 'ditolak') {
         const o = new Date(); data.outTime = newStatus === 'selesai' ? `${o.getHours().toString().padStart(2, '0')}:${o.getMinutes().toString().padStart(2, '0')} WIB` : 'Ditolak';
     }
 
-    // Refresh Panel Belakang Layar
     const histBadge = document.getElementById(`hist-badge-${code}`); const histOut = document.getElementById(`hist-out-${code}`);
     if (histBadge) {
         if (newStatus === 'bertemu') { histBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 w-max block mx-auto text-center"; histBadge.innerText = "Sedang Bertemu"; } 
@@ -229,10 +262,7 @@ window.changeGuestStatus = function(code, newStatus) {
         else if (newStatus === 'ditolak') { histBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 w-max block mx-auto text-center"; histBadge.innerText = "Dibatalkan"; if (histOut) histOut.innerText = "Out: Dibatalkan"; }
     }
     
-    // KUNCI PERBAIKAN: Selalu render ulang Dashboard (Beranda & Kepsek)
     refreshDashboardMetrics();
-    
-    // KUNCI PERBAIKAN: Jika Modal Profil atau Layar Verifikasi sedang terbuka, paksa Refresh Layar Mereka secara instan!
     if (activeDetailCode === code) { openDetailModal(code); }
     if (codeToVerify === code && currentActiveView === 'view-admin-verify') { executeVerification(code); }
 }
@@ -313,12 +343,32 @@ function renderScheduleAnalytics() {
 }
 
 // =========================================================
-// SUBMIT FORM TAMU
+// BUGFIX UTAMA: FUNGSI RESET FORM & SUBMIT FORM
 // =========================================================
-document.getElementById('guest-form')?.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const guestName = document.getElementById('guest-name').value; const instansi = document.getElementById('guest-instansi').value; const guestDate = document.getElementById('guest-date').value;
-    const guestPhone = document.getElementById('guest-phone').value; 
+window.resetGuestForm = function() {
+    const submitBtn = document.getElementById('btn-submit-guest');
+    if (submitBtn) { submitBtn.disabled = false; document.getElementById('submit-text').innerText = "Kirim & Buat Tiket Kunjungan"; document.getElementById('submit-icon').classList.remove('hidden'); document.getElementById('submit-spinner').classList.add('hidden'); }
+    const form = document.getElementById('guest-form'); if (form) form.reset();
+    const dateInp = document.getElementById('guest-date'); if (dateInp) dateInp.value = new Date().toISOString().split('T')[0];
+    const timeInp = document.getElementById('guest-time');
+    if (timeInp) { const now = new Date(); timeInp.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; }
+    const kelasC = document.getElementById('kelas-container'); if (kelasC) kelasC.classList.remove('is-active');
+
+    if (typeof stopCamera === 'function') stopCamera();
+    const cRes = document.getElementById('camera-result'); if (cRes) { cRes.classList.add('hidden'); cRes.src = ""; }
+    const bRetake = document.getElementById('btn-retake'); if(bRetake) bRetake.classList.add('hidden');
+    const cIdle = document.getElementById('camera-idle'); if(cIdle) cIdle.classList.remove('hidden');
+    const cVid = document.getElementById('camera-video'); if(cVid) cVid.classList.add('hidden');
+    const bCap = document.getElementById('btn-capture'); if(bCap) bCap.classList.add('hidden');
+};
+
+window.finishGuestRegistration = function() {
+    resetGuestForm(); switchAppView('view-guest-form');
+    const mainEl = document.querySelector('main'); if(mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.submitGuestForm = function() {
+    const guestName = document.getElementById('guest-name').value; const instansi = document.getElementById('guest-instansi').value; const guestDate = document.getElementById('guest-date').value; const guestPhone = document.getElementById('guest-phone').value; 
     const guestTimeInput = document.getElementById('guest-time').value; const planTimeWIB = guestTimeInput ? guestTimeInput + ' WIB' : '-';
     const kategoriSel = document.getElementById('kategori-select'); const kategori = kategoriSel.options[kategoriSel.selectedIndex].text;
     let kelas = document.getElementById('input-kelas').value; if (kelas && kategoriSel.value === 'siswa') kelas = " - " + kelas; else kelas = "";
@@ -349,54 +399,42 @@ document.getElementById('guest-form')?.addEventListener('submit', function (e) {
 
     guestsDatabase[code] = { name: guestName, phone: guestPhone, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, date: guestDate, displayDate: displayDate, planTime: planTimeWIB, time: timeStrWIB, outTime: '-', status: 'menunggu' };
 
-    const submitBtn = document.getElementById('btn-submit-guest'); submitBtn.disabled = true; document.getElementById('submit-text').innerText = "Memproses Tiket..."; document.getElementById('submit-icon').classList.add('hidden'); document.getElementById('submit-spinner').classList.remove('hidden');
+    const submitBtn = document.getElementById('btn-submit-guest'); if(submitBtn) submitBtn.disabled = true; 
+    document.getElementById('submit-text').innerText = "Memproses Tiket..."; document.getElementById('submit-icon').classList.add('hidden'); document.getElementById('submit-spinner').classList.remove('hidden');
 
     setTimeout(() => {
-        document.getElementById('ticket-name').innerText = guestName; document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`; document.getElementById('ticket-code').innerText = code;
-        document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
+        try {
+            document.getElementById('ticket-name').innerText = guestName; document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`; document.getElementById('ticket-code').innerText = code;
+            document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
 
-        switchAppView('view-success'); appendHistoryRow(code); refreshDashboardMetrics();
-        silentAddNotification("Tamu Baru Terdaftar!", `${guestName} dari ${instansi} telah mendaftar.`);
-
-        submitBtn.disabled = false; document.getElementById('submit-text').innerText = "Kirim & Buat Tiket Kunjungan"; document.getElementById('submit-icon').classList.remove('hidden'); document.getElementById('submit-spinner').classList.add('hidden');
-        document.getElementById('guest-form').reset(); document.getElementById('guest-date').value = new Date().toISOString().split('T')[0]; document.getElementById('guest-time').value = `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`; document.getElementById('kelas-container').classList.remove('is-active');
-        if (videoStream) stopCamera(); cameraResult.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden'); document.getElementById('camera-idle').classList.remove('hidden'); cameraVideo.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden');
+            switchAppView('view-success'); appendHistoryRow(code); refreshDashboardMetrics();
+            silentAddNotification("Tamu Baru Terdaftar!", `${guestName} dari ${instansi} telah mendaftar.`);
+        } catch (error) {} finally { resetGuestForm(); }
     }, 1200);
-});
+};
 
 window.printTicket = function() { document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket'); window.print(); }
 document.getElementById('btn-accept-suggestion')?.addEventListener('click', function() { document.getElementById('guest-time').value = this.dataset.suggestTime; document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('btn-submit-guest').click(); }, 300); });
 document.getElementById('btn-change-schedule')?.addEventListener('click', () => { document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300); });
 
 // =========================================================
-// MODAL PROFIL DETAIL
+// CEK TIKET, VERIFIKASI & RIWAYAT TETAP SAMA...
 // =========================================================
+function appendHistoryRow(code) {
+    const data = guestsDatabase[code]; const tbody = document.getElementById('history-table-body'); if (!tbody) return;
+    const tr = document.createElement('tr'); tr.id = `hist-row-${code}`; tr.className = "hover:bg-slate-50/70 transition fade-in";
+    tr.innerHTML = `<td class="px-5 py-3.5"><p class="text-[10px] font-mono text-slate-400 font-bold">${code}</p><p class="font-bold text-slate-900">${data.name}</p><p class="text-[11px] text-slate-400">${data.instansi}</p></td><td class="px-5 py-3.5 text-slate-600">${data.displayDate} <br><span class="text-[10px] text-slate-400 font-mono">In: ${data.time} | <span id="hist-out-${code}">Out: -</span></span></td><td class="px-5 py-3.5"><span id="hist-badge-${code}" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 w-max block mx-auto text-center">Menunggu</span></td><td class="px-5 py-3.5 text-center"><button onclick="openDetailModal('${code}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition active:scale-90 shadow-sm relative z-20"><i data-lucide="user" class="w-4 h-4 pointer-events-none"></i></button></td>`;
+    tbody.prepend(tr); lucide.createIcons();
+}
+
 window.openDetailModal = function (code) {
     const data = guestsDatabase[code]; if (!data) return; activeDetailCode = code;
     document.getElementById('detail-photo').src = data.photo; document.getElementById('detail-code').innerText = code; document.getElementById('detail-datetime').innerText = `${data.displayDate} - ${data.planTime}`; document.getElementById('detail-outtime').innerText = data.outTime; document.getElementById('detail-name').innerText = `${data.name} (${data.phone})`; document.getElementById('detail-instansi').innerText = `${data.instansi} (${data.kategori})`; document.getElementById('detail-tujuan').innerText = data.tujuan;
-    
-    // Refresh Logic untuk UI Modal
-    const badge = document.getElementById('detail-status-badge');
-    const waitActions = document.getElementById('mdl-waiting-actions'); 
-    const btnSelesai = document.getElementById('btn-mdl-selesai');
-    
-    if (data.status === 'menunggu') { 
-        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; 
-        waitActions.classList.remove('hidden'); btnSelesai.classList.add('hidden'); 
-    } 
-    else if (data.status === 'bertemu') { 
-        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu Kepsek"; 
-        waitActions.classList.add('hidden'); btnSelesai.classList.remove('hidden'); 
-    } 
-    else if (data.status === 'selesai') { 
-        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; 
-        waitActions.classList.add('hidden'); btnSelesai.classList.add('hidden'); 
-    } 
-    else if (data.status === 'ditolak') { 
-        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700"; badge.innerText = "Dibatalkan / Reschedule"; 
-        waitActions.classList.add('hidden'); btnSelesai.classList.add('hidden'); 
-    }
-
+    const badge = document.getElementById('detail-status-badge'); const waitActions = document.getElementById('mdl-waiting-actions'); const btnSelesai = document.getElementById('btn-mdl-selesai');
+    if (data.status === 'menunggu') { badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; waitActions.classList.remove('hidden'); btnSelesai.classList.add('hidden'); } 
+    else if (data.status === 'bertemu') { badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu Kepsek"; waitActions.classList.add('hidden'); btnSelesai.classList.remove('hidden'); } 
+    else if (data.status === 'selesai') { badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; waitActions.classList.add('hidden'); btnSelesai.classList.add('hidden'); } 
+    else if (data.status === 'ditolak') { badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700"; badge.innerText = "Dibatalkan / Reschedule"; waitActions.classList.add('hidden'); btnSelesai.classList.add('hidden'); }
     const modal = document.getElementById('detail-modal'); const card = document.getElementById('detail-card');
     modal.classList.remove('hidden'); setTimeout(() => { card.classList.replace('scale-95', 'scale-100'); card.classList.replace('opacity-0', 'opacity-100'); }, 10);
 };
@@ -406,11 +444,6 @@ window.closeDetailModal = function () {
     card.classList.replace('scale-100', 'scale-95'); card.classList.replace('opacity-100', 'opacity-0');
     setTimeout(() => { modal.classList.add('hidden'); activeDetailCode = null; }, 250);
 };
-
-// =========================================================
-// CEK TIKET & VERIFIKASI (FIX LAYAR REFRESH 100%)
-// =========================================================
-window.updateStatusFromModal = function (newStatus) { if (activeDetailCode) { changeGuestStatus(activeDetailCode, newStatus); } };
 
 window.doTrackTicket = function() {
     const code = document.getElementById('track-input').value.trim().toUpperCase(); if (!code) return;
@@ -435,13 +468,10 @@ window.executeVerification = function(code) {
     if (data) {
         codeToVerify = code; notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
         document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
-        
         const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
         
-        if (data.status === 'menunggu') { 
-            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; 
-            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
-        } else {
+        if (data.status === 'menunggu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden'); } 
+        else {
             if (data.status === 'bertemu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu"; msgStatus.innerText = "Sedang Bertemu Kepsek"; msgStatus.className = "text-blue-600"; } 
             else if (data.status === 'selesai') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; msgStatus.innerText = "Selesai (Sudah Keluar)"; msgStatus.className = "text-emerald-600"; } 
             else if (data.status === 'ditolak') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700"; badge.innerText = "Dibatalkan"; msgStatus.innerText = "Dibatalkan / Reschedule"; msgStatus.className = "text-rose-600"; }
@@ -450,21 +480,9 @@ window.executeVerification = function(code) {
     } else { resultCard.classList.add('hidden'); notFound.classList.remove('hidden'); }
 };
 
-window.doAdminVerify = function() {
-    const code = document.getElementById('admin-verify-input').value.trim().toUpperCase(); 
-    executeVerification(code);
-};
-
-window.doQuickVerify = function() {
-    const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; 
-    switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code);
-};
-
+window.doAdminVerify = function() { const code = document.getElementById('admin-verify-input').value.trim().toUpperCase(); executeVerification(code); };
+window.doQuickVerify = function() { const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code); };
 window.approveVerification = function() { if (codeToVerify) { changeGuestStatus(codeToVerify, 'bertemu'); } };
-
-// =========================================================
-// EXPORT CSV & PDF
-// =========================================================
 window.exportToCSV = function() {
     let csv = "Kode Tiket,Tanggal Pertemuan,Rencana Jam Tiba,Nama Lengkap,Asal Instansi,Kategori,Keperluan,Status Akhir,Waktu Form Masuk,Waktu Keluar\n";
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
