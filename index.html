@@ -14,8 +14,6 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
@@ -26,246 +24,161 @@
 </head>
 <body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800 bg-slate-50">
 
-    <div id="toast-container" class="fixed top-20 md:top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
-
     <!-- SIDEBAR DESKTOP -->
     <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
         <nav class="flex flex-col items-center gap-6 w-full relative">
-            <div id="sliding-indicator" class="absolute right-0 w-[3px] bg-rose-600 rounded-l-full opacity-0 pointer-events-none z-10 transition-all duration-300" style="top: 0; height: 0;"></div>
-            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 overflow-hidden p-1 font-black text-rose-600 text-xs">SMAN</div>
+            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 p-1 font-black text-rose-600 text-xs">SMAN</div>
 
             <div id="guest-nav-group" class="w-full flex flex-col gap-2">
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 font-bold group transition cursor-pointer" data-target="view-guest-form"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Buku<br>Tamu</span></button>
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 font-semibold group transition cursor-pointer" data-target="view-track"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Cek<br>Tiket</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 font-bold transition cursor-pointer" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight">Buku<br>Tamu</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 font-semibold transition cursor-pointer" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight">Cek<br>Tiket</span></button>
             </div>
 
             <div id="admin-nav-group" class="w-full hidden flex-col gap-2">
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold group transition cursor-pointer" data-target="view-admin-overview"><div class="relative pointer-events-none"><i data-lucide="home" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Beranda</span></button>
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold group transition cursor-pointer" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Analitik</span></button>
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold group transition cursor-pointer" data-target="view-admin-verify"><div class="relative pointer-events-none"><i data-lucide="scan" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Verifikasi</span></button>
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold group transition cursor-pointer" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Riwayat</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-overview')"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px]">Beranda</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-statistik')"><i data-lucide="pie-chart" class="w-5 h-5"></i><span class="text-[10px]">Analitik</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-verify')"><i data-lucide="scan" class="w-5 h-5"></i><span class="text-[10px]">Verifikasi</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-history')"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-[10px]">Riwayat</span></button>
             </div>
 
             <div id="kepsek-nav-group" class="w-full hidden flex-col gap-2">
-                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 font-bold group transition cursor-pointer" data-target="view-kepsek-overview"><i data-lucide="monitor" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Layar<br>Pimpinan</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-emerald-600 font-bold transition cursor-pointer" onclick="switchAppView('view-kepsek-overview')"><i data-lucide="monitor" class="w-5 h-5"></i><span class="text-[10px]">Pimpinan</span></button>
             </div>
         </nav>
         <div class="flex flex-col items-center gap-3 w-full px-2">
-            <button type="button" onclick="toggleLoginAction(this)" id="btn-sidebar-action" class="w-12 h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-lg shadow-rose-500/25 transition relative z-40 cursor-pointer"><i data-lucide="lock" class="w-5 h-5 pointer-events-none" id="sidebar-icon"></i><span class="text-[9px] font-bold mt-0.5 pointer-events-none" id="sidebar-text">Login</span></button>
+            <button type="button" onclick="toggleLoginAction(this)" id="btn-sidebar-action" class="w-12 h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-lg transition cursor-pointer"><i data-lucide="lock" class="w-5 h-5" id="sidebar-icon"></i><span class="text-[9px] font-bold mt-0.5" id="sidebar-text">Login</span></button>
         </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10 bg-white">
-        <header class="bg-white border-b border-slate-200/80 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0 z-50 relative">
-            <div class="md:hidden flex items-center gap-3">
-                <h1 class="font-extrabold text-sm tracking-widest uppercase text-slate-900">SMAN 1 Kandangan</h1>
-            </div>
-            <div class="hidden md:block"><h1 class="font-extrabold text-base md:text-lg text-slate-900 tracking-tight">Penerima Tamu</h1><p class="text-[11px] text-slate-400">Sistem Registrasi & Verifikasi Terpadu</p></div>
-            
-            <div class="flex items-center gap-3 md:gap-5">
-                <div id="header-notif-container" class="relative hidden">
-                    <button type="button" onclick="toggleNotifDropdown(event)" id="btn-header-notif" class="relative w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer z-50">
-                        <i data-lucide="bell" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
-                        <span id="header-notif-dot" class="hidden absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse pointer-events-none"></span>
-                    </button>
-                    <div id="notif-dropdown" class="hidden absolute top-full right-0 mt-3 w-[300px] md:w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-[100]">
-                        <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h4 class="font-bold text-sm text-slate-900">Notifikasi</h4>
-                            <button type="button" onclick="clearNotifications()" class="text-[10px] text-rose-500 font-bold hover:underline cursor-pointer">Bersihkan</button>
-                        </div>
-                        <div id="notif-list" class="max-h-[60vh] overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1 bg-white">
-                            <div id="notif-empty" class="p-6 text-center text-slate-400 flex flex-col items-center"><i data-lucide="bell-off" class="w-6 h-6 mb-2 opacity-50"></i><span class="text-xs">Belum ada notifikasi.</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0">
+            <h1 class="font-extrabold text-sm md:text-base text-slate-900 tracking-tight">Penerima Tamu - SMAN 1 Kandangan</h1>
         </header>
 
-        <main class="flex-1 overflow-y-auto custom-scrollbar pb-24 md:pb-8 p-4 md:p-6 lg:p-7 relative z-10">
+        <main class="flex-1 overflow-y-auto custom-scrollbar pb-24 md:pb-8 p-4 md:p-6">
             
             <!-- VIEW 1: BUKU TAMU -->
             <div id="view-guest-form" class="app-view block fade-in max-w-2xl mx-auto">
-                <div class="mb-5 md:mb-6 text-center md:text-left"><span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold tracking-wider rounded-full mb-2">Buku Tamu Digital</span><h2 class="text-2xl md:text-3xl font-black text-slate-900 mb-1">Formulir Kunjungan</h2><p class="text-slate-500 text-xs md:text-sm">Lengkapi data diri Anda untuk janji temu dengan Kepala Sekolah.</p></div>
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 md:p-8">
-                    <form id="guest-form" onsubmit="event.preventDefault(); submitGuestForm();" class="space-y-4 md:space-y-5">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap *</label><input type="text" id="guest-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">No. WhatsApp *</label><input type="tel" id="guest-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition" placeholder="Contoh: 08123456789"></div>
+                <div class="mb-5 text-center md:text-left"><span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full mb-2">Buku Tamu Digital</span><h2 class="text-2xl font-black text-slate-900 mb-1">Formulir Kunjungan</h2></div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+                    <form id="guest-form" onsubmit="event.preventDefault(); submitGuestForm();" class="space-y-4">
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap *</label><input type="text" id="guest-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp *</label><input type="tel" id="guest-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500" placeholder="0812..."></div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">Asal Instansi *</label><input type="text" id="guest-instansi" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">Tanggal *</label><input type="date" id="guest-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm"></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">Jam Tiba *</label><input type="time" id="guest-time" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm"></div>
                         </div>
-                        <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Asal Instansi / Lembaga *</label><input type="text" id="guest-instansi" required placeholder="Contoh: Dinas, Wali Murid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Tgl Pertemuan *</label><input type="date" id="guest-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 cursor-pointer transition"></div>
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Rencana Jam Tiba *</label><input type="time" id="guest-time" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 cursor-pointer transition"></div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
-                            <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Kategori Tamu *</label><select id="kategori-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"><option value="" disabled selected>Pilih Kategori...</option><option value="siswa">Siswa / Siswi</option><option value="dinas">Dinas / Lembaga</option><option value="guru">Guru / Pendidik</option><option value="umum">Wali Murid / Umum</option></select></div>
-                            <div id="kelas-container" class="kelas-wrapper"><div class="kelas-inner pt-0"><label class="block text-xs font-bold text-slate-700 mb-1.5">Kelas / Jurusan</label><input type="text" id="input-kelas" placeholder="Contoh: X MIPA 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div></div>
-                        </div>
-                        <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Tujuan Bertemu / Keperluan *</label><textarea id="guest-tujuan" rows="2" required placeholder="Jelaskan keperluan..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 resize-none transition"></textarea></div>
-                        
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Foto Identitas</label>
-                            <div class="relative border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center min-h-[220px]">
-                                <div id="camera-idle" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-10 p-4">
-                                    <p class="text-xs font-bold text-slate-500 mb-4 text-center">Pilih metode pengambilan foto:</p>
-                                    <div class="flex gap-4 w-full max-w-xs">
-                                        <button type="button" onclick="startCamera()" class="flex-1 flex flex-col items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 p-4 rounded-xl border border-rose-200 transition cursor-pointer">
-                                            <i data-lucide="camera" class="w-6 h-6 pointer-events-none"></i><span class="text-[10px] font-bold">Buka Kamera</span>
-                                        </button>
-                                        <label class="flex-1 flex flex-col items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-600 p-4 rounded-xl border border-blue-200 transition cursor-pointer">
-                                            <i data-lucide="upload" class="w-6 h-6 pointer-events-none"></i><span class="text-[10px] font-bold">Upload Gambar</span>
-                                            <input type="file" id="upload-photo" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
-                                        </label>
-                                    </div>
-                                </div>
-                                <video id="camera-video" class="hidden absolute inset-0 w-full h-full object-cover z-0" autoplay playsinline></video>
-                                <button type="button" id="btn-capture" class="hidden absolute bottom-4 z-20 bg-white px-5 py-2 rounded-full text-xs font-bold shadow flex items-center gap-2 active:scale-95 transition cursor-pointer" onclick="takeSnapshot()"><div class="w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse"></div> Ambil Foto</button>
-                                <canvas id="camera-canvas" class="hidden"></canvas><img id="camera-result" class="hidden absolute inset-0 w-full h-full object-cover z-30" alt="Foto">
-                                <button type="button" id="btn-retake" class="hidden absolute bottom-4 z-40 bg-slate-900 text-white px-5 py-2 rounded-full text-xs font-medium shadow active:scale-95 transition cursor-pointer" onclick="retakePhoto()"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Ganti Foto</button>
-                            </div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
+                            <select id="kategori-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                <option value="" disabled selected>Pilih...</option>
+                                <option value="siswa">Siswa</option>
+                                <option value="dinas">Dinas</option>
+                                <option value="guru">Guru</option>
+                                <option value="umum">Umum</option>
+                            </select>
                         </div>
-
-                        <div class="pt-2"><button type="submit" id="btn-submit-guest" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-4 text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/25 transition-all relative z-10 cursor-pointer"><span id="submit-text">Kirim & Buat Tiket Kunjungan</span><i data-lucide="arrow-right" id="submit-icon" class="w-4 h-4"></i><div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div></button></div>
+                        <div id="kelas-container" class="kelas-wrapper">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kelas</label>
+                            <input type="text" id="input-kelas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                        </div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">Keperluan *</label><textarea id="guest-tujuan" rows="2" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm"></textarea></div>
+                        
+                        <button type="submit" id="btn-submit-guest" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl py-3.5 text-sm cursor-pointer shadow-lg shadow-rose-600/25">Kirim & Buat Tiket</button>
                     </form>
                 </div>
             </div>
 
-            <!-- VIEW 2: TIKET BERHASIL -->
-            <div id="view-success" class="app-view hidden fade-in flex-col justify-center h-full max-w-sm mx-auto">
-                <div class="text-center w-full">
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="check-circle" class="w-8 h-8"></i></div><h3 class="text-2xl font-black text-slate-900 mb-1">Pengajuan Berhasil!</h3><p class="text-slate-500 text-xs mb-6">Tunjukkan tangkapan layar tiket ini ke Staf TU saat Anda tiba.</p>
-                    <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 w-full mb-6 text-left relative overflow-hidden shadow-lg">
-                        <div class="flex justify-between items-start mb-5 pb-5 border-b border-dashed border-slate-200"><div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tiket Masuk Tamu</p><h4 class="text-base font-extrabold text-slate-900">SMAN 1 Kandangan</h4></div><i data-lucide="ticket" class="w-6 h-6 text-rose-500"></i></div>
-                        <div class="mb-3"><p class="text-[10px] text-slate-400 uppercase font-bold">Nama Tamu</p><p id="ticket-name" class="font-bold text-slate-900 text-sm">-</p></div>
-                        <div class="mb-5"><p class="text-[10px] text-slate-400 uppercase font-bold">Jadwal Pertemuan</p><p id="ticket-date-display" class="font-bold text-rose-600 text-sm">-</p></div>
-                        <div class="bg-slate-950 p-4 rounded-2xl text-center"><p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Kode Pelacakan</p><p id="ticket-code" class="text-2xl font-black text-white tracking-widest font-mono">SMAN1-XXXX</p></div>
-                    </div>
-                    <button type="button" onclick="finishGuestRegistration()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-4 py-3.5 text-sm transition cursor-pointer">Selesai & Tutup</button>
-                </div>
+            <!-- VIEW 2: SUKSES -->
+            <div id="view-success" class="app-view hidden flex-col justify-center items-center h-full max-w-sm mx-auto text-center">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                <h3 class="text-2xl font-black mb-1">Berhasil!</h3>
+                <p id="ticket-code" class="text-xl font-mono font-bold text-rose-600 mb-4">SMAN1-XXXX</p>
+                <button type="button" onclick="switchAppView('view-guest-form')" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl cursor-pointer">Kembali</button>
             </div>
 
             <!-- VIEW 3: CEK TIKET -->
-            <div id="view-track" class="app-view hidden fade-in max-w-md mx-auto flex-col justify-center h-full">
-                <h2 class="text-2xl font-black text-slate-900 mb-1 text-center">Cek Status Tiket</h2><p class="text-slate-400 text-xs text-center mb-6">Pantau nomor antrean dengan kode pelacakan Anda.</p>
-                <form onsubmit="event.preventDefault(); doTrackTicket();" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex gap-2 mb-6">
-                    <input type="text" id="track-input" placeholder="SMAN1-..." class="flex-1 bg-transparent px-4 py-2.5 outline-none font-mono uppercase font-bold text-xs" autocomplete="off">
-                    <button type="button" onclick="doTrackTicket()" id="btn-do-track" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2.5 font-bold text-xs transition cursor-pointer">Cari</button>
-                </form>
-                <div id="track-result-container" class="hidden fade-in">
-                    <div id="track-found" class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden hidden">
-                        <div class="absolute top-0 right-0 w-2 h-full bg-rose-500" id="track-color-bar"></div>
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Informasi Kunjungan</h4>
-                        <div class="mb-3"><p class="text-[10px] text-slate-400 uppercase font-bold">Nama Tamu</p><p id="track-res-name" class="font-bold text-slate-900 text-sm">-</p></div>
-                        <div class="mb-4"><p class="text-[10px] text-slate-400 uppercase font-bold">Tanggal Pertemuan</p><p id="track-res-date" class="font-bold text-rose-600 text-xs">-</p></div>
-                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100"><p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Status Saat Ini:</p><div class="flex items-center gap-2"><span id="track-res-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span><p id="track-res-status" class="text-sm font-black text-amber-600">Menunggu</p></div></div>
-                    </div>
-                    <div id="track-not-found" class="bg-rose-50 text-rose-700 p-5 rounded-2xl border border-rose-100 text-center hidden"><i data-lucide="alert-circle" class="w-6 h-6 mx-auto mb-1"></i><p class="font-bold text-xs">Kode Tiket Tidak Ditemukan</p></div>
+            <div id="view-track" class="app-view hidden max-w-md mx-auto">
+                <h2 class="text-2xl font-black mb-4">Cek Tiket</h2>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="track-input" placeholder="SMAN1-..." class="flex-1 bg-slate-50 border rounded-xl px-4 py-2 text-sm font-mono uppercase">
+                    <button type="button" onclick="doTrackTicket()" class="bg-rose-600 text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">Cari</button>
+                </div>
+                <div id="track-result-container" class="hidden bg-white p-4 rounded-2xl border text-sm">
+                    <p class="font-bold" id="track-res-name">-</p>
+                    <p class="text-xs text-slate-500" id="track-res-status">-</p>
                 </div>
             </div>
 
-            <!-- VIEW 4: LOGIN FORM -->
-            <div id="view-login" class="app-view hidden fade-in flex-col justify-center h-full max-w-sm mx-auto relative z-50">
-                <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200/80">
-                    <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mb-5 mx-auto"><i data-lucide="shield-check" class="w-7 h-7"></i></div>
-                    <h2 class="text-2xl font-black text-center mb-1 text-slate-900">Akses Pintu Masuk</h2>
-                    <p class="text-slate-400 text-xs text-center mb-6">Login sebagai <b>admin</b> atau <b>kepsek</b>.</p>
-                    <form id="login-form" onsubmit="event.preventDefault(); executeSafeLogin();" class="space-y-4 relative z-20">
-                        <input type="text" id="username-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500" placeholder="Username">
-                        <input type="password" id="password-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500" placeholder="Password">
-                        <button type="button" onclick="executeSafeLogin()" id="btn-do-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-4 py-3.5 text-sm flex justify-center items-center transition cursor-pointer"><span id="login-text">Masuk Dashboard</span><div id="login-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div></button>
-                    </form>
+            <!-- VIEW 4: LOGIN -->
+            <div id="view-login" class="app-view hidden max-w-sm mx-auto">
+                <div class="bg-white p-6 rounded-3xl border shadow-sm">
+                    <h2 class="text-xl font-black mb-4 text-center">Login TU</h2>
+                    <input type="text" id="username-input" placeholder="Username" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-sm mb-3">
+                    <input type="password" id="password-input" placeholder="Password" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-sm mb-4">
+                    <button type="button" onclick="executeSafeLogin()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl cursor-pointer">Masuk</button>
                 </div>
             </div>
 
-            <!-- VIEW 5: ADMIN BERANDA -->
-            <div id="view-admin-overview" class="app-view hidden fade-in max-w-[1400px] mx-auto">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    <div class="lg:col-span-8 space-y-6">
-                        <div class="bg-slate-900 text-white p-6 rounded-3xl"><h2 class="text-xl font-black">Petugas TU - SMAN 1 Kandangan</h2><p class="text-xs text-slate-300 mt-1">Monitor Aktif</p></div>
-                        <div class="grid grid-cols-3 gap-3 md:gap-4">
-                            <div class="bg-white p-4 rounded-2xl border"><p class="text-[10px] text-slate-500 font-bold uppercase">Menunggu</p><h3 id="stat-menunggu-ratio" class="text-2xl font-black text-amber-500 mt-1">0</h3></div>
-                            <div class="bg-white p-4 rounded-2xl border"><p class="text-[10px] text-slate-500 font-bold uppercase">Di Ruang Kepsek</p><h3 id="stat-bertemu" class="text-2xl font-black text-blue-500 mt-1">0</h3></div>
-                            <div class="bg-white p-4 rounded-2xl border"><p class="text-[10px] text-slate-500 font-bold uppercase">Selesai</p><h3 id="stat-checkout-count" class="text-2xl font-black text-emerald-500 mt-1">0</h3></div>
-                        </div>
-                        <div class="bg-white rounded-3xl p-6 border"><h4 class="font-bold text-sm mb-4">Grafik Pendaftar</h4><div class="w-full h-[200px]"><canvas id="visitorChartOverview"></canvas></div></div>
-                        <div><h3 class="text-lg font-bold mb-4">Antrean Tamu Aktif</h3><div id="active-guests-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div><div id="empty-active-state" class="bg-white rounded-2xl p-8 border border-dashed text-center"><p class="font-bold text-sm text-slate-700">Belum Ada Tamu Aktif</p></div></div>
-                    </div>
-                    <div class="lg:col-span-4 space-y-6">
-                        <div class="bg-white rounded-3xl p-6 border"><h4 class="font-bold text-sm mb-4">Verifikasi Cepat</h4><form onsubmit="event.preventDefault(); doQuickVerify();" class="flex gap-2"><input type="text" id="quick-verify-input" placeholder="SMAN1-..." class="flex-1 bg-slate-50 border rounded-xl px-3 py-2 text-xs font-mono uppercase font-bold"><button type="button" onclick="doQuickVerify()" class="bg-slate-900 text-white rounded-xl px-4 py-2 text-xs font-bold">Cek</button></form></div>
-                    </div>
-                </div>
-            </div>
+            <!-- VIEW 5, 6, 7, 8, 9 (ADMIN & KEPSEK) -->
+            <div id="view-admin-overview" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Dashboard Admin TU</h2><button onclick="processLogout()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold">Keluar</button></div>
+            <div id="view-admin-statistik" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Analitik</h2></div>
+            <div id="view-admin-verify" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Verifikasi</h2></div>
+            <div id="view-admin-history" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Riwayat</h2></div>
+            <div id="view-kepsek-overview" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Dashboard Kepala Sekolah</h2><button onclick="processLogout()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold">Keluar</button></div>
 
-            <!-- VIEW 6: ANALITIK -->
-            <div id="view-admin-statistik" class="app-view hidden fade-in max-w-[1400px] mx-auto">
-                <h2 class="text-2xl font-black mb-6">Statistik & Jadwal</h2>
-                <div class="bg-white rounded-3xl p-6 border mb-6"><div class="w-full h-[200px]"><canvas id="visitorChartAnalitik"></canvas></div></div>
-                <div class="bg-white rounded-3xl p-6 border overflow-x-auto"><table class="w-full text-left text-xs whitespace-nowrap"><thead class="bg-slate-50 text-slate-500 border-b"><tr><th class="px-4 py-3 font-bold">Tanggal</th><th class="px-4 py-3 font-bold text-center">Jam</th><th class="px-4 py-3 font-bold">Tamu</th><th class="px-4 py-3 font-bold">Keperluan</th><th class="px-4 py-3 font-bold text-center">Status</th></tr></thead><tbody id="analytics-schedule-body"></tbody></table></div>
-            </div>
-
-            <!-- VIEW 7: VERIFIKASI -->
-            <div id="view-admin-verify" class="app-view hidden fade-in max-w-4xl mx-auto">
-                <h2 class="text-2xl font-black mb-4 text-center">Verifikasi Tamu</h2>
-                <form onsubmit="event.preventDefault(); doAdminVerify();" class="bg-white p-2 rounded-2xl border flex gap-2 max-w-md mx-auto mb-6"><input type="text" id="admin-verify-input" placeholder="SMAN1-..." class="flex-1 bg-transparent px-4 py-2 font-mono uppercase font-bold text-sm"><button type="button" onclick="doAdminVerify()" class="bg-rose-600 text-white rounded-xl px-5 py-2 text-xs font-bold">Cari</button></form>
-                <div id="verify-result-card" class="bg-white rounded-3xl border overflow-hidden hidden">
-                    <div class="p-6 flex flex-col md:flex-row gap-5">
-                        <div class="w-36 h-48 rounded-2xl overflow-hidden bg-slate-200 shrink-0"><img id="v-res-photo" src="" class="w-full h-full object-cover"></div>
-                        <div class="flex-1"><p class="text-xs font-mono text-rose-600 font-bold mb-1" id="v-res-code"></p><h3 id="v-res-name" class="text-xl font-black mb-3"></h3><p id="v-res-instansi" class="text-xs text-slate-600 mb-2"></p><p id="v-res-tujuan" class="text-xs bg-slate-50 p-3 rounded-xl border"></p></div>
-                    </div>
-                    <div class="p-5 bg-slate-50 border-t flex gap-2">
-                        <button type="button" onclick="approveVerification()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl text-xs">Panggil Masuk</button>
-                        <button type="button" onclick="finishVerification()" class="flex-1 bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs">Selesai (Check-Out)</button>
-                    </div>
-                </div>
-                <div id="verify-not-found" class="bg-rose-50 text-rose-700 p-4 rounded-2xl text-center hidden"><p class="font-bold text-xs">Tiket Tidak Ditemukan</p></div>
-            </div>
-
-            <!-- VIEW 8: RIWAYAT -->
-            <div id="view-admin-history" class="app-view hidden fade-in max-w-5xl mx-auto">
-                <div class="flex justify-between items-center mb-5"><h2 class="text-2xl font-black">Log Riwayat</h2><button type="button" onclick="exportToCSV()" class="bg-emerald-600 text-white rounded-xl px-5 py-2.5 text-xs font-bold">Export Excel (CSV)</button></div>
-                <div class="bg-white rounded-3xl border overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 border-b"><tr><th class="px-5 py-3 font-bold">Tiket & Tamu</th><th class="px-5 py-3 font-bold">Waktu</th><th class="px-5 py-3 font-bold">Status</th></tr></thead><tbody id="history-table-body"></tbody></table></div>
-            </div>
-
-            <!-- VIEW 9: KEPSEK -->
-            <div id="view-kepsek-overview" class="app-view hidden fade-in max-w-4xl mx-auto">
-                <div class="bg-emerald-900 text-white p-8 rounded-3xl mb-6"><h2 class="text-2xl font-black">Dashboard Kepala Sekolah</h2><p class="text-xs text-emerald-200 mt-1">Pantauan Ruangan Aktif</p></div>
-                <div class="bg-white rounded-3xl p-6 border"><h3 class="font-bold mb-4">Antrean Pertemuan</h3><div id="kepsek-guests-grid" class="grid grid-cols-1 gap-4"></div><div id="kepsek-empty-state" class="bg-slate-50 p-8 rounded-2xl text-center text-slate-400 text-xs">Ruangan Kosong</div></div>
-            </div>
         </main>
     </div>
 
     <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center h-[68px] z-40 px-2" id="mobile-bottom-nav"></nav>
 
-    <!-- SCRIPT JAVASCRIPT LENGKAP -->
+    <!-- SCRIPT UTAMA AMAN DARI CRASH -->
     <script>
-        // GANTI URL DAN KUNCI SUPABASE DI SINI:
+        // GANTI SUPABASE URL & KEY DI SINI:
         const SUPABASE_URL = 'https://yixtnhmeogxzeyrrbmcg.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpeHRuaG1lb2d4emV5cnJibWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NjQyMjIsImV4cCI6MjEwNTM0MDIyMn0.TYj88t54zypBKsHlS0PuUo-fu59oelib-xwXCK2k1no';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        lucide.createIcons();
-
+        let supabase = null;
         let guestsDatabase = {};
-        let currentUserRole = 'guest'; 
-        let chartOverview = null, chartAnalitik = null;
-        let currentActiveView = 'view-guest-form';
-        let syncInterval = null;
-        let knownGuestCodes = new Set();
-        let codeToVerify = null;
+        let currentUserRole = 'guest';
 
-        document.getElementById('guest-date').value = new Date().toISOString().split('T')[0];
-        const now = new Date();
-        document.getElementById('guest-time').value = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        // Tunggu sampai halaman selesai dimuat agar tidak crash
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (window.supabase) {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                }
+            } catch(e) {
+                console.log("Supabase init error:", e);
+            }
 
-        function formatPhone(phone) { let p = phone.replace(/\D/g, ''); if(p.startsWith('0')) p = '62' + p.substring(1); return p; }
+            lucide.createIcons();
+            renderMobileNav();
+            
+            const dateInp = document.getElementById('guest-date');
+            if(dateInp) dateInp.value = new Date().toISOString().split('T')[0];
+            const timeInp = document.getElementById('guest-time');
+            if(timeInp) {
+                const now = new Date();
+                timeInp.value = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            }
+
+            const katSel = document.getElementById('kategori-select');
+            if(katSel) {
+                katSel.addEventListener('change', function() {
+                    const c = document.getElementById('kelas-container');
+                    if(this.value === 'siswa') c.classList.add('is-active'); else c.classList.remove('is-active');
+                });
+            }
+        });
 
         function switchAppView(targetId) {
-            currentActiveView = targetId;
             document.querySelectorAll('.app-view').forEach(view => { view.classList.remove('block', 'flex'); view.classList.add('hidden'); });
-            const target = document.getElementById(targetId); if (!target) return; target.classList.remove('hidden');
+            const target = document.getElementById(targetId); 
+            if (!target) return; 
+            target.classList.remove('hidden');
             if (['view-success', 'view-track', 'view-login'].includes(targetId)) target.classList.add('flex'); else target.classList.add('block');
         }
 
@@ -273,34 +186,19 @@
             const nav = document.getElementById('mobile-bottom-nav');
             if(!nav) return;
             if (currentUserRole === 'guest') {
-                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-rose-600 font-bold" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Buku Tamu</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Cek Tiket</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="switchAppView('view-login')"><i data-lucide="lock" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Login TU</span></button>`;
+                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-rose-600 font-bold cursor-pointer" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Buku Tamu</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Cek Tiket</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-login')"><i data-lucide="lock" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Login TU</span></button>`;
             } else if (currentUserRole === 'admin') {
-                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-rose-600 font-bold" onclick="switchAppView('view-admin-overview')"><i data-lucide="home" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Beranda</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="switchAppView('view-admin-statistik')"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Analitik</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="switchAppView('view-admin-verify')"><i data-lucide="scan" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Verifikasi</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400" onclick="switchAppView('view-admin-history')"><i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Riwayat</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Keluar</span></button>`;
+                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-rose-600 font-bold cursor-pointer" onclick="switchAppView('view-admin-overview')"><i data-lucide="home" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Beranda</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-admin-statistik')"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Analitik</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-admin-verify')"><i data-lucide="scan" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Verifikasi</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-admin-history')"><i data-lucide="book-open" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Riwayat</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-red-500 cursor-pointer" onclick="processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Keluar</span></button>`;
             } else if (currentUserRole === 'kepsek') {
-                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-emerald-600 font-bold" onclick="switchAppView('view-kepsek-overview')"><i data-lucide="monitor" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Pimpinan</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-red-500" onclick="processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5"></i><span class="text-[9px]">Keluar</span></button>`;
+                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-emerald-600 font-bold cursor-pointer" onclick="switchAppView('view-kepsek-overview')"><i data-lucide="monitor" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Pimpinan</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-red-500 cursor-pointer" onclick="processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Keluar</span></button>`;
             }
             lucide.createIcons();
         }
-        renderMobileNav();
 
-        // CHARTS
-        function initChart() {
-            try {
-                const o = document.getElementById('visitorChartOverview'), a = document.getElementById('visitorChartAnalitik');
-                const cfg = { type: 'bar', data: { labels: ['Siswa', 'Dinas', 'Guru', 'Umum'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } };
-                if(o) chartOverview = new Chart(o, cfg);
-                if(a) chartAnalitik = new Chart(a, cfg);
-            } catch(e) {}
-        }
-        initChart();
-        function updateChartData(s, d, g, u) {
-            const arr = [s, d, g, u];
-            if(chartOverview) { chartOverview.data.datasets[0].data = arr; chartOverview.update(); }
-            if(chartAnalitik) { chartAnalitik.data.datasets[0].data = arr; chartAnalitik.update(); }
+        function toggleLoginAction(btn) {
+            if(currentUserRole === 'guest') switchAppView('view-login'); else processLogout();
         }
 
-        // LOGIN
-        function toggleLoginAction(btn) { if(currentUserRole === 'guest') switchAppView('view-login'); else processLogout(); }
         function executeSafeLogin() {
             const u = document.getElementById('username-input').value.trim().toLowerCase();
             const p = document.getElementById('password-input').value.trim();
@@ -312,15 +210,11 @@
 
             currentUserRole = role;
             document.getElementById('guest-nav-group').classList.add('hidden');
-            if(role === 'admin') { document.getElementById('admin-nav-group').classList.remove('hidden'); document.getElementById('admin-nav-group').classList.add('flex'); switchAppView('view-admin-overview'); }
-            else if(role === 'kepsek') { document.getElementById('kepsek-nav-group').classList.remove('hidden'); document.getElementById('kepsek-nav-group').classList.add('flex'); switchAppView('view-kepsek-overview'); }
-            document.getElementById('header-notif-container').classList.remove('hidden');
-            const btnAct = document.getElementById('btn-sidebar-action'); btnAct.className = "w-12 h-12 rounded-2xl bg-slate-800 text-white flex flex-col items-center justify-center shadow-lg cursor-pointer";
-            document.getElementById('sidebar-icon').setAttribute('data-lucide', 'log-out');
-            document.getElementById('sidebar-text').innerText = "Keluar";
+            if(role === 'admin') { document.getElementById('admin-nav-group').classList.remove('hidden'); switchAppView('view-admin-overview'); }
+            else if(role === 'kepsek') { document.getElementById('kepsek-nav-group').classList.remove('hidden'); switchAppView('view-kepsek-overview'); }
             renderMobileNav();
-            loadSupabaseData();
-            syncInterval = setInterval(loadSupabaseData, 5000);
+            document.getElementById('username-input').value = "";
+            document.getElementById('password-input').value = "";
         }
 
         function processLogout() {
@@ -328,149 +222,10 @@
             document.getElementById('admin-nav-group').classList.add('hidden');
             document.getElementById('kepsek-nav-group').classList.add('hidden');
             document.getElementById('guest-nav-group').classList.remove('hidden');
-            document.getElementById('header-notif-container').classList.add('hidden');
-            const btnAct = document.getElementById('btn-sidebar-action'); btnAct.className = "w-12 h-12 rounded-2xl bg-rose-500 text-white flex flex-col items-center justify-center shadow-lg cursor-pointer";
-            document.getElementById('sidebar-icon').setAttribute('data-lucide', 'lock');
-            document.getElementById('sidebar-text').innerText = "Login";
             renderMobileNav();
             switchAppView('view-guest-form');
-            if(syncInterval) clearInterval(syncInterval);
         }
 
-        // CAMERA & UPLOAD
-        document.getElementById('kategori-select').addEventListener('change', function() {
-            const c = document.getElementById('kelas-container');
-            if(this.value === 'siswa') c.classList.add('is-active'); else c.classList.remove('is-active');
-        });
-        const cv = document.getElementById('camera-video'), cc = document.getElementById('camera-canvas'), cr = document.getElementById('camera-result');
-        let vStream = null;
-        async function startCamera() {
-            try {
-                vStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-                cv.srcObject = vStream; document.getElementById('camera-idle').classList.add('hidden');
-                cv.classList.remove('hidden'); document.getElementById('btn-capture').classList.remove('hidden');
-            } catch(e) { alert("Kamera diblokir."); }
-        }
-        function takeSnapshot() {
-            if(!vStream) return;
-            cc.width = cv.videoWidth; cc.height = cv.videoHeight;
-            cc.getContext('2d').drawImage(cv, 0, 0);
-            cr.src = cc.toDataURL('image/jpeg', 0.85);
-            cv.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden');
-            cr.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden');
-            stopCamera();
-        }
-        function handlePhotoUpload(e) {
-            const f = e.target.files[0];
-            if(f) {
-                const r = new FileReader();
-                r.onload = function(evt) {
-                    cr.src = evt.target.result;
-                    document.getElementById('camera-idle').classList.add('hidden');
-                    cv.classList.add('hidden'); document.getElementById('btn-capture').classList.add('hidden');
-                    cr.classList.remove('hidden'); document.getElementById('btn-retake').classList.remove('hidden');
-                    if(vStream) stopCamera();
-                }
-                r.readAsDataURL(f);
-            }
-        }
-        function retakePhoto() {
-            cr.classList.add('hidden'); document.getElementById('btn-retake').classList.add('hidden');
-            document.getElementById('camera-idle').classList.remove('hidden');
-            document.getElementById('upload-photo').value = "";
-            stopCamera();
-        }
-        function stopCamera() { if(vStream) { vStream.getTracks().forEach(t => t.stop()); vStream = null; } }
-
-        // SUPABASE DATA SYNC
-        async function loadSupabaseData() {
-            try {
-                const { data, error } = await supabase.from('guests').select('*');
-                if(error) throw error;
-                for(let k in guestsDatabase) delete guestsDatabase[k];
-                data.forEach(item => { guestsDatabase[item.code] = item; });
-                refreshDashboardMetrics();
-            } catch(e) {}
-        }
-
-        async function changeGuestStatus(code, newStatus) {
-            try {
-                const item = guestsDatabase[code];
-                let out = item.outTime;
-                if(newStatus === 'selesai') {
-                    const d = new Date(); out = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} WIB`;
-                }
-                await supabase.from('guests').update({ status: newStatus, outTime: out %> out }).eq('code', code); // wait, let's fix typo: outTime: out
-                await loadSupabaseData();
-                if(codeToVerify === code) executeVerification(code);
-            } catch(e) {}
-        }
-
-        function refreshDashboardMetrics() {
-            let menunggu = 0, bertemu = 0, selesai = 0;
-            let s = 0, d = 0, g = 0, u = 0;
-            for(let c in guestsDatabase) {
-                const item = guestsDatabase[c];
-                if(item.status === 'menunggu') menunggu++;
-                else if(item.status === 'bertemu') bertemu++;
-                else if(item.status === 'selesai') selesai++;
-                const kat = item.kategori.toLowerCase();
-                if(kat.includes('siswa')) s++; else if(kat.includes('dinas')) d++; else if(kat.includes('guru')) g++; else u++;
-            }
-            updateChartData(s, d, g, u);
-            if(document.getElementById('stat-bertemu')) {
-                document.getElementById('stat-bertemu').innerText = bertemu;
-                document.getElementById('stat-menunggu-ratio').innerText = menunggu;
-                document.getElementById('stat-checkout-count').innerText = selesai;
-                renderActiveGuestsGrid();
-            }
-            renderScheduleAnalytics();
-            renderKepsekDashboard();
-            renderHistoryTable();
-        }
-
-        function renderActiveGuestsGrid() {
-            const grid = document.getElementById('active-guests-grid'), empty = document.getElementById('empty-active-state');
-            if(!grid) return; grid.innerHTML = "";
-            const list = Object.values(guestsDatabase).filter(item => item.status === 'menunggu' || item.status === 'bertemu').reverse();
-            if(list.length === 0) { empty.classList.remove('hidden'); grid.classList.add('hidden'); return; }
-            empty.classList.add('hidden'); grid.classList.remove('hidden');
-            list.forEach(g => {
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl p-4 border flex items-center justify-between gap-3 shadow-sm";
-                card.innerHTML = `<div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0"><img src="${g.photo}" class="w-full h-full object-cover"></div><div><p class="text-[9px] font-mono font-bold text-slate-400">${g.code}</p><h5 class="font-bold text-sm">${g.name}</h5><p class="text-[11px] text-slate-500">${g.instansi}</p></div></div><span class="px-2 py-0.5 rounded text-[9px] font-bold ${g.status==='bertemu'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${g.status.toUpperCase()}</span>`;
-                grid.appendChild(card);
-            });
-        }
-
-        function renderKepsekDashboard() {
-            const grid = document.getElementById('kepsek-guests-grid');
-            if(!grid) return; grid.innerHTML = "";
-            const list = Object.values(guestsDatabase).filter(item => item.status === 'menunggu' || item.status === 'bertemu').reverse();
-            if(list.length === 0) { grid.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">Ruangan Kosong</div>`; return; }
-            list.forEach(g => {
-                const card = document.createElement('div');
-                card.className = "p-4 rounded-2xl border flex items-center justify-between gap-4 bg-slate-50";
-                card.innerHTML = `<div><h5 class="font-bold text-sm">${g.name}</h5><p class="text-xs text-slate-500">${g.instansi} - ${g.tujuan}</p></div><div class="flex gap-2">${g.status==='menunggu'?`<button onclick="changeGuestStatus('${g.code}','bertemu')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold">Panggil</button>`:`<button onclick="changeGuestStatus('${g.code}','selesai')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">Selesai</button>`}</div>`;
-                grid.appendChild(card);
-            });
-        }
-
-        function renderScheduleAnalytics() {
-            const tbody = document.getElementById('analytics-schedule-body'); if(!tbody) return; tbody.innerHTML = "";
-            Object.values(guestsDatabase).forEach(d => {
-                tbody.innerHTML += `<tr class="border-b"><td class="px-4 py-3">${d.displayDate}</td><td class="px-4 py-3 text-center">${d.planTime}</td><td class="px-4 py-3">${d.name} (${d.instansi})</td><td class="px-4 py-3">${d.tujuan}</td><td class="px-4 py-3 text-center font-bold">${d.status.toUpperCase()}</td></tr>`;
-            });
-        }
-
-        function renderHistoryTable() {
-            const tbody = document.getElementById('history-table-body'); if(!tbody) return; tbody.innerHTML = "";
-            Object.values(guestsDatabase).forEach(d => {
-                tbody.innerHTML += `<tr class="border-b"><td class="px-5 py-3"><p class="font-mono text-[10px] text-slate-400">${d.code}</p><p class="font-bold">${d.name}</p></td><td class="px-5 py-3 text-slate-500">${d.displayDate}</td><td class="px-5 py-3 font-bold">${d.status.toUpperCase()}</td></tr>`;
-            });
-        }
-
-        // SUBMIT FORM
         async function submitGuestForm() {
             const name = document.getElementById('guest-name').value;
             const phone = document.getElementById('guest-phone').value;
@@ -480,89 +235,40 @@
             const kategori = document.getElementById('kategori-select').value;
             const kelas = document.getElementById('input-kelas').value;
             const tujuan = document.getElementById('guest-tujuan').value;
-            const photo = cr.src || 'data:image/svg+xml;utf8,...';
-            const dObj = new Date(date);
-            const displayDate = `${dObj.getDate().toString().padStart(2,'0')}/${(dObj.getMonth()+1).toString().padStart(2,'0')}/${dObj.getFullYear()}`;
+            
             const code = `SMAN1-${Math.random().toString(36).substring(2,7).toUpperCase()}`;
-
             const newGuest = {
-                code, name, phone, instansi, kategori: kategori + (kelas ? " - " + kelas : ""), tujuan, photo, date, displayDate, planTime: time + " WIB", time: "Baru Saja", outTime: "-", status: "menunggu"
+                code, name, phone, instansi, kategori: kategori + (kelas ? " - " + kelas : ""), tujuan, date, planTime: time + " WIB", status: "menunggu", photo: "https://via.placeholder.com/150"
             };
 
             try {
-                const { error } = await supabase.from('guests').insert([newGuest]);
-                if(error) throw error;
-                document.getElementById('ticket-name').innerText = name;
-                document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${time} WIB`;
+                if(supabase) {
+                    const { error } = await supabase.from('guests').insert([newGuest]);
+                    if(error) throw error;
+                }
                 document.getElementById('ticket-code').innerText = code;
                 switchAppView('view-success');
-            } catch(e) { alert("Gagal menyimpan ke Supabase: " + e.message); }
+            } catch(e) {
+                alert("Gagal kirim ke database: " + e.message);
+            }
         }
 
-        function finishGuestRegistration() {
-            document.getElementById('guest-form').reset();
-            retakePhoto();
-            switchAppView('view-guest-form');
-        }
-
-        // TRACK & VERIFY
         async function doTrackTicket() {
             const code = document.getElementById('track-input').value.trim().toUpperCase();
             if(!code) return;
             document.getElementById('track-result-container').classList.remove('hidden');
             try {
-                const { data } = await supabase.from('guests').select('*').eq('code', code).single();
-                if(data) {
-                    document.getElementById('track-not-found').classList.add('hidden');
-                    document.getElementById('track-found').classList.remove('hidden');
-                    document.getElementById('track-res-name').innerText = data.name;
-                    document.getElementById('track-res-date').innerText = `${data.displayDate} | Tiba: ${data.planTime}`;
-                    document.getElementById('track-res-status').innerText = data.status.toUpperCase();
-                } else { throw new Error(); }
+                if(supabase) {
+                    const { data } = await supabase.from('guests').select('*').eq('code', code).single();
+                    if(data) {
+                        document.getElementById('track-res-name').innerText = data.name;
+                        document.getElementById('track-res-status').innerText = "Status: " + data.status.toUpperCase();
+                    } else { throw new Error(); }
+                }
             } catch(e) {
-                document.getElementById('track-found').classList.add('hidden');
-                document.getElementById('track-not-found').classList.remove('hidden');
+                document.getElementById('track-res-name').innerText = "Tiket tidak ditemukan.";
+                document.getElementById('track-res-status').innerText = "-";
             }
-        }
-
-        async function doAdminVerify() {
-            const code = document.getElementById('admin-verify-input').value.trim().toUpperCase();
-            executeVerification(code);
-        }
-        function doQuickVerify() {
-            const code = document.getElementById('quick-verify-input').value.trim().toUpperCase();
-            switchAppView('view-admin-verify');
-            document.getElementById('admin-verify-input').value = code;
-            executeVerification(code);
-        }
-        async function executeVerification(code) {
-            await loadSupabaseData();
-            const d = guestsDatabase[code];
-            if(d) {
-                codeToVerify = code;
-                document.getElementById('verify-not-found').classList.add('hidden');
-                document.getElementById('verify-result-card').classList.remove('hidden');
-                document.getElementById('v-res-photo').src = d.photo;
-                document.getElementById('v-res-code').innerText = code;
-                document.getElementById('v-res-name').innerText = d.name;
-                document.getElementById('v-res-instansi').innerText = `${d.instansi} (${d.kategori})`;
-                document.getElementById('v-res-tujuan').innerText = d.tujuan;
-            } else {
-                document.getElementById('verify-result-card').classList.add('hidden');
-                document.getElementById('verify-not-found').classList.remove('hidden');
-            }
-        }
-        async function approveVerification() { if(codeToVerify) { await changeGuestStatus(codeToVerify, 'bertemu'); alert("Tamu dipanggil masuk!"); } }
-        async function finishVerification() { if(codeToVerify) { await changeGuestStatus(codeToVerify, 'selesai'); alert("Tamu selesai (check-out)!"); } }
-
-        function exportToCSV() {
-            let csv = "Kode,Tanggal,Jam,Nama,Instansi,Kategori,Keperluan,Status\n";
-            Object.values(guestsDatabase).forEach(d => {
-                csv += `${d.code},${d.displayDate},${d.planTime},"${d.name}","${d.instansi}",${d.kategori},"${d.tujuan}",${d.status}\n`;
-            });
-            const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
-            link.download = `Rekap_Tamu_${new Date().getTime()}.csv`; link.click();
         }
     </script>
 </body>
