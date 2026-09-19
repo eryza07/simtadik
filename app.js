@@ -465,11 +465,11 @@ window.executeVerification = function(code) {
 
 window.doAdminVerify = function() { const code = document.getElementById('admin-verify-input').value.trim().toUpperCase(); executeVerification(code); };
 window.doQuickVerify = function() { const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code); };
-window.approveVerification = function() { try { if (codeToVerify) { changeGuestStatus(codeToVerify, 'bertemu'); } } catch(e) { alert("Gagal verifikasi: " + e.message); } };
-window.finishVerification = function() { try { if (codeToVerify) { changeGuestStatus(codeToVerify, 'selesai'); } } catch(e) { alert("Gagal menyelesaikan: " + e.message); } };
+window.approveVerification = function() { try { if (codeToVerify) { changeGuestStatus(codeToVerify, 'bertemu'); } } catch(e) {} };
+window.finishVerification = function() { try { if (codeToVerify) { changeGuestStatus(codeToVerify, 'selesai'); } } catch(e) {} };
 
 // =========================================================
-// EXPORT CSV & CETAK PDF DENGAN HTML2PDF
+// EXPORT CSV & CETAK PDF DENGAN HTML2PDF (ANTI-BLANK 100%)
 // =========================================================
 window.exportToCSV = function() {
     let csv = "Kode Tiket,Tanggal Pertemuan,Rencana Jam Tiba,Nama Lengkap,Asal Instansi,Kategori,Keperluan,Status Akhir,Waktu Form Masuk,Waktu Keluar\n";
@@ -483,31 +483,33 @@ window.exportToCSV = function() {
     link.setAttribute("href", url); link.setAttribute("download", `Rekap_Tamu_SMAN1_${new Date().getTime()}.csv`); link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
 };
 
-window.printTicket = function() {
+window.printTicket = function(btn) {
     const ticketCard = document.querySelector('.print-card');
     if(!ticketCard) { alert("Tiket tidak ditemukan!"); return; }
     
-    // Ganti teks tombol selagi proses PDF
-    const oldBtn = event.target.innerHTML;
-    event.target.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mendownload...`;
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = `<div class="w-4 h-4 border-2 border-rose-200 border-t-white rounded-full animate-spin"></div> Mendownload...`;
     
+    // KUNCI ANTI-BLANK: Scroll layar ke atas sebelum difoto!
+    window.scrollTo(0, 0);
+
     const opt = {
       margin:       0.3,
       filename:     `Tiket_Tamu_${document.getElementById('ticket-code').innerText}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
+      html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
       jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
     };
     
     html2pdf().set(opt).from(ticketCard).save().then(() => {
-        event.target.innerHTML = oldBtn;
+        btn.innerHTML = oldHtml;
     }).catch(err => {
-        alert("Gagal mendownload tiket: " + err);
-        event.target.innerHTML = oldBtn;
+        alert("Gagal mendownload tiket.");
+        btn.innerHTML = oldHtml;
     });
 };
 
-window.generateReportPDF = function() {
+window.generateReportPDF = function(btn) {
     const tbody = document.getElementById('print-report-tbody'); tbody.innerHTML = ''; let no = 1;
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
     
@@ -524,11 +526,13 @@ window.generateReportPDF = function() {
     document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
     
     const printContainer = document.getElementById('print-report-container');
-    printContainer.classList.remove('hidden');
-    printContainer.classList.remove('opacity-0');
     
-    // Ganti teks tombol
-    const btn = event.target;
+    // KUNCI ANTI-BLANK 1: Munculkan Wadah Laporan ke Layar
+    printContainer.classList.remove('hidden');
+    
+    // KUNCI ANTI-BLANK 2: Scroll ke atas agar tidak terpotong
+    window.scrollTo(0, 0);
+
     const oldHtml = btn.innerHTML;
     btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Merender...`;
     
@@ -536,16 +540,17 @@ window.generateReportPDF = function() {
       margin:       0.5,
       filename:     `Laporan_Tamu_SMAN1_${new Date().getTime()}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
+      html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
       jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
     };
     
+    // Proses cetak langsung jadi PDF
     html2pdf().set(opt).from(printContainer).save().then(() => {
+        // Sembunyikan lagi kalau udah selesai
         printContainer.classList.add('hidden');
-        printContainer.classList.add('opacity-0');
         btn.innerHTML = oldHtml;
     }).catch(err => {
-        alert("Gagal merender PDF: " + err);
+        alert("Gagal merender PDF.");
         printContainer.classList.add('hidden');
         btn.innerHTML = oldHtml;
     });
