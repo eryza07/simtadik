@@ -16,9 +16,7 @@ const timeInput = document.getElementById('guest-time');
 if (timeInput) { const now = new Date(); timeInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; }
 const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-function formatPhone(phone) {
-    let p = phone.replace(/\D/g, ''); if(p.startsWith('0')) p = '62' + p.substring(1); return p;
-}
+function formatPhone(phone) { let p = phone.replace(/\D/g, ''); if(p.startsWith('0')) p = '62' + p.substring(1); return p; }
 
 // =========================================================
 // FITUR WHATSAPP & RESCHEDULE
@@ -59,34 +57,26 @@ window.closeRescheduleModal = function() {
 window.submitReschedule = function() {
     if(!rescheduleCode) return;
     const data = guestsDatabase[rescheduleCode]; if(!data) return;
-    
     const reason = document.getElementById('reschedule-reason').value || "Bapak Kepala Sekolah ada keperluan mendadak";
-    const newDate = document.getElementById('reschedule-date').value;
-    const newTime = document.getElementById('reschedule-time').value;
-    
-    const dateObj = new Date(newDate); 
-    const newDisplayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+    const newDate = document.getElementById('reschedule-date').value; const newTime = document.getElementById('reschedule-time').value;
+    const dateObj = new Date(newDate); const newDisplayDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
     const newPlanTime = newTime ? newTime + " WIB" : "Waktu menyesuaikan";
 
     changeGuestStatus(rescheduleCode, 'ditolak'); 
     
     const msg = `Mohon maaf Bapak/Ibu *${data.name}*, jadwal kunjungan Anda dengan Kode Tiket *${rescheduleCode}* terpaksa kami *BATALKAN* karena *${reason}*.\n\nSebagai gantinya, kami menyarankan Anda untuk datang kembali pada tanggal *${newDisplayDate}* pukul *${newPlanTime}*.\n\nSilakan balas pesan ini untuk mengonfirmasi ketersediaan Anda. Terima kasih.`;
     window.open(`https://wa.me/${formatPhone(data.phone)}?text=${encodeURIComponent(msg)}`, '_blank');
-    
     closeRescheduleModal();
 };
 
 // =========================================================
-// SUARA "TING" NOTIFIKASI
+// PUSH NOTIFICATION & TOAST
 // =========================================================
 function playTingSound() {
     const AudioContext = window.AudioContext || window.webkitAudioContext; if (!AudioContext) return;
     try { const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gainNode = ctx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5); gainNode.gain.setValueAtTime(0.5, ctx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5); osc.connect(gainNode); gainNode.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.5); } catch (e) {}
 }
 
-// =========================================================
-// FITUR BARU: NATIVE PUSH NOTIFICATION (OS LEVEL)
-// =========================================================
 function checkNotifPermission() {
     if (!("Notification" in window)) return;
     const btn = document.getElementById('btn-enable-notif');
@@ -96,26 +86,14 @@ function checkNotifPermission() {
         if(btn) btn.classList.add('hidden');
     }
 }
-
 window.requestDesktopNotif = function() {
-    if (!("Notification" in window)) {
-        alert("Browser ini tidak mendukung notifikasi OS Desktop.");
-        return;
-    }
+    if (!("Notification" in window)) { alert("Browser ini tidak mendukung notifikasi OS Desktop."); return; }
     Notification.requestPermission().then(permission => {
         checkNotifPermission();
-        if (permission === "granted") {
-            new Notification("Notifikasi Aktif!", { 
-                body: "Anda akan menerima pemberitahuan tamu baru secara langsung di layar ini.", 
-                icon: "logo.png" 
-            });
-        }
+        if (permission === "granted") { new Notification("Notifikasi Aktif!", { body: "Anda akan menerima pemberitahuan tamu baru secara langsung di layar ini.", icon: "logo.png" }); }
     });
 };
 
-// =========================================================
-// LOGIKA NOTIFIKASI DIAM-DIAM KE ADMIN
-// =========================================================
 window.silentAddNotification = function(title, message) {
     const now = new Date(); const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} WIB`;
     const list = document.getElementById('notif-list'); const empty = document.getElementById('notif-empty');
@@ -124,13 +102,11 @@ window.silentAddNotification = function(title, message) {
     item.className = "p-3 hover:bg-slate-50 rounded-xl transition cursor-pointer border border-transparent hover:border-slate-100 flex gap-3 fade-in";
     item.innerHTML = `<div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="bell" class="w-4 h-4 pointer-events-none"></i></div><div><h5 class="text-xs font-bold text-slate-900">${title}</h5><p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${message}</p><span class="text-[9px] font-bold text-slate-400 mt-1 block">${timeStr}</span></div>`;
     list.prepend(item); lucide.createIcons();
+    
     const dotHeader = document.getElementById('header-notif-dot'); if(dotHeader) dotHeader.classList.remove('hidden');
     document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.remove('hidden'));
 
-    // BUM! NATIVE OS NOTIFICATION JIKA SUDAH DIIZINKAN
-    if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(title, { body: message, icon: "logo.png" });
-    }
+    if ("Notification" in window && Notification.permission === "granted") { new Notification(title, { body: message, icon: "logo.png" }); }
 }
 
 window.toggleNotifDropdown = function(e) {
@@ -215,8 +191,6 @@ window.executeSafeLogin = function() {
         document.getElementById('sidebar-icon').setAttribute('data-lucide', 'log-out'); document.getElementById('sidebar-text').innerText = "Keluar";
         
         lucide.createIcons(); renderMobileNav(); refreshDashboardMetrics(); document.getElementById('username-input').value = ""; document.getElementById('password-input').value = "";
-        
-        // Panggil Cek Permisi Layar
         checkNotifPermission();
     }, 800);
 };
@@ -227,8 +201,6 @@ window.processLogout = function() {
     document.getElementById('sidebar-icon').setAttribute('data-lucide', 'lock'); document.getElementById('sidebar-text').innerText = "Login";
     lucide.createIcons(); renderMobileNav(); switchAppView('view-guest-form'); 
     const dotHeader = document.getElementById('header-notif-dot'); if(dotHeader) dotHeader.classList.add('hidden'); document.querySelectorAll('.nav-red-dot').forEach(dot => dot.classList.add('hidden'));
-    
-    // Matikan tombol notif layar
     const btnNotif = document.getElementById('btn-enable-notif'); if(btnNotif) btnNotif.classList.add('hidden');
 };
 
@@ -244,7 +216,7 @@ function retakePhoto() { cameraResult.classList.add('hidden'); document.getEleme
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
-// FUNGSI UTAMA: UPDATE STATUS MASTER (ANTI-BUG UI)
+// BUGFIX UTAMA: FUNGSI UPDATE STATUS & REFRESH LAYAR
 // =========================================================
 window.changeGuestStatus = function(code, newStatus) {
     const data = guestsDatabase[code]; 
@@ -263,6 +235,8 @@ window.changeGuestStatus = function(code, newStatus) {
     }
     
     refreshDashboardMetrics();
+    
+    // Refresh modal / layar verifikasi jika sedang terbuka
     if (activeDetailCode === code) { openDetailModal(code); }
     if (codeToVerify === code && currentActiveView === 'view-admin-verify') { executeVerification(code); }
 }
@@ -343,7 +317,7 @@ function renderScheduleAnalytics() {
 }
 
 // =========================================================
-// BUGFIX UTAMA: FUNGSI RESET FORM & SUBMIT FORM
+// SUBMIT FORM TAMU
 // =========================================================
 window.resetGuestForm = function() {
     const submitBtn = document.getElementById('btn-submit-guest');
@@ -396,7 +370,6 @@ window.submitGuestForm = function() {
 
     const now = new Date(); const timeStrWIB = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ' WIB';
     const code = `SMAN1-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
     guestsDatabase[code] = { name: guestName, phone: guestPhone, instansi: instansi, kategori: kategori + kelas, tujuan: tujuan, photo: photoSrc, date: guestDate, displayDate: displayDate, planTime: planTimeWIB, time: timeStrWIB, outTime: '-', status: 'menunggu' };
 
     const submitBtn = document.getElementById('btn-submit-guest'); if(submitBtn) submitBtn.disabled = true; 
@@ -418,7 +391,7 @@ document.getElementById('btn-accept-suggestion')?.addEventListener('click', func
 document.getElementById('btn-change-schedule')?.addEventListener('click', () => { document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300); });
 
 // =========================================================
-// CEK TIKET, VERIFIKASI & RIWAYAT TETAP SAMA...
+// CEK TIKET, VERIFIKASI & MODAL PROFIL
 // =========================================================
 function appendHistoryRow(code) {
     const data = guestsDatabase[code]; const tbody = document.getElementById('history-table-body'); if (!tbody) return;
@@ -445,6 +418,8 @@ window.closeDetailModal = function () {
     setTimeout(() => { modal.classList.add('hidden'); activeDetailCode = null; }, 250);
 };
 
+window.updateStatusFromModal = function (newStatus) { if (activeDetailCode) { changeGuestStatus(activeDetailCode, newStatus); } };
+
 window.doTrackTicket = function() {
     const code = document.getElementById('track-input').value.trim().toUpperCase(); if (!code) return;
     const resContainer = document.getElementById('track-result-container'); resContainer.classList.remove('hidden');
@@ -461,6 +436,7 @@ window.doTrackTicket = function() {
     } else { document.getElementById('track-found').classList.add('hidden'); document.getElementById('track-not-found').classList.remove('hidden'); }
 };
 
+// BUGFIX: FUNGSI EXECUTE VERIFICATION DIRAPIKAN AGAR TOMBOL SELESAI MUNCUL!
 window.executeVerification = function(code) {
     if (!code) return; const data = guestsDatabase[code]; 
     const notFound = document.getElementById('verify-not-found'); const resultCard = document.getElementById('verify-result-card');
@@ -468,14 +444,29 @@ window.executeVerification = function(code) {
     if (data) {
         codeToVerify = code; notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
         document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
-        const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
         
-        if (data.status === 'menunggu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden'); } 
+        const badge = document.getElementById('v-res-status-badge'); 
+        const footer = document.getElementById('v-res-action-footer'); 
+        const waitActions = document.getElementById('v-res-waiting-actions');
+        const meetActions = document.getElementById('v-res-bertemu-actions');
+        const msgDone = document.getElementById('v-res-msg-done'); 
+        const msgStatus = document.getElementById('v-res-msg-status');
+        
+        if (data.status === 'menunggu') { 
+            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; 
+            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
+            waitActions.classList.remove('hidden'); meetActions.classList.add('hidden');
+        } 
+        else if (data.status === 'bertemu') { 
+            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu"; 
+            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
+            waitActions.classList.add('hidden'); meetActions.classList.remove('hidden');
+        } 
         else {
-            if (data.status === 'bertemu') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu"; msgStatus.innerText = "Sedang Bertemu Kepsek"; msgStatus.className = "text-blue-600"; } 
-            else if (data.status === 'selesai') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; msgStatus.innerText = "Selesai (Sudah Keluar)"; msgStatus.className = "text-emerald-600"; } 
+            if (data.status === 'selesai') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; msgStatus.innerText = "Selesai (Sudah Keluar)"; msgStatus.className = "text-emerald-600"; } 
             else if (data.status === 'ditolak') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700"; badge.innerText = "Dibatalkan"; msgStatus.innerText = "Dibatalkan / Reschedule"; msgStatus.className = "text-rose-600"; }
             footer.classList.add('hidden'); footer.classList.remove('flex'); msgDone.classList.remove('hidden');
+            waitActions.classList.add('hidden'); meetActions.classList.add('hidden');
         }
     } else { resultCard.classList.add('hidden'); notFound.classList.remove('hidden'); }
 };
@@ -483,6 +474,8 @@ window.executeVerification = function(code) {
 window.doAdminVerify = function() { const code = document.getElementById('admin-verify-input').value.trim().toUpperCase(); executeVerification(code); };
 window.doQuickVerify = function() { const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code); };
 window.approveVerification = function() { if (codeToVerify) { changeGuestStatus(codeToVerify, 'bertemu'); } };
+window.finishVerification = function() { if (codeToVerify) { changeGuestStatus(codeToVerify, 'selesai'); } }; // BUGFIX FUNGSI SELESAI
+
 window.exportToCSV = function() {
     let csv = "Kode Tiket,Tanggal Pertemuan,Rencana Jam Tiba,Nama Lengkap,Asal Instansi,Kategori,Keperluan,Status Akhir,Waktu Form Masuk,Waktu Keluar\n";
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
