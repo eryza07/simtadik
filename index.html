@@ -58,9 +58,7 @@
                         <i data-lucide="bell" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
                         <span id="header-notif-dot" class="hidden absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse pointer-events-none"></span>
                     </button>
-                    <!-- PANEL DROPDOWN NOTIF -->
                     <div id="notif-dropdown" class="hidden absolute top-full right-0 mt-3 w-[300px] md:w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-[100] transform origin-top-right transition-all duration-200 scale-95 opacity-0">
-                        <!-- FITUR BARU: TOMBOL IZIN NOTIFIKASI OS -->
                         <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <h4 class="font-bold text-sm text-slate-900">Notifikasi</h4>
                             <div class="flex gap-3 items-center">
@@ -127,10 +125,7 @@
                         <div class="mb-5"><p class="text-[10px] text-slate-400 uppercase font-bold">Jadwal Pertemuan</p><p id="ticket-date-display" class="font-bold text-rose-600 text-sm">-</p></div>
                         <div class="bg-slate-950 p-4 rounded-2xl text-center"><p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Kode Pelacakan</p><p id="ticket-code" class="text-2xl font-black text-white tracking-widest font-mono">SMAN1-XXXX</p></div>
                     </div>
-                    <div class="flex gap-2 no-print">
-                        <button type="button" onclick="printTicket()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-3 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"><i data-lucide="printer" class="w-4 h-4"></i> Cetak / Simpan</button>
-                        <button type="button" onclick="finishGuestRegistration()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl px-4 py-3 text-xs transition cursor-pointer">Selesai</button>
-                    </div>
+                    <div class="flex gap-2 no-print"><button type="button" onclick="printTicket()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-3 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"><i data-lucide="printer" class="w-4 h-4"></i> Cetak / Simpan</button><button type="button" onclick="finishGuestRegistration()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl px-4 py-3 text-xs transition cursor-pointer">Selesai</button></div>
                 </div>
             </div>
 
@@ -200,7 +195,7 @@
                 <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm mt-6"><div class="flex items-center justify-between mb-4"><div><h4 class="font-bold text-sm text-slate-900">Kalender Jadwal Kunjungan Kepala Sekolah</h4><p class="text-[11px] text-slate-400">Tabel jadwal harian, jam pertemuan, dan identitas instansi tamu.</p></div><i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i></div><div class="overflow-x-auto hide-scroll"><table class="w-full text-left text-xs whitespace-nowrap"><thead class="bg-slate-50 text-slate-500 border-b border-slate-100"><tr><th class="px-4 py-3 font-bold">Hari & Tanggal</th><th class="px-4 py-3 font-bold text-center">Rencana Jam Tiba</th><th class="px-4 py-3 font-bold">Identitas Tamu</th><th class="px-4 py-3 font-bold">Keperluan</th><th class="px-4 py-3 font-bold text-center">Status</th></tr></thead><tbody id="analytics-schedule-body" class="divide-y divide-slate-100"></tbody></table></div></div>
             </div>
 
-            <!-- VIEW 7: ADMIN VERIFIKASI -->
+            <!-- VIEW 7: ADMIN VERIFIKASI (BUGFIX: DITAMBAHKAN TOMBOL SELESAI DI SINI) -->
             <div id="view-admin-verify" class="app-view hidden fade-in max-w-4xl mx-auto">
                 <div class="text-center mb-6"><span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold tracking-wider rounded-full mb-2">Pintu Masuk TU</span><h2 class="text-2xl font-black text-slate-900 mb-1">Verifikasi & Persetujuan</h2></div>
                 <form id="form-admin-verify" onsubmit="event.preventDefault(); doAdminVerify();" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6 max-w-md mx-auto">
@@ -219,11 +214,19 @@
                     </div>
                     
                     <div id="v-res-action-footer" class="p-5 bg-slate-50 border-t border-slate-100 flex flex-col gap-3">
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <button onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju Jadwal</button>
-                            <button onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Batal / Reschedule</button>
+                        <!-- ACTION SAAT MENUNGGU -->
+                        <div id="v-res-waiting-actions" class="flex flex-col gap-3 hidden">
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <button onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju Jadwal</button>
+                                <button onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Batal / Reschedule</button>
+                            </div>
+                            <button onclick="approveVerification()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
                         </div>
-                        <button onclick="approveVerification()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
+                        
+                        <!-- ACTION SAAT BERTEMU KEPSEK (MUNCUL TOMBOL SELESAI DI SINI) -->
+                        <div id="v-res-bertemu-actions" class="hidden">
+                            <button onclick="finishVerification()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="check-check" class="w-4 h-4 pointer-events-none"></i> Tandai Selesai (Check-Out)</button>
+                        </div>
                     </div>
                     
                     <p id="v-res-msg-done" class="text-center text-xs font-bold text-slate-500 hidden py-4 bg-slate-50 border-t border-slate-100"><i data-lucide="info" class="w-4 h-4 inline mr-1 text-rose-500"></i> Status Akhir Tamu: <span id="v-res-msg-status" class="text-rose-600">Selesai</span></p>
@@ -272,7 +275,7 @@
                     </div>
                     <button onclick="updateStatusFromModal('bertemu')" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
                 </div>
-                <button onclick="updateStatusFromModal('selesai')" id="btn-mdl-selesai" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition active:scale-95 hidden cursor-pointer">Tandai Selesai (Check-Out)</button>
+                <button onclick="updateStatusFromModal('selesai')" id="btn-mdl-selesai" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition active:scale-95 hidden cursor-pointer shadow-md"><i data-lucide="check-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tandai Selesai (Check-Out)</button>
             </div>
         </div>
     </div>
@@ -294,7 +297,7 @@
         </div>
     </div>
 
-    <!-- MODAL KONFLIK JADWAL (SAAT TAMU DAFTAR) -->
+    <!-- MODAL KONFLIK JADWAL -->
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" id="conflict-overlay"></div>
         <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p><div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5"><p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p><p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p></div><div class="flex flex-col gap-2"><button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25 cursor-pointer">Gunakan Jam Ini</button><button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer">Pilih Waktu Lain</button></div></div>
