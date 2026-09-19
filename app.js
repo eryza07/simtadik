@@ -6,7 +6,7 @@ lucide.createIcons();
 
 // MAS ERIK: GANTI TULISAN DI DALAM TANDA KUTIP INI DENGAN KODE DARI SUPABASE!!!
 const SUPABASE_URL = 'https://yixtnhmeogxzeyrrbmcg.supabase.co/';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpeHRuaG1lb2d4emV5cnJibWNnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTc2NDIyMiwiZXhwIjoyMTA1MzQwMjIyfQ.4I2GjqAirIf5XEXFYyLjmux0UKVdH_O-W3CtwligJK4';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpeHRuaG1lb2d4emV5cnJibWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NjQyMjIsImV4cCI6MjEwNTM0MDIyMn0.TYj88t54zypBKsHlS0PuUo-fu59oelib-xwXCK2k1no';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // =========================================================
