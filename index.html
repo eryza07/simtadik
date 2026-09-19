@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -16,8 +15,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
-        .red-dot-pulse { animation: pulseDot 1.5s infinite; }
         .kelas-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         .kelas-wrapper.is-active { max-height: 100px; }
     </style>
@@ -25,24 +22,18 @@
 <body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800 bg-slate-50">
 
     <!-- SIDEBAR DESKTOP -->
-    <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
-        <nav class="flex flex-col items-center gap-6 w-full relative">
+    <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200 py-6 items-center justify-between shrink-0 z-30">
+        <nav class="flex flex-col items-center gap-6 w-full">
             <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 p-1 font-black text-rose-600 text-xs">SMAN</div>
 
             <div id="guest-nav-group" class="w-full flex flex-col gap-2">
-                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 font-bold transition cursor-pointer" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight">Buku<br>Tamu</span></button>
-                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 font-semibold transition cursor-pointer" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] tracking-tight mt-0.5 text-center leading-tight">Cek<br>Tiket</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 font-bold transition cursor-pointer" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px]">Buku Tamu</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 font-semibold transition cursor-pointer" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px]">Cek Tiket</span></button>
             </div>
 
             <div id="admin-nav-group" class="w-full hidden flex-col gap-2">
                 <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-overview')"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px]">Beranda</span></button>
-                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-statistik')"><i data-lucide="pie-chart" class="w-5 h-5"></i><span class="text-[10px]">Analitik</span></button>
-                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-verify')"><i data-lucide="scan" class="w-5 h-5"></i><span class="text-[10px]">Verifikasi</span></button>
                 <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-history')"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-[10px]">Riwayat</span></button>
-            </div>
-
-            <div id="kepsek-nav-group" class="w-full hidden flex-col gap-2">
-                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-emerald-600 font-bold transition cursor-pointer" onclick="switchAppView('view-kepsek-overview')"><i data-lucide="monitor" class="w-5 h-5"></i><span class="text-[10px]">Pimpinan</span></button>
             </div>
         </nav>
         <div class="flex flex-col items-center gap-3 w-full px-2">
@@ -51,7 +42,7 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10 bg-white">
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative bg-white">
         <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0">
             <h1 class="font-extrabold text-sm md:text-base text-slate-900 tracking-tight">Penerima Tamu - SMAN 1 Kandangan</h1>
         </header>
@@ -122,154 +113,156 @@
                 </div>
             </div>
 
-            <!-- VIEW 5, 6, 7, 8, 9 (ADMIN & KEPSEK) -->
-            <div id="view-admin-overview" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Dashboard Admin TU</h2><button onclick="processLogout()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold">Keluar</button></div>
-            <div id="view-admin-statistik" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Analitik</h2></div>
-            <div id="view-admin-verify" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Verifikasi</h2></div>
-            <div id="view-admin-history" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Riwayat</h2></div>
-            <div id="view-kepsek-overview" class="app-view hidden max-w-4xl mx-auto"><h2 class="text-2xl font-black mb-4">Dashboard Kepala Sekolah</h2><button onclick="processLogout()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold">Keluar</button></div>
+            <!-- VIEW ADMIN -->
+            <div id="view-admin-overview" class="app-view hidden max-w-4xl mx-auto">
+                <h2 class="text-2xl font-black mb-4">Dashboard Admin TU</h2>
+                <button onclick="processLogout()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">Keluar</button>
+            </div>
+            <div id="view-admin-history" class="app-view hidden max-w-4xl mx-auto">
+                <h2 class="text-2xl font-black mb-4">Riwayat Tamu</h2>
+                <div id="history-list" class="space-y-2"></div>
+            </div>
 
         </main>
     </div>
 
     <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center h-[68px] z-40 px-2" id="mobile-bottom-nav"></nav>
 
-    <!-- SCRIPT UTAMA AMAN DARI CRASH -->
-    <script>
-        // GANTI SUPABASE URL & KEY DI SINI:
-        const SUPABASE_URL = 'https://yixtnhmeogxzeyrrbmcg.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpeHRuaG1lb2d4emV5cnJibWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NjQyMjIsImV4cCI6MjEwNTM0MDIyMn0.TYj88t54zypBKsHlS0PuUo-fu59oelib-xwXCK2k1no';
+    <!-- PENGHUBUNG KE FILE app.js -->
+    <script src="app.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Penerima Tamu - SMAN 1 Kandangan</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .kelas-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .kelas-wrapper.is-active { max-height: 100px; }
+    </style>
+</head>
+<body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800 bg-slate-50">
 
-        let supabase = null;
-        let guestsDatabase = {};
-        let currentUserRole = 'guest';
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200 py-6 items-center justify-between shrink-0 z-30">
+        <nav class="flex flex-col items-center gap-6 w-full">
+            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 p-1 font-black text-rose-600 text-xs">SMAN</div>
 
-        // Tunggu sampai halaman selesai dimuat agar tidak crash
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                if (window.supabase) {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                }
-            } catch(e) {
-                console.log("Supabase init error:", e);
-            }
+            <div id="guest-nav-group" class="w-full flex flex-col gap-2">
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 font-bold transition cursor-pointer" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px]">Buku Tamu</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 font-semibold transition cursor-pointer" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px]">Cek Tiket</span></button>
+            </div>
 
-            lucide.createIcons();
-            renderMobileNav();
+            <div id="admin-nav-group" class="w-full hidden flex-col gap-2">
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-overview')"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px]">Beranda</span></button>
+                <button type="button" class="nav-tab-btn flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 font-semibold transition cursor-pointer" onclick="switchAppView('view-admin-history')"><i data-lucide="book-open" class="w-5 h-5"></i><span class="text-[10px]">Riwayat</span></button>
+            </div>
+        </nav>
+        <div class="flex flex-col items-center gap-3 w-full px-2">
+            <button type="button" onclick="toggleLoginAction(this)" id="btn-sidebar-action" class="w-12 h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-lg transition cursor-pointer"><i data-lucide="lock" class="w-5 h-5" id="sidebar-icon"></i><span class="text-[9px] font-bold mt-0.5" id="sidebar-text">Login</span></button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative bg-white">
+        <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0">
+            <h1 class="font-extrabold text-sm md:text-base text-slate-900 tracking-tight">Penerima Tamu - SMAN 1 Kandangan</h1>
+        </header>
+
+        <main class="flex-1 overflow-y-auto custom-scrollbar pb-24 md:pb-8 p-4 md:p-6">
             
-            const dateInp = document.getElementById('guest-date');
-            if(dateInp) dateInp.value = new Date().toISOString().split('T')[0];
-            const timeInp = document.getElementById('guest-time');
-            if(timeInp) {
-                const now = new Date();
-                timeInp.value = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-            }
+            <!-- VIEW 1: BUKU TAMU -->
+            <div id="view-guest-form" class="app-view block fade-in max-w-2xl mx-auto">
+                <div class="mb-5 text-center md:text-left"><span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full mb-2">Buku Tamu Digital</span><h2 class="text-2xl font-black text-slate-900 mb-1">Formulir Kunjungan</h2></div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+                    <form id="guest-form" onsubmit="event.preventDefault(); submitGuestForm();" class="space-y-4">
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap *</label><input type="text" id="guest-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp *</label><input type="tel" id="guest-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500" placeholder="0812..."></div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">Asal Instansi *</label><input type="text" id="guest-instansi" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">Tanggal *</label><input type="date" id="guest-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm"></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">Jam Tiba *</label><input type="time" id="guest-time" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
+                            <select id="kategori-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                <option value="" disabled selected>Pilih...</option>
+                                <option value="siswa">Siswa</option>
+                                <option value="dinas">Dinas</option>
+                                <option value="guru">Guru</option>
+                                <option value="umum">Umum</option>
+                            </select>
+                        </div>
+                        <div id="kelas-container" class="kelas-wrapper">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kelas</label>
+                            <input type="text" id="input-kelas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                        </div>
+                        <div><label class="block text-xs font-bold text-slate-700 mb-1">Keperluan *</label><textarea id="guest-tujuan" rows="2" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm"></textarea></div>
+                        
+                        <button type="submit" id="btn-submit-guest" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl py-3.5 text-sm cursor-pointer shadow-lg shadow-rose-600/25">Kirim & Buat Tiket</button>
+                    </form>
+                </div>
+            </div>
 
-            const katSel = document.getElementById('kategori-select');
-            if(katSel) {
-                katSel.addEventListener('change', function() {
-                    const c = document.getElementById('kelas-container');
-                    if(this.value === 'siswa') c.classList.add('is-active'); else c.classList.remove('is-active');
-                });
-            }
-        });
+            <!-- VIEW 2: SUKSES -->
+            <div id="view-success" class="app-view hidden flex-col justify-center items-center h-full max-w-sm mx-auto text-center">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                <h3 class="text-2xl font-black mb-1">Berhasil!</h3>
+                <p id="ticket-code" class="text-xl font-mono font-bold text-rose-600 mb-4">SMAN1-XXXX</p>
+                <button type="button" onclick="switchAppView('view-guest-form')" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl cursor-pointer">Kembali</button>
+            </div>
 
-        function switchAppView(targetId) {
-            document.querySelectorAll('.app-view').forEach(view => { view.classList.remove('block', 'flex'); view.classList.add('hidden'); });
-            const target = document.getElementById(targetId); 
-            if (!target) return; 
-            target.classList.remove('hidden');
-            if (['view-success', 'view-track', 'view-login'].includes(targetId)) target.classList.add('flex'); else target.classList.add('block');
-        }
+            <!-- VIEW 3: CEK TIKET -->
+            <div id="view-track" class="app-view hidden max-w-md mx-auto">
+                <h2 class="text-2xl font-black mb-4">Cek Tiket</h2>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="track-input" placeholder="SMAN1-..." class="flex-1 bg-slate-50 border rounded-xl px-4 py-2 text-sm font-mono uppercase">
+                    <button type="button" onclick="doTrackTicket()" class="bg-rose-600 text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">Cari</button>
+                </div>
+                <div id="track-result-container" class="hidden bg-white p-4 rounded-2xl border text-sm">
+                    <p class="font-bold" id="track-res-name">-</p>
+                    <p class="text-xs text-slate-500" id="track-res-status">-</p>
+                </div>
+            </div>
 
-        function renderMobileNav() {
-            const nav = document.getElementById('mobile-bottom-nav');
-            if(!nav) return;
-            if (currentUserRole === 'guest') {
-                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-rose-600 font-bold cursor-pointer" onclick="switchAppView('view-guest-form')"><i data-lucide="user-plus" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Buku Tamu</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-track')"><i data-lucide="search" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Cek Tiket</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-login')"><i data-lucide="lock" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Login TU</span></button>`;
-            } else if (currentUserRole === 'admin') {
-                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-rose-600 font-bold cursor-pointer" onclick="switchAppView('view-admin-overview')"><i data-lucide="home" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Beranda</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-admin-statistik')"><i data-lucide="pie-chart" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Analitik</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-admin-verify')"><i data-lucide="scan" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Verifikasi</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-slate-400 cursor-pointer" onclick="switchAppView('view-admin-history')"><i data-lucide="book-open" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Riwayat</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-red-500 cursor-pointer" onclick="processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Keluar</span></button>`;
-            } else if (currentUserRole === 'kepsek') {
-                nav.innerHTML = `<button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-emerald-600 font-bold cursor-pointer" onclick="switchAppView('view-kepsek-overview')"><i data-lucide="monitor" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Pimpinan</span></button><button type="button" class="flex-1 flex flex-col items-center justify-center h-full text-red-500 cursor-pointer" onclick="processLogout()"><i data-lucide="log-out" class="w-5 h-5 mb-0.5 pointer-events-none"></i><span class="text-[9px]">Keluar</span></button>`;
-            }
-            lucide.createIcons();
-        }
+            <!-- VIEW 4: LOGIN -->
+            <div id="view-login" class="app-view hidden max-w-sm mx-auto">
+                <div class="bg-white p-6 rounded-3xl border shadow-sm">
+                    <h2 class="text-xl font-black mb-4 text-center">Login TU</h2>
+                    <input type="text" id="username-input" placeholder="Username" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-sm mb-3">
+                    <input type="password" id="password-input" placeholder="Password" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-sm mb-4">
+                    <button type="button" onclick="executeSafeLogin()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl cursor-pointer">Masuk</button>
+                </div>
+            </div>
 
-        function toggleLoginAction(btn) {
-            if(currentUserRole === 'guest') switchAppView('view-login'); else processLogout();
-        }
+            <!-- VIEW ADMIN -->
+            <div id="view-admin-overview" class="app-view hidden max-w-4xl mx-auto">
+                <h2 class="text-2xl font-black mb-4">Dashboard Admin TU</h2>
+                <button onclick="processLogout()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">Keluar</button>
+            </div>
+            <div id="view-admin-history" class="app-view hidden max-w-4xl mx-auto">
+                <h2 class="text-2xl font-black mb-4">Riwayat Tamu</h2>
+                <div id="history-list" class="space-y-2"></div>
+            </div>
 
-        function executeSafeLogin() {
-            const u = document.getElementById('username-input').value.trim().toLowerCase();
-            const p = document.getElementById('password-input').value.trim();
-            if(!u || !p) { alert("Isi username & password!"); return; }
-            let role = null;
-            if(u === 'admin' && p === 'admin') role = 'admin';
-            else if(u === 'kepsek' && p === 'password') role = 'kepsek';
-            if(!role) { alert("Salah username/password!"); return; }
+        </main>
+    </div>
 
-            currentUserRole = role;
-            document.getElementById('guest-nav-group').classList.add('hidden');
-            if(role === 'admin') { document.getElementById('admin-nav-group').classList.remove('hidden'); switchAppView('view-admin-overview'); }
-            else if(role === 'kepsek') { document.getElementById('kepsek-nav-group').classList.remove('hidden'); switchAppView('view-kepsek-overview'); }
-            renderMobileNav();
-            document.getElementById('username-input').value = "";
-            document.getElementById('password-input').value = "";
-        }
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center h-[68px] z-40 px-2" id="mobile-bottom-nav"></nav>
 
-        function processLogout() {
-            currentUserRole = 'guest';
-            document.getElementById('admin-nav-group').classList.add('hidden');
-            document.getElementById('kepsek-nav-group').classList.add('hidden');
-            document.getElementById('guest-nav-group').classList.remove('hidden');
-            renderMobileNav();
-            switchAppView('view-guest-form');
-        }
-
-        async function submitGuestForm() {
-            const name = document.getElementById('guest-name').value;
-            const phone = document.getElementById('guest-phone').value;
-            const instansi = document.getElementById('guest-instansi').value;
-            const date = document.getElementById('guest-date').value;
-            const time = document.getElementById('guest-time').value;
-            const kategori = document.getElementById('kategori-select').value;
-            const kelas = document.getElementById('input-kelas').value;
-            const tujuan = document.getElementById('guest-tujuan').value;
-            
-            const code = `SMAN1-${Math.random().toString(36).substring(2,7).toUpperCase()}`;
-            const newGuest = {
-                code, name, phone, instansi, kategori: kategori + (kelas ? " - " + kelas : ""), tujuan, date, planTime: time + " WIB", status: "menunggu", photo: "https://via.placeholder.com/150"
-            };
-
-            try {
-                if(supabase) {
-                    const { error } = await supabase.from('guests').insert([newGuest]);
-                    if(error) throw error;
-                }
-                document.getElementById('ticket-code').innerText = code;
-                switchAppView('view-success');
-            } catch(e) {
-                alert("Gagal kirim ke database: " + e.message);
-            }
-        }
-
-        async function doTrackTicket() {
-            const code = document.getElementById('track-input').value.trim().toUpperCase();
-            if(!code) return;
-            document.getElementById('track-result-container').classList.remove('hidden');
-            try {
-                if(supabase) {
-                    const { data } = await supabase.from('guests').select('*').eq('code', code).single();
-                    if(data) {
-                        document.getElementById('track-res-name').innerText = data.name;
-                        document.getElementById('track-res-status').innerText = "Status: " + data.status.toUpperCase();
-                    } else { throw new Error(); }
-                }
-            } catch(e) {
-                document.getElementById('track-res-name').innerText = "Tiket tidak ditemukan.";
-                document.getElementById('track-res-status').innerText = "-";
-            }
-        }
-    </script>
+    <!-- PENGHUBUNG KE FILE app.js -->
+    <script src="app.js"></script>
 </body>
 </html>
