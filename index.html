@@ -8,12 +8,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FITUR BARU: ROBOT PENCETAK PDF ANTI-GAGAL (BISA DI HP & PC) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800">
 
     <!-- WADAH NOTIFIKASI TOAST -->
-    <div id="toast-container" class="fixed top-20 md:top-4 right-4 z-[99999] flex flex-col gap-3" style="pointer-events: none;"></div>
+    <div id="toast-container" class="fixed top-20 md:top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- SIDEBAR KIRI -->
     <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
@@ -22,23 +26,23 @@
             <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-2 shadow-sm border border-slate-200 overflow-hidden p-1"><img src="logo.png" alt="Logo" class="w-full h-full object-contain"></div>
 
             <div id="guest-nav-group" class="w-full flex flex-col gap-2">
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 group transition" data-target="view-guest-form"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-bold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Buku<br>Tamu</span></button>
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-track"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Cek<br>Tiket</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 group transition cursor-pointer" data-target="view-guest-form"><i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-bold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Buku<br>Tamu</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition cursor-pointer" data-target="view-track"><i data-lucide="search" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Cek<br>Tiket</span></button>
             </div>
 
             <div id="admin-nav-group" class="w-full hidden flex-col gap-2">
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-overview"><div class="relative pointer-events-none"><i data-lucide="home" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Beranda</span></button>
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Analitik</span></button>
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-verify"><div class="relative pointer-events-none"><i data-lucide="scan" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Verifikasi</span></button>
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Riwayat</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition cursor-pointer" data-target="view-admin-overview"><div class="relative pointer-events-none"><i data-lucide="home" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Beranda</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition cursor-pointer" data-target="view-admin-statistik"><i data-lucide="pie-chart" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Analitik</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition cursor-pointer" data-target="view-admin-verify"><div class="relative pointer-events-none"><i data-lucide="scan" class="w-5 h-5"></i><span class="nav-red-dot hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse"></span></div><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Verifikasi</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-slate-400 hover:text-slate-700 group transition cursor-pointer" data-target="view-admin-history"><i data-lucide="book-open" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-semibold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Riwayat</span></button>
             </div>
 
             <div id="kepsek-nav-group" class="w-full hidden flex-col gap-2">
-                <button class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 group transition" data-target="view-kepsek-overview"><i data-lucide="monitor" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-bold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Layar<br>Pimpinan</span></button>
+                <button type="button" class="nav-tab-btn relative flex flex-col items-center gap-1 w-full py-2.5 text-rose-600 group transition cursor-pointer" data-target="view-kepsek-overview"><i data-lucide="monitor" class="w-5 h-5 pointer-events-none"></i><span class="text-[10px] font-bold tracking-tight mt-0.5 text-center leading-tight pointer-events-none">Layar<br>Pimpinan</span></button>
             </div>
         </nav>
         <div class="flex flex-col items-center gap-3 w-full px-2">
-            <button onclick="toggleLoginAction(this)" id="btn-sidebar-action" class="w-12 h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-lg shadow-rose-500/25 transition relative z-40"><i data-lucide="lock" class="w-5 h-5 pointer-events-none" id="sidebar-icon"></i><span class="text-[9px] font-bold mt-0.5 pointer-events-none" id="sidebar-text">Login</span></button>
+            <button type="button" onclick="toggleLoginAction(this)" id="btn-sidebar-action" class="w-12 h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-lg shadow-rose-500/25 transition relative z-40 cursor-pointer"><i data-lucide="lock" class="w-5 h-5 pointer-events-none" id="sidebar-icon"></i><span class="text-[9px] font-bold mt-0.5 pointer-events-none" id="sidebar-text">Login</span></button>
         </div>
     </aside>
 
@@ -54,7 +58,7 @@
             
             <div class="flex items-center gap-3 md:gap-5">
                 <div id="header-notif-container" class="relative hidden">
-                    <button onclick="toggleNotifDropdown(event)" id="btn-header-notif" class="relative w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition active:scale-95 shadow-sm cursor-pointer z-50">
+                    <button type="button" onclick="toggleNotifDropdown(event)" id="btn-header-notif" class="relative w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition active:scale-95 shadow-sm cursor-pointer z-50">
                         <i data-lucide="bell" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
                         <span id="header-notif-dot" class="hidden absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white red-dot-pulse pointer-events-none"></span>
                     </button>
@@ -62,8 +66,8 @@
                         <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <h4 class="font-bold text-sm text-slate-900">Notifikasi</h4>
                             <div class="flex gap-3 items-center">
-                                <button onclick="requestDesktopNotif()" id="btn-enable-notif" class="hidden text-[10px] bg-blue-100 text-blue-600 px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-200 transition cursor-pointer flex items-center gap-1 active:scale-95 shadow-sm"><i data-lucide="monitor" class="w-3 h-3 pointer-events-none"></i> Izinkan Layar</button>
-                                <button onclick="clearNotifications()" class="text-[10px] text-rose-500 font-bold hover:underline cursor-pointer">Bersihkan</button>
+                                <button type="button" onclick="requestDesktopNotif()" id="btn-enable-notif" class="hidden text-[10px] bg-blue-100 text-blue-600 px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-200 transition cursor-pointer flex items-center gap-1 active:scale-95 shadow-sm"><i data-lucide="monitor" class="w-3 h-3 pointer-events-none"></i> Izinkan Layar</button>
+                                <button type="button" onclick="clearNotifications()" class="text-[10px] text-rose-500 font-bold hover:underline cursor-pointer">Bersihkan</button>
                             </div>
                         </div>
                         <div id="notif-list" class="max-h-[60vh] overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1 bg-white">
@@ -107,7 +111,7 @@
                                 <video id="camera-video" class="hidden absolute inset-0 w-full h-full object-cover z-0" autoplay playsinline></video>
                                 <button type="button" id="btn-capture" class="hidden absolute bottom-4 z-20 bg-white px-5 py-2 rounded-full text-xs font-bold shadow flex items-center gap-2 active:scale-95 transition" onclick="takeSnapshot()"><div class="w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse"></div> Ambil Foto</button>
                                 <canvas id="camera-canvas" class="hidden"></canvas><img id="camera-result" class="hidden absolute inset-0 w-full h-full object-cover z-30" alt="Foto">
-                                <button type="button" id="btn-retake" class="hidden absolute bottom-4 z-40 bg-slate-900 text-white px-5 py-2 rounded-full text-xs font-medium shadow active:scale-95 transition" onclick="retakePhoto()"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Ulangi</button>
+                                <button type="button" id="btn-retake" class="hidden absolute bottom-4 z-40 bg-slate-900 text-white px-5 py-2 rounded-full text-xs font-medium shadow active:scale-95 transition cursor-pointer" onclick="retakePhoto()"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Ulangi</button>
                             </div>
                         </div>
                         <div class="pt-2"><button type="submit" id="btn-submit-guest" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-4 text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/25 transition-all relative z-10 cursor-pointer"><span id="submit-text" class="pointer-events-none">Kirim & Buat Tiket Kunjungan</span><i data-lucide="arrow-right" id="submit-icon" class="w-4 h-4 pointer-events-none"></i><div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin pointer-events-none"></div></button></div>
@@ -125,7 +129,10 @@
                         <div class="mb-5"><p class="text-[10px] text-slate-400 uppercase font-bold">Jadwal Pertemuan</p><p id="ticket-date-display" class="font-bold text-rose-600 text-sm">-</p></div>
                         <div class="bg-slate-950 p-4 rounded-2xl text-center"><p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Kode Pelacakan</p><p id="ticket-code" class="text-2xl font-black text-white tracking-widest font-mono">SMAN1-XXXX</p></div>
                     </div>
-                    <div class="flex gap-2 no-print"><button type="button" onclick="printTicket()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-3 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"><i data-lucide="printer" class="w-4 h-4"></i> Cetak / Simpan</button><button type="button" onclick="finishGuestRegistration()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl px-4 py-3 text-xs transition cursor-pointer">Selesai</button></div>
+                    <div class="flex gap-2 no-print">
+                        <button type="button" onclick="printTicket()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-3 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"><i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i> Download PDF</button>
+                        <button type="button" onclick="finishGuestRegistration()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl px-4 py-3 text-xs transition cursor-pointer">Selesai</button>
+                    </div>
                 </div>
             </div>
 
@@ -195,7 +202,7 @@
                 <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm mt-6"><div class="flex items-center justify-between mb-4"><div><h4 class="font-bold text-sm text-slate-900">Kalender Jadwal Kunjungan Kepala Sekolah</h4><p class="text-[11px] text-slate-400">Tabel jadwal harian, jam pertemuan, dan identitas instansi tamu.</p></div><i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i></div><div class="overflow-x-auto hide-scroll"><table class="w-full text-left text-xs whitespace-nowrap"><thead class="bg-slate-50 text-slate-500 border-b border-slate-100"><tr><th class="px-4 py-3 font-bold">Hari & Tanggal</th><th class="px-4 py-3 font-bold text-center">Rencana Jam Tiba</th><th class="px-4 py-3 font-bold">Identitas Tamu</th><th class="px-4 py-3 font-bold">Keperluan</th><th class="px-4 py-3 font-bold text-center">Status</th></tr></thead><tbody id="analytics-schedule-body" class="divide-y divide-slate-100"></tbody></table></div></div>
             </div>
 
-            <!-- VIEW 7: ADMIN VERIFIKASI (BUGFIX: DITAMBAHKAN TOMBOL SELESAI DI SINI) -->
+            <!-- VIEW 7: ADMIN VERIFIKASI -->
             <div id="view-admin-verify" class="app-view hidden fade-in max-w-4xl mx-auto">
                 <div class="text-center mb-6"><span class="inline-block px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold tracking-wider rounded-full mb-2">Pintu Masuk TU</span><h2 class="text-2xl font-black text-slate-900 mb-1">Verifikasi & Persetujuan</h2></div>
                 <form id="form-admin-verify" onsubmit="event.preventDefault(); doAdminVerify();" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 mb-6 max-w-md mx-auto">
@@ -214,18 +221,16 @@
                     </div>
                     
                     <div id="v-res-action-footer" class="p-5 bg-slate-50 border-t border-slate-100 flex flex-col gap-3">
-                        <!-- ACTION SAAT MENUNGGU -->
                         <div id="v-res-waiting-actions" class="flex flex-col gap-3 hidden">
                             <div class="flex flex-col sm:flex-row gap-2">
-                                <button onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju Jadwal</button>
-                                <button onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Batal / Reschedule</button>
+                                <button type="button" onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju Jadwal</button>
+                                <button type="button" onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Batal / Reschedule</button>
                             </div>
-                            <button onclick="approveVerification()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
+                            <button type="button" onclick="approveVerification()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md relative z-20"><i data-lucide="user-check" class="w-4 h-4 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
                         </div>
                         
-                        <!-- ACTION SAAT BERTEMU KEPSEK (MUNCUL TOMBOL SELESAI DI SINI) -->
                         <div id="v-res-bertemu-actions" class="hidden">
-                            <button onclick="finishVerification()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="check-check" class="w-4 h-4 pointer-events-none"></i> Tandai Selesai (Check-Out)</button>
+                            <button type="button" onclick="finishVerification()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md relative z-20"><i data-lucide="check-check" class="w-4 h-4 pointer-events-none"></i> Tandai Selesai (Check-Out)</button>
                         </div>
                     </div>
                     
@@ -238,7 +243,7 @@
             <div id="view-admin-history" class="app-view hidden fade-in max-w-5xl mx-auto">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
                     <div><h2 class="text-2xl font-black text-slate-900 tracking-tight">Log Riwayat Tamu</h2><p class="text-xs text-slate-400">Rekapitulasi tamu yang telah selesai berkunjung atau dibatalkan.</p></div>
-                    <div class="flex w-full sm:w-auto gap-2"><button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export Excel</button><button onclick="generateReportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-text" class="w-4 h-4"></i> Cetak PDF</button></div>
+                    <div class="flex w-full sm:w-auto gap-2"><button type="button" onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i> Export Excel</button><button type="button" onclick="generateReportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i> Cetak PDF</button></div>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden"><div class="overflow-x-auto hide-scroll"><table class="w-full text-left text-xs whitespace-nowrap md:whitespace-normal"><thead class="bg-slate-50 text-slate-500 border-b border-slate-100"><tr><th class="px-5 py-3.5 font-bold">Identitas & Tiket</th><th class="px-5 py-3.5 font-bold">Waktu Masuk / Keluar</th><th class="px-5 py-3.5 font-bold">Status Akhir</th><th class="px-5 py-3.5 font-bold text-center">Profil</th></tr></thead><tbody id="history-table-body" class="divide-y divide-slate-100"></tbody></table></div></div>
             </div>
@@ -259,7 +264,7 @@
     <div id="detail-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeDetailModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden" id="detail-card">
-            <div class="flex justify-between items-center p-5 border-b border-slate-100"><h3 class="font-black text-base text-slate-900">Profil Tamu</h3><button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+            <div class="flex justify-between items-center p-5 border-b border-slate-100"><h3 class="font-black text-base text-slate-900">Profil Tamu</h3><button type="button" onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition cursor-pointer"><i data-lucide="x" class="w-4 h-4 pointer-events-none"></i></button></div>
             <div class="p-5 md:p-6 overflow-y-auto max-h-[75vh] flex flex-col md:flex-row gap-5">
                 <div class="w-full md:w-2/5 shrink-0"><div class="w-36 h-48 md:w-full md:h-64 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 mx-auto"><img id="detail-photo" src="" alt="Foto" class="w-full h-full object-cover"></div></div>
                 <div class="flex-1 space-y-3.5 text-xs">
@@ -270,12 +275,12 @@
             <div id="modal-action-footer" class="p-4 bg-slate-50 border-t border-slate-100 flex flex-col gap-2">
                 <div id="mdl-waiting-actions" class="flex flex-col gap-2 hidden">
                     <div class="flex gap-2">
-                        <button onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju</button>
-                        <button onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Reschedule</button>
+                        <button type="button" onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju</button>
+                        <button type="button" onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Reschedule</button>
                     </div>
-                    <button onclick="updateStatusFromModal('bertemu')" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
+                    <button type="button" onclick="updateStatusFromModal('bertemu')" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition active:scale-95 cursor-pointer shadow-md relative z-20"><i data-lucide="user-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
                 </div>
-                <button onclick="updateStatusFromModal('selesai')" id="btn-mdl-selesai" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition active:scale-95 hidden cursor-pointer shadow-md"><i data-lucide="check-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tandai Selesai (Check-Out)</button>
+                <button type="button" onclick="updateStatusFromModal('selesai')" id="btn-mdl-selesai" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition active:scale-95 hidden cursor-pointer shadow-md relative z-20"><i data-lucide="check-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tandai Selesai (Check-Out)</button>
             </div>
         </div>
     </div>
@@ -284,7 +289,7 @@
     <div id="reschedule-modal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeRescheduleModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="reschedule-card">
-            <div class="flex items-center justify-between mb-4"><h3 class="font-black text-slate-900 text-lg">Batalkan Kunjungan</h3><button onclick="closeRescheduleModal()" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5 pointer-events-none"></i></button></div>
+            <div class="flex items-center justify-between mb-4"><h3 class="font-black text-slate-900 text-lg">Batalkan Kunjungan</h3><button type="button" onclick="closeRescheduleModal()" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5 pointer-events-none"></i></button></div>
             <div class="space-y-4 text-left">
                 <div><label class="block text-xs font-bold text-slate-700 mb-1">Alasan Pembatalan</label><input type="text" id="reschedule-reason" placeholder="Contoh: Kepsek rapat dinas luar" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:border-rose-500 outline-none"></div>
                 <div class="grid grid-cols-2 gap-3">
@@ -293,7 +298,7 @@
                 </div>
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-start gap-2 mt-2"><i data-lucide="info" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i><p class="text-[10px] text-blue-700 leading-relaxed">Sistem akan menolak tiket ini dan langsung membuat draf WhatsApp ke tamu berisi jadwal baru di atas.</p></div>
             </div>
-            <button onclick="submitReschedule()" class="w-full mt-5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl py-3.5 text-xs flex justify-center items-center gap-2 transition cursor-pointer shadow-md"><i data-lucide="send" class="w-4 h-4 pointer-events-none"></i> Batalkan & Kirim WA</button>
+            <button type="button" onclick="submitReschedule()" class="w-full mt-5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl py-3.5 text-xs flex justify-center items-center gap-2 transition cursor-pointer shadow-md"><i data-lucide="send" class="w-4 h-4 pointer-events-none"></i> Batalkan & Kirim WA</button>
         </div>
     </div>
 
@@ -301,6 +306,14 @@
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" id="conflict-overlay"></div>
         <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p><div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5"><p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p><p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p></div><div class="flex flex-col gap-2"><button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25 cursor-pointer">Gunakan Jam Ini</button><button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer">Pilih Waktu Lain</button></div></div>
+    </div>
+
+    <!-- WADAH CETAK LAPORAN (PDF) - DISEMBUNYIKAN DI LUAR LAYAR UNTUK HTML2PDF -->
+    <div id="print-report-container" class="absolute top-0 left-[-9999px] w-[1050px] bg-white p-10 z-0 opacity-0 pointer-events-none">
+        <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4"><h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1><h2 class="text-3xl font-black uppercase text-slate-900 mt-1">Dinas Pendidikan SMAN 1 Kandangan</h2><p class="text-sm text-slate-600 mt-2">Jl. Kaswari No.1, Kandangan, Kec. Kandangan, Kabupaten Kediri, Jawa Timur 64294</p></div>
+        <h3 class="text-center font-bold text-lg mb-6 uppercase underline">Laporan Rekapitulasi Kunjungan Tamu</h3>
+        <table class="w-full text-sm text-left border-collapse border border-slate-900"><thead class="bg-slate-100"><tr><th class="border border-slate-900 p-2">No</th><th class="border border-slate-900 p-2">Kode Tiket</th><th class="border border-slate-900 p-2">Tanggal</th><th class="border border-slate-900 p-2">Nama Tamu</th><th class="border border-slate-900 p-2">Instansi / Kategori</th><th class="border border-slate-900 p-2">Keperluan</th><th class="border border-slate-900 p-2 text-center">In - Out</th><th class="border border-slate-900 p-2 text-center">Status</th></tr></thead><tbody id="print-report-tbody"></tbody></table>
+        <div class="flex justify-end mt-16 pr-8"><div class="text-center"><p class="text-sm mb-16" id="print-date-signature">Kandangan, ........................</p><p class="text-sm font-bold underline">Kepala Tata Usaha</p><p class="text-xs">NIP. ..............................</p></div></div>
     </div>
 
     <!-- BOTTOM NAVBAR MOBILE -->
