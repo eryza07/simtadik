@@ -8,18 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- FITUR BARU: ROBOT PENCETAK PDF ANTI-GAGAL (BISA DI HP & PC) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="h-[100dvh] w-full flex flex-col md:flex-row overflow-hidden text-slate-800">
 
-    <!-- WADAH NOTIFIKASI TOAST -->
     <div id="toast-container" class="fixed top-20 md:top-4 right-4 z-[99999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- SIDEBAR KIRI -->
+    <!-- SIDEBAR -->
     <aside class="hidden md:flex flex-col w-[88px] bg-white border-r border-slate-200/80 py-6 items-center justify-between shrink-0 z-30 select-none relative">
         <nav class="flex flex-col items-center gap-6 w-full relative" id="desktop-sidebar-nav">
             <div id="sliding-indicator" class="sliding-indicator absolute right-0 w-[3px] bg-rose-600 rounded-l-full opacity-0 pointer-events-none z-10" style="top: 0; height: 0;"></div>
@@ -46,9 +42,8 @@
         </div>
     </aside>
 
-    <!-- KONTEN UTAMA -->
+    <!-- MAIN CONTENT -->
     <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10">
-
         <header class="bg-white border-b border-slate-200/80 px-4 md:px-6 py-3.5 flex items-center justify-between shrink-0 z-50 relative">
             <div class="md:hidden flex items-center gap-3">
                 <div class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden p-1 shadow-sm"><img src="logo.png" alt="Logo" class="w-full h-full object-contain"></div>
@@ -130,7 +125,7 @@
                         <div class="bg-slate-950 p-4 rounded-2xl text-center"><p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Kode Pelacakan</p><p id="ticket-code" class="text-2xl font-black text-white tracking-widest font-mono">SMAN1-XXXX</p></div>
                     </div>
                     <div class="flex gap-2 no-print">
-                        <button type="button" onclick="printTicket()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-3 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"><i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i> Download PDF</button>
+                        <button type="button" onclick="printTicket(this)" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-3 text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"><i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i> Download PDF</button>
                         <button type="button" onclick="finishGuestRegistration()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl px-4 py-3 text-xs transition cursor-pointer">Selesai</button>
                     </div>
                 </div>
@@ -243,7 +238,10 @@
             <div id="view-admin-history" class="app-view hidden fade-in max-w-5xl mx-auto">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
                     <div><h2 class="text-2xl font-black text-slate-900 tracking-tight">Log Riwayat Tamu</h2><p class="text-xs text-slate-400">Rekapitulasi tamu yang telah selesai berkunjung atau dibatalkan.</p></div>
-                    <div class="flex w-full sm:w-auto gap-2"><button type="button" onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i> Export Excel</button><button type="button" onclick="generateReportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i> Cetak PDF</button></div>
+                    <div class="flex w-full sm:w-auto gap-2">
+                        <button type="button" onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i> Export Excel</button>
+                        <button type="button" onclick="generateReportPDF(this)" class="bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 flex-1 sm:flex-none cursor-pointer"><i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i> Cetak PDF</button>
+                    </div>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden"><div class="overflow-x-auto hide-scroll"><table class="w-full text-left text-xs whitespace-nowrap md:whitespace-normal"><thead class="bg-slate-50 text-slate-500 border-b border-slate-100"><tr><th class="px-5 py-3.5 font-bold">Identitas & Tiket</th><th class="px-5 py-3.5 font-bold">Waktu Masuk / Keluar</th><th class="px-5 py-3.5 font-bold">Status Akhir</th><th class="px-5 py-3.5 font-bold text-center">Profil</th></tr></thead><tbody id="history-table-body" class="divide-y divide-slate-100"></tbody></table></div></div>
             </div>
@@ -308,8 +306,8 @@
         <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p><div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5"><p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p><p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p></div><div class="flex flex-col gap-2"><button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25 cursor-pointer">Gunakan Jam Ini</button><button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer">Pilih Waktu Lain</button></div></div>
     </div>
 
-    <!-- WADAH CETAK LAPORAN (PDF) - DISEMBUNYIKAN DI LUAR LAYAR UNTUK HTML2PDF -->
-    <div id="print-report-container" class="absolute top-0 left-[-9999px] w-[1050px] bg-white p-10 z-0 opacity-0 pointer-events-none">
+    <!-- WADAH CETAK LAPORAN (PDF) - SUDAH DIPERBAIKI ANTI BLANK -->
+    <div id="print-report-container" class="hidden absolute top-0 left-0 w-full min-w-[1050px] min-h-screen bg-white p-10 z-[99999]">
         <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4"><h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1><h2 class="text-3xl font-black uppercase text-slate-900 mt-1">Dinas Pendidikan SMAN 1 Kandangan</h2><p class="text-sm text-slate-600 mt-2">Jl. Kaswari No.1, Kandangan, Kec. Kandangan, Kabupaten Kediri, Jawa Timur 64294</p></div>
         <h3 class="text-center font-bold text-lg mb-6 uppercase underline">Laporan Rekapitulasi Kunjungan Tamu</h3>
         <table class="w-full text-sm text-left border-collapse border border-slate-900"><thead class="bg-slate-100"><tr><th class="border border-slate-900 p-2">No</th><th class="border border-slate-900 p-2">Kode Tiket</th><th class="border border-slate-900 p-2">Tanggal</th><th class="border border-slate-900 p-2">Nama Tamu</th><th class="border border-slate-900 p-2">Instansi / Kategori</th><th class="border border-slate-900 p-2">Keperluan</th><th class="border border-slate-900 p-2 text-center">In - Out</th><th class="border border-slate-900 p-2 text-center">Status</th></tr></thead><tbody id="print-report-tbody"></tbody></table>
