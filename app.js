@@ -216,7 +216,7 @@ function retakePhoto() { cameraResult.classList.add('hidden'); document.getEleme
 function stopCamera() { if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; } }
 
 // =========================================================
-// BUGFIX UTAMA: FUNGSI UPDATE STATUS & REFRESH LAYAR
+// UPDATE STATUS MASTER (ANTI-BUG UI)
 // =========================================================
 window.changeGuestStatus = function(code, newStatus) {
     const data = guestsDatabase[code]; 
@@ -235,8 +235,6 @@ window.changeGuestStatus = function(code, newStatus) {
     }
     
     refreshDashboardMetrics();
-    
-    // Refresh modal / layar verifikasi jika sedang terbuka
     if (activeDetailCode === code) { openDetailModal(code); }
     if (codeToVerify === code && currentActiveView === 'view-admin-verify') { executeVerification(code); }
 }
@@ -378,15 +376,34 @@ window.submitGuestForm = function() {
     setTimeout(() => {
         try {
             document.getElementById('ticket-name').innerText = guestName; document.getElementById('ticket-date-display').innerText = `${displayDate} | Jam ${planTimeWIB}`; document.getElementById('ticket-code').innerText = code;
-            document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket');
-
             switchAppView('view-success'); appendHistoryRow(code); refreshDashboardMetrics();
             silentAddNotification("Tamu Baru Terdaftar!", `${guestName} dari ${instansi} telah mendaftar.`);
         } catch (error) {} finally { resetGuestForm(); }
     }, 1200);
 };
 
-window.printTicket = function() { document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket'); window.print(); }
+window.printTicket = function() {
+    const appMain = document.querySelector('.flex-1'); const sidebar = document.querySelector('aside'); const mobileNav = document.getElementById('mobile-bottom-nav');
+    if(appMain) appMain.classList.remove('hidden'); if(sidebar) sidebar.style.display = 'none'; if(mobileNav) mobileNav.style.display = 'none';
+    
+    document.body.classList.remove('print-mode-report'); document.body.classList.add('print-mode-ticket'); 
+    
+    setTimeout(() => { window.print(); }, 500);
+}
+
+// Event listener saat dialog print ditutup (Berlaku untuk Tiket & Laporan PDF)
+window.addEventListener('afterprint', () => {
+    const printContainer = document.getElementById('print-report-container');
+    if(printContainer) { printContainer.classList.add('hidden'); printContainer.classList.remove('block'); }
+    
+    const appMain = document.querySelector('.flex-1'); const sidebar = document.querySelector('aside'); const mobileNav = document.getElementById('mobile-bottom-nav');
+    if(appMain) { appMain.style.display = ''; appMain.classList.remove('hidden'); }
+    if(sidebar) sidebar.style.display = '';
+    if(mobileNav) mobileNav.style.display = '';
+    
+    document.body.classList.remove('print-mode-ticket', 'print-mode-report');
+});
+
 document.getElementById('btn-accept-suggestion')?.addEventListener('click', function() { document.getElementById('guest-time').value = this.dataset.suggestTime; document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('btn-submit-guest').click(); }, 300); });
 document.getElementById('btn-change-schedule')?.addEventListener('click', () => { document.getElementById('conflict-card').classList.replace('scale-100', 'scale-95'); document.getElementById('conflict-card').classList.replace('opacity-100', 'opacity-0'); setTimeout(() => { document.getElementById('conflict-modal').classList.add('hidden'); document.getElementById('guest-time').focus(); }, 300); });
 
@@ -418,8 +435,6 @@ window.closeDetailModal = function () {
     setTimeout(() => { modal.classList.add('hidden'); activeDetailCode = null; }, 250);
 };
 
-window.updateStatusFromModal = function (newStatus) { if (activeDetailCode) { changeGuestStatus(activeDetailCode, newStatus); } };
-
 window.doTrackTicket = function() {
     const code = document.getElementById('track-input').value.trim().toUpperCase(); if (!code) return;
     const resContainer = document.getElementById('track-result-container'); resContainer.classList.remove('hidden');
@@ -436,7 +451,6 @@ window.doTrackTicket = function() {
     } else { document.getElementById('track-found').classList.add('hidden'); document.getElementById('track-not-found').classList.remove('hidden'); }
 };
 
-// BUGFIX: FUNGSI EXECUTE VERIFICATION DIRAPIKAN AGAR TOMBOL SELESAI MUNCUL!
 window.executeVerification = function(code) {
     if (!code) return; const data = guestsDatabase[code]; 
     const notFound = document.getElementById('verify-not-found'); const resultCard = document.getElementById('verify-result-card');
@@ -445,28 +459,22 @@ window.executeVerification = function(code) {
         codeToVerify = code; notFound.classList.add('hidden'); resultCard.classList.remove('hidden');
         document.getElementById('v-res-photo').src = data.photo; document.getElementById('v-res-code').innerText = code; document.getElementById('v-res-name').innerText = data.name; document.getElementById('v-res-instansi').innerText = data.instansi; document.getElementById('v-res-kategori').innerText = data.kategori; document.getElementById('v-res-date').innerText = data.displayDate; document.getElementById('v-res-time').innerText = data.planTime; document.getElementById('v-res-tujuan').innerText = data.tujuan;
         
-        const badge = document.getElementById('v-res-status-badge'); 
-        const footer = document.getElementById('v-res-action-footer'); 
-        const waitActions = document.getElementById('v-res-waiting-actions');
-        const meetActions = document.getElementById('v-res-bertemu-actions');
-        const msgDone = document.getElementById('v-res-msg-done'); 
-        const msgStatus = document.getElementById('v-res-msg-status');
+        const badge = document.getElementById('v-res-status-badge'); const footer = document.getElementById('v-res-action-footer'); 
+        const waitActions = document.getElementById('v-res-waiting-actions'); const meetActions = document.getElementById('v-res-bertemu-actions');
+        const msgDone = document.getElementById('v-res-msg-done'); const msgStatus = document.getElementById('v-res-msg-status');
         
         if (data.status === 'menunggu') { 
             badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700"; badge.innerText = "Menunggu Persetujuan"; 
-            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
-            waitActions.classList.remove('hidden'); meetActions.classList.add('hidden');
+            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden'); waitActions.classList.remove('hidden'); meetActions.classList.add('hidden');
         } 
         else if (data.status === 'bertemu') { 
             badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"; badge.innerText = "Sedang Bertemu"; 
-            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden');
-            waitActions.classList.add('hidden'); meetActions.classList.remove('hidden');
+            footer.classList.remove('hidden'); footer.classList.add('flex'); msgDone.classList.add('hidden'); waitActions.classList.add('hidden'); meetActions.classList.remove('hidden');
         } 
         else {
             if (data.status === 'selesai') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700"; badge.innerText = "Selesai (Pulang)"; msgStatus.innerText = "Selesai (Sudah Keluar)"; msgStatus.className = "text-emerald-600"; } 
             else if (data.status === 'ditolak') { badge.className = "px-3 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700"; badge.innerText = "Dibatalkan"; msgStatus.innerText = "Dibatalkan / Reschedule"; msgStatus.className = "text-rose-600"; }
-            footer.classList.add('hidden'); footer.classList.remove('flex'); msgDone.classList.remove('hidden');
-            waitActions.classList.add('hidden'); meetActions.classList.add('hidden');
+            footer.classList.add('hidden'); footer.classList.remove('flex'); msgDone.classList.remove('hidden'); waitActions.classList.add('hidden'); meetActions.classList.add('hidden');
         }
     } else { resultCard.classList.add('hidden'); notFound.classList.remove('hidden'); }
 };
@@ -474,8 +482,11 @@ window.executeVerification = function(code) {
 window.doAdminVerify = function() { const code = document.getElementById('admin-verify-input').value.trim().toUpperCase(); executeVerification(code); };
 window.doQuickVerify = function() { const code = document.getElementById('quick-verify-input').value.trim().toUpperCase(); if (!code) return; switchAppView('view-admin-verify'); document.getElementById('admin-verify-input').value = code; executeVerification(code); };
 window.approveVerification = function() { if (codeToVerify) { changeGuestStatus(codeToVerify, 'bertemu'); } };
-window.finishVerification = function() { if (codeToVerify) { changeGuestStatus(codeToVerify, 'selesai'); } }; // BUGFIX FUNGSI SELESAI
+window.finishVerification = function() { if (codeToVerify) { changeGuestStatus(codeToVerify, 'selesai'); } };
 
+// =========================================================
+// EXPORT CSV & BUGFIX PDF (TIDAK MACET LAGI)
+// =========================================================
 window.exportToCSV = function() {
     let csv = "Kode Tiket,Tanggal Pertemuan,Rencana Jam Tiba,Nama Lengkap,Asal Instansi,Kategori,Keperluan,Status Akhir,Waktu Form Masuk,Waktu Keluar\n";
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -487,15 +498,55 @@ window.exportToCSV = function() {
     const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); const url = URL.createObjectURL(blob);
     link.setAttribute("href", url); link.setAttribute("download", `Rekap_Tamu_SMAN1_${new Date().getTime()}.csv`); link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
 };
+
 window.generateReportPDF = function() {
     const tbody = document.getElementById('print-report-tbody'); tbody.innerHTML = ''; let no = 1;
     const sortedGuests = Object.values(guestsDatabase).sort((a, b) => new Date(a.date) - new Date(b.date));
-    sortedGuests.forEach(data => {
-        let statText = data.status.toUpperCase(); if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI"; else if (data.status === 'ditolak') statText = "BATAL";
-        const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data); const tr = document.createElement('tr');
-        tr.innerHTML = `<td class="border border-slate-900 p-2 text-center">${no++}</td><td class="border border-slate-900 p-2 font-mono">${code}</td><td class="border border-slate-900 p-2">${data.displayDate}</td><td class="border border-slate-900 p-2 font-bold">${data.name}</td><td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td><td class="border border-slate-900 p-2">${data.tujuan}</td><td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td><td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>`;
-        tbody.appendChild(tr);
-    });
-    document.body.classList.remove('print-mode-ticket'); document.body.classList.add('print-mode-report'); document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
-    setTimeout(() => { window.print(); }, 300);
+    
+    // Tulis Ulang Tabel PDF
+    if (sortedGuests.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="border border-slate-900 p-4 text-center font-bold text-slate-500">Belum ada data kunjungan.</td></tr>`;
+    } else {
+        sortedGuests.forEach(data => {
+            let statText = data.status.toUpperCase(); if(data.status === 'menunggu') statText = "DALAM ANTREAN"; else if (data.status === 'bertemu') statText = "SEDANG BERTEMU"; else if (data.status === 'selesai') statText = "SELESAI"; else if (data.status === 'ditolak') statText = "BATAL";
+            const code = Object.keys(guestsDatabase).find(k => guestsDatabase[k] === data); const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="border border-slate-900 p-2 text-center">${no++}</td><td class="border border-slate-900 p-2 font-mono">${code}</td><td class="border border-slate-900 p-2">${data.displayDate}</td><td class="border border-slate-900 p-2 font-bold">${data.name}</td><td class="border border-slate-900 p-2">${data.instansi} <br> <span class="text-[10px]">${data.kategori}</span></td><td class="border border-slate-900 p-2">${data.tujuan}</td><td class="border border-slate-900 p-2 text-center">${data.time} - ${data.outTime}</td><td class="border border-slate-900 p-2 text-center font-bold">${statText}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+    document.getElementById('print-date-signature').innerText = `Kandangan, ${todayStr}`;
+    
+    // 1. Munculkan Gembok Kertas PDF
+    const printContainer = document.getElementById('print-report-container');
+    printContainer.classList.remove('hidden');
+    printContainer.classList.add('block');
+    
+    // 2. Sembunyikan Aplikasi Utama agar tidak tumpang tindih
+    const appMain = document.querySelector('.flex-1');
+    const sidebar = document.querySelector('aside');
+    const mobileNav = document.getElementById('mobile-bottom-nav');
+    
+    if(appMain) { appMain.style.display = 'none'; appMain.classList.add('hidden'); }
+    if(sidebar) sidebar.style.display = 'none';
+    if(mobileNav) mobileNav.style.display = 'none';
+
+    document.body.classList.remove('print-mode-ticket'); 
+    document.body.classList.add('print-mode-report'); 
+
+    // 3. Print Dialog!
+    setTimeout(() => { 
+        window.print(); 
+        
+        // 4. Jurus Cadangan: Jika browser lemot menutup PDF
+        setTimeout(() => {
+            printContainer.classList.add('hidden');
+            printContainer.classList.remove('block');
+            
+            if(appMain) { appMain.style.display = ''; appMain.classList.remove('hidden'); }
+            if(sidebar) sidebar.style.display = '';
+            if(mobileNav) mobileNav.style.display = '';
+            
+            document.body.classList.remove('print-mode-report');
+        }, 1500);
+    }, 500);
 };
