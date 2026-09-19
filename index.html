@@ -65,7 +65,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="hidden md:flex items-center gap-3">
                     <div class="text-right"><p class="text-xs font-bold text-slate-800 leading-tight">SMAN 1 KANDANGAN</p><p class="text-[10px] text-slate-400 font-medium">Kab. Kediri, Jawa Timur</p></div>
                     <div class="w-10 h-10 rounded-xl border border-slate-200 overflow-hidden bg-white p-1 shadow-sm flex items-center justify-center"><img src="logo.png" alt="Logo SMAN 1" class="w-full h-full object-contain"></div>
@@ -82,7 +81,6 @@
                     <form id="guest-form" class="space-y-4 md:space-y-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                             <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap *</label><input type="text" id="guest-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
-                            <!-- BUGFIX WA: Tambah ID guest-phone -->
                             <div><label class="block text-xs font-bold text-slate-700 mb-1.5">No. WhatsApp *</label><input type="tel" id="guest-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition" placeholder="Contoh: 08123456789"></div>
                         </div>
                         <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Asal Instansi / Lembaga *</label><input type="text" id="guest-instansi" required placeholder="Contoh: Dinas, Wali Murid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 transition"></div>
@@ -144,21 +142,16 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: LOGIN FORM MULTI-ROLE -->
+            <!-- VIEW 4: LOGIN FORM -->
             <div id="view-login" class="app-view hidden fade-in flex-col justify-center h-full max-w-sm mx-auto relative z-50">
                 <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200/80">
                     <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mb-5 mx-auto"><i data-lucide="shield-check" class="w-7 h-7"></i></div>
                     <h2 class="text-2xl font-black text-center mb-1 text-slate-900">Akses Pintu Masuk</h2>
                     <p class="text-slate-400 text-xs text-center mb-6">Login sebagai <b>admin</b> (Petugas TU) atau <b>kepsek</b> (Pimpinan).</p>
-                    
                     <form id="login-form" onsubmit="event.preventDefault(); executeSafeLogin();" class="space-y-4 relative z-20">
                         <input type="text" id="username-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-rose-500 text-sm transition" placeholder="Username (admin / kepsek)">
                         <input type="password" id="password-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:outline-none focus:border-rose-500 text-sm transition" placeholder="Password">
-                        
-                        <button type="button" onclick="executeSafeLogin()" id="btn-do-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-4 py-3.5 text-sm flex justify-center items-center transition cursor-pointer active:scale-95 shadow-md">
-                            <span id="login-text" class="pointer-events-none">Masuk Dashboard</span>
-                            <div id="login-spinner" class="spinner hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin pointer-events-none"></div>
-                        </button>
+                        <button type="button" onclick="executeSafeLogin()" id="btn-do-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-4 py-3.5 text-sm flex justify-center items-center transition cursor-pointer active:scale-95 shadow-md"><span id="login-text" class="pointer-events-none">Masuk Dashboard</span><div id="login-spinner" class="spinner hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin pointer-events-none"></div></button>
                     </form>
                 </div>
             </div>
@@ -167,10 +160,7 @@
             <div id="view-admin-overview" class="app-view hidden fade-in max-w-[1400px] mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     <div class="lg:col-span-8 space-y-6">
-                        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 text-white p-6 shadow-sm border border-slate-800">
-                            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 via-transparent to-transparent pointer-events-none"></div>
-                            <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4"><div class="flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center font-extrabold text-xl shadow-inner">TU</div><div><h2 class="text-xl md:text-2xl font-black tracking-tight">Petugas TU - SMAN 1 Kandangan</h2><div class="flex flex-wrap items-center gap-2 text-xs text-slate-300 mt-1"><span class="font-mono bg-white/10 px-2 py-0.5 rounded-md font-semibold text-rose-300">POS-01</span><span>•</span><span class="text-emerald-400 font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Aktif</span></div></div></div></div>
-                        </div>
+                        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 text-white p-6 shadow-sm border border-slate-800"><div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 via-transparent to-transparent pointer-events-none"></div><div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4"><div class="flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center font-extrabold text-xl shadow-inner">TU</div><div><h2 class="text-xl md:text-2xl font-black tracking-tight">Petugas TU - SMAN 1 Kandangan</h2><div class="flex flex-wrap items-center gap-2 text-xs text-slate-300 mt-1"><span class="font-mono bg-white/10 px-2 py-0.5 rounded-md font-semibold text-rose-300">POS-01</span><span>•</span><span class="text-emerald-400 font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Aktif</span></div></div></div></div></div>
                         <div>
                             <div class="flex items-center justify-between mb-4"><h3 class="text-lg font-bold text-slate-900 tracking-tight">Pantauan Kilat Harian</h3><span class="text-[11px] font-semibold bg-slate-100 text-slate-600 px-3 py-1 rounded-full border border-slate-200/80" id="current-date-badge">Hari Ini</span></div>
                             <div class="grid grid-cols-3 gap-3 md:gap-4">
@@ -217,11 +207,10 @@
                         </div>
                     </div>
                     
-                    <!-- BUGFIX WA & RESCHEDULE: Action Footer Baru -->
                     <div id="v-res-action-footer" class="p-5 bg-slate-50 border-t border-slate-100 flex flex-col gap-3">
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <button onclick="sendWAApprove(codeToVerify)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju Jadwal</button>
-                            <button onclick="openRescheduleModal(codeToVerify)" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Batal / Reschedule</button>
+                            <button onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju Jadwal</button>
+                            <button onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Batal / Reschedule</button>
                         </div>
                         <button onclick="approveVerification()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3.5 text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
                     </div>
@@ -252,7 +241,7 @@
         </main>
     </div>
 
-    <!-- MODAL DETAIL PROFIL (DENGAN TOMBOL WA & RESCHEDULE) -->
+    <!-- MODAL DETAIL PROFIL -->
     <div id="detail-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeDetailModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden" id="detail-card">
@@ -265,28 +254,23 @@
                 </div>
             </div>
             <div id="modal-action-footer" class="p-4 bg-slate-50 border-t border-slate-100 flex flex-col gap-2">
-                <!-- Action Waiting -->
                 <div id="mdl-waiting-actions" class="flex flex-col gap-2 hidden">
                     <div class="flex gap-2">
-                        <button onclick="sendWAApprove(activeDetailCode)" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju</button>
-                        <button onclick="openRescheduleModal(activeDetailCode)" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Reschedule</button>
+                        <button onclick="sendWAApprove()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4 pointer-events-none"></i> WA Setuju</button>
+                        <button onclick="openRescheduleModal()" class="flex-1 bg-rose-50 text-rose-700 border border-rose-200 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="calendar-x" class="w-4 h-4 pointer-events-none"></i> Reschedule</button>
                     </div>
                     <button onclick="updateStatusFromModal('bertemu')" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition active:scale-95 cursor-pointer shadow-md"><i data-lucide="user-check" class="w-4 h-4 inline mr-1 pointer-events-none"></i> Tamu Telah Tiba: Panggil Masuk</button>
                 </div>
-                <!-- Action Checkout -->
                 <button onclick="updateStatusFromModal('selesai')" id="btn-mdl-selesai" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition active:scale-95 hidden cursor-pointer">Tandai Selesai (Check-Out)</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL BATAL / RESCHEDULE (FITUR BARU) -->
+    <!-- MODAL BATAL / RESCHEDULE -->
     <div id="reschedule-modal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeRescheduleModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="reschedule-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-black text-slate-900 text-lg">Batalkan Kunjungan</h3>
-                <button onclick="closeRescheduleModal()" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5 pointer-events-none"></i></button>
-            </div>
+            <div class="flex items-center justify-between mb-4"><h3 class="font-black text-slate-900 text-lg">Batalkan Kunjungan</h3><button onclick="closeRescheduleModal()" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5 pointer-events-none"></i></button></div>
             <div class="space-y-4 text-left">
                 <div><label class="block text-xs font-bold text-slate-700 mb-1">Alasan Pembatalan</label><input type="text" id="reschedule-reason" placeholder="Contoh: Kepsek rapat dinas luar" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:border-rose-500 outline-none"></div>
                 <div class="grid grid-cols-2 gap-3">
@@ -303,14 +287,6 @@
     <div id="conflict-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" id="conflict-overlay"></div>
         <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full relative z-10 text-center transform scale-95 opacity-0 transition-all duration-300" id="conflict-card"><div class="w-14 h-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" class="w-7 h-7"></i></div><h3 class="text-lg font-black text-slate-900 mb-1">Jadwal Bentrok</h3><p class="text-xs text-slate-500 mb-5 leading-relaxed">Tanggal <span id="conflict-date-text" class="font-bold"></span> jam <span id="conflict-time-text" class="font-bold text-rose-600"></span> sudah diisi oleh <span id="conflict-name-text" class="font-bold text-slate-800"></span>.</p><div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5"><p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Saran Waktu Kosong (+2 Jam)</p><p class="text-2xl font-black text-slate-900" id="conflict-suggest-time">12:00 WIB</p></div><div class="flex flex-col gap-2"><button type="button" id="btn-accept-suggestion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-xs transition active:scale-95 shadow-lg shadow-emerald-500/25 cursor-pointer">Gunakan Jam Ini</button><button type="button" id="btn-change-schedule" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl py-3 text-xs transition active:scale-95 cursor-pointer">Pilih Waktu Lain</button></div></div>
-    </div>
-
-    <!-- WADAH CETAK LAPORAN (PDF) -->
-    <div id="print-report-container" class="hidden bg-white min-h-screen relative z-[99999]">
-        <div class="text-center border-b-4 border-slate-900 pb-4 mb-6 pt-4"><h1 class="text-2xl font-black uppercase text-slate-900">Pemerintah Provinsi Jawa Timur</h1><h2 class="text-3xl font-black uppercase text-slate-900 mt-1">Dinas Pendidikan SMAN 1 Kandangan</h2><p class="text-sm text-slate-600 mt-2">Jl. Kaswari No.1, Kandangan, Kec. Kandangan, Kabupaten Kediri, Jawa Timur 64294</p></div>
-        <h3 class="text-center font-bold text-lg mb-6 uppercase underline">Laporan Rekapitulasi Kunjungan Tamu</h3>
-        <table class="w-full text-sm text-left border-collapse border border-slate-900"><thead class="bg-slate-100"><tr><th class="border border-slate-900 p-2">No</th><th class="border border-slate-900 p-2">Kode Tiket</th><th class="border border-slate-900 p-2">Tanggal</th><th class="border border-slate-900 p-2">Nama Tamu</th><th class="border border-slate-900 p-2">Instansi / Kategori</th><th class="border border-slate-900 p-2">Keperluan</th><th class="border border-slate-900 p-2 text-center">In - Out</th><th class="border border-slate-900 p-2 text-center">Status</th></tr></thead><tbody id="print-report-tbody"></tbody></table>
-        <div class="flex justify-end mt-16 pr-8"><div class="text-center"><p class="text-sm mb-16" id="print-date-signature">Kandangan, ........................</p><p class="text-sm font-bold underline">Kepala Tata Usaha</p><p class="text-xs">NIP. ..............................</p></div></div>
     </div>
 
     <!-- BOTTOM NAVBAR MOBILE -->
